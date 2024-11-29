@@ -46,8 +46,8 @@ namespace SharpReader
         }
 
         private void LoadComics(){
-            ComicsWrapPanel.Children.Add(LoadComic("../resources/placeholder.jpg", "sample title"));
-            ComicsWrapPanel.Children.Add(LoadComic("../resources/placeholder.jpg", "sample title 2"));
+            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title"));
+            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title 2"));
         }
         private StackPanel LoadComic(string path,string title)
         {
