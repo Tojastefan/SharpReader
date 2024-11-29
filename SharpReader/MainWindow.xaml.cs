@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -6,15 +9,23 @@ using System.Windows.Media.Imaging;
 
 namespace SharpReader
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window , INotifyPropertyChanged
     {
-        // Kolory dla ciemnego i jasnego motywu
-        private readonly Brush darkBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
-        private readonly Brush darkPanelBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
-        private readonly Brush lightBackground = Brushes.White;
-        private readonly Brush lightPanelBackground = Brushes.LightGray;
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
+        private Brush currentTextColor;
+        public Brush CurrentTextColor
+        {
+            get => currentTextColor;
+            set
+            {
+                if (currentTextColor != value)
+                {
+                    currentTextColor = value;
+                    OnPropertyChanged(nameof(CurrentTextColor));
+                }
+            }
+        }
         Color darkSidebar = (Color)ColorConverter.ConvertFromString("#3c3c3c");
         Color lightSidebar = (Color)ColorConverter.ConvertFromString("#F5F5F5");
         private bool isDarkMode = true;
@@ -22,55 +33,52 @@ namespace SharpReader
 
         public MainWindow()
         {
+            CurrentTextColor = darkText;
             InitializeComponent();
+            foreach (var tb in FindVisualChildren<TextBlock>(SidebarPanel))
+            {
+                tb.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
+                {
+                    Source = this
+                });
+            }
             LoadComics();
         }
 
-        private void LoadComics()
-        {
-            for (int i = 0; i < 30; i++)
-            {
-                Border comicBorder = new Border
-                {
-                    BorderBrush = Brushes.Gray,
-                    BorderThickness = new Thickness(2),
-                    Width = 100,
-                    Height = 150,
-                    Margin = new Thickness(5),
-                    Background = Brushes.White
-                };
-
-                StackPanel comicPanel = new StackPanel();
-                Image comicImage = new Image
-                {
-                    Width = 90,
-                    Height = 100,
-                    Margin = new Thickness(5),
-                    Source = new BitmapImage(new Uri("https://via.placeholder.com/90x100", UriKind.Absolute))
-                };
-
-                TextBlock comicTitle = new TextBlock
-                {
-                    Text = "Comic " + (i + 1),
-                    Foreground = Brushes.White,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Margin = new Thickness(0, 5, 0, 0)
-                };
-
-                comicPanel.Children.Add(comicImage);
-                comicPanel.Children.Add(comicTitle);
-
-                comicBorder.Child = comicPanel;
-                ComicsWrapPanel.Children.Add(comicBorder);
-            }
+        private void LoadComics(){
+            ComicsWrapPanel.Children.Add(LoadComic("../resources/placeholder.jpg", "sample title"));
+            ComicsWrapPanel.Children.Add(LoadComic("../resources/placeholder.jpg", "sample title 2"));
         }
-
-        private void ChangeBackground_Click(object sender, RoutedEventArgs e)
+        private StackPanel LoadComic(string path,string title)
         {
-            // Sprawdzenie, czy obecny kolor tła to ciemny
-            if (MainGrid.Background is SolidColorBrush brush && brush.Color == (Color)ColorConverter.ConvertFromString("#232323"))
+            int width = 150, height = 250;
+            StackPanel panel = new StackPanel
             {
-                // Zmiana na jasny motyw
+                Height = height,
+                Width = width,
+                Margin = new Thickness(20)
+            };
+            Image image = new Image{
+                Source = new BitmapImage(new Uri(path,Path.IsPathRooted(path) ? UriKind.Absolute : UriKind.Relative)),
+                Width = width,
+                MaxHeight = height
+            };
+            TextBlock textBlock = new TextBlock{
+                Text = title,
+                FontSize = 15,
+                TextWrapping = TextWrapping.Wrap
+            };
+            textBlock.SetBinding(TextBlock.ForegroundProperty,new System.Windows.Data.Binding("CurrentTextColor"){
+                Source = this
+            });
+            panel.Children.Add(image);
+            panel.Children.Add(textBlock);
+            return panel;
+        }
+        private void ChangeBackground_Click(object sender, RoutedEventArgs e){
+            if(isDarkMode)
+            {
+                ChangeTextColor(false);
                 MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0"));
                 MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
                 MainMenu.Background = new SolidColorBrush(lightSidebar);
@@ -86,7 +94,7 @@ namespace SharpReader
                     }
                     else if (child is TextBlock textBlock)
                     {
-                        textBlock.Foreground = Brushes.Black;
+                        textBlock.Foreground = currentTextColor;
                     }
                 }
 
@@ -96,12 +104,13 @@ namespace SharpReader
                     if (item is MenuItem menuItem)
                     {
                         menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
-                        menuItem.Foreground = Brushes.Black;
+                        menuItem.Foreground = currentTextColor;
                     }
                 }
             }
             else
             {
+                ChangeTextColor(true);
                 // Zmiana na ciemny motyw
                 MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
                 MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
@@ -114,11 +123,11 @@ namespace SharpReader
                     if (child is Button button)
                     {
                         button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
-                        button.Foreground = Brushes.White;
+                        button.Foreground = currentTextColor;
                     }
                     else if (child is TextBlock textBlock)
                     {
-                        textBlock.Foreground = Brushes.White;
+                        textBlock.Foreground = currentTextColor;
                     }
                 }
 
@@ -128,24 +137,55 @@ namespace SharpReader
                     if (item is MenuItem menuItem)
                     {
                         menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
-                        menuItem.Foreground = Brushes.White;
+                        menuItem.Foreground = currentTextColor;
                     }
                 }
             }
+            isDarkMode = !isDarkMode;
         }
-
 
         private void GridLayout_Click(object sender, RoutedEventArgs e)
         {
-            ComicsWrapPanel.ItemHeight = 150;
-            ComicsWrapPanel.ItemWidth = 100;
+
         }
 
         private void ListLayout_Click(object sender, RoutedEventArgs e)
         {
-            ComicsWrapPanel.ItemHeight = 150;
-            ComicsWrapPanel.ItemWidth = 300;
+
         }
 
+        private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null) yield break;
+
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childrenCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild)
+                {
+                    yield return typedChild;
+                }
+
+                // Recursively find children of the child
+                foreach (var grandChild in FindVisualChildren<T>(child))
+                {
+                    yield return grandChild;
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // Example method to change the text color
+        private void ChangeTextColor(bool useDarkText)
+        {
+            CurrentTextColor = useDarkText ? darkText : lightText;
+        }
     }
 }

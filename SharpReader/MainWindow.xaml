@@ -1,7 +1,11 @@
 ﻿<Window x:Class="SharpReader.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Comic Viewer" Height="600" Width="800">
+        Title="Comic Viewer" Height="720" Width="1280"
+        MaxWidth="1920" MaxHeight="1080" WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        
+        >
 
     <!-- Główna siatka (Grid) z ciemnym tłem oraz identyfikatorem "MainGrid" -->
     <Grid Background="#232323" Name="MainGrid">
@@ -33,7 +37,9 @@
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->
             <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    
+                </WrapPanel>
             </ScrollViewer>
         </DockPanel>
     </Grid>
