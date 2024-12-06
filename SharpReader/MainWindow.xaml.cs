@@ -82,8 +82,34 @@ namespace SharpReader
             panel.Children.Add(button);
             panel.MouseDown += (sender, e) =>
             {
-
                 ComicsWrapPanel.Children.Clear();
+                ComicsWrapPanel.Orientation = Orientation.Vertical;
+                string imagePath = "./resources/ActionComics/Action Comics 001 (1938) (Digital) (Shadowcat-Empire)_page-0001.jpg";
+
+                // Define the path to the ActionComics directory
+                string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
+                if (Directory.Exists(dirPath))
+                {
+                    string[] files = Directory.GetFiles(dirPath);
+
+                    foreach (string file in files)
+                    {
+                        Image firstimage = new Image
+                        {
+                            Source = new BitmapImage(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative)),
+                            Width = 800,
+                            MaxHeight = 700,
+                        };
+                        ComicsWrapPanel.Children.Add(firstimage);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("The directory does not exist.");
+                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                    Console.WriteLine($"Base Directory: {basePath}");
+
+                }
             };
             panel.MouseEnter += (sender, e) =>
             {
