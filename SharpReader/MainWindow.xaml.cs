@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Effects;
 
 namespace SharpReader
 {
@@ -71,8 +72,45 @@ namespace SharpReader
             textBlock.SetBinding(TextBlock.ForegroundProperty,new System.Windows.Data.Binding("CurrentTextColor"){
                 Source = this
             });
+            Button button = new Button
+            {
+                Content = "Settings",
+                Visibility = Visibility.Hidden,
+            };
             panel.Children.Add(image);
             panel.Children.Add(textBlock);
+            panel.Children.Add(button);
+            panel.MouseDown += (sender, e) =>
+            {
+
+                ComicsWrapPanel.Children.Clear();
+            };
+            panel.MouseEnter += (sender, e) =>
+            {
+                StackPanel obj = sender as StackPanel;
+                Image imageInside= obj.Children[0] as Image;
+                imageInside.Width = imageInside.Width + 5;
+                obj.Width = obj.Width + 5;
+                image.Effect = new DropShadowEffect
+                {
+                    RenderingBias = RenderingBias.Quality,
+                    Color = isDarkMode ? Colors.White : Colors.Black,
+                    BlurRadius = 15,
+                    Opacity = 0.7,
+                    ShadowDepth=0,
+                };
+                button.Visibility = Visibility.Visible;
+            };
+            panel.MouseLeave+= (sender, e) =>
+            {
+                StackPanel obj = sender as StackPanel;
+                Image imageInside = obj.Children[0] as Image;
+                imageInside.Width = imageInside.Width - 5;
+                obj.Width = obj.Width - 5;
+                image.Effect = null;
+                button.Visibility = Visibility.Hidden;
+            };
+
             return panel;
         }
         private void ChangeBackground_Click(object sender, RoutedEventArgs e){
@@ -173,6 +211,10 @@ namespace SharpReader
                     yield return grandChild;
                 }
             }
+        }
+        private void MyButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Button clicked!");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
