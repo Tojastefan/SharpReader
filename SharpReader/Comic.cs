@@ -12,11 +12,35 @@ namespace SharpReader
 {
     internal class Comic
     {
+        private string title;
         private string path;
-        List<Image> images;
-        public Comic(string path)
+        private List<Uri> images;
+        public Comic(string path,string title)
         {
+            this.title = title;
             this.path = path;
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+                images=new List<Uri>();
+
+                foreach (string file in files)
+                {
+                    images.Add(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative));
+                }
+            }
+        }
+        public string getTitle()
+        {
+            return title;
+        }
+        public List<Uri> getImages()
+        {
+            return images;
+        }
+        public Uri getFirstImage()
+        {
+            return images[0];
         }
     }
 }
