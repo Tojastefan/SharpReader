@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Effects;
-using Forms = System.Windows.Forms;
 
 namespace SharpReader
 {
@@ -31,7 +30,7 @@ namespace SharpReader
         Color darkSidebar = (Color)ColorConverter.ConvertFromString("#3c3c3c");
         Color lightSidebar = (Color)ColorConverter.ConvertFromString("#F5F5F5");
         private bool isDarkMode = true;
-        List<Comic> comics=new List<Comic>();
+
 
         public MainWindow()
         {
@@ -44,22 +43,16 @@ namespace SharpReader
                     Source = this
                 });
             }
-            Comic c = new Comic(".\\Comic","Superman");
-            comics.Add(c);
             LoadComics();
         }
 
         private void LoadComics(){
-            comics.ForEach(c =>
-            {
-                ComicsWrapPanel.Children.Add(LoadComic(c));
-            });
+            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title"));
+            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title 2"));
         }
-        private StackPanel LoadComic(Comic comic)
+        private StackPanel LoadComic(string path,string title)
         {
-            Uri cover=comic.getFirstImage();
-            string title=comic.getTitle();
-            int width = 150, height = 350;
+            int width = 150, height = 250;
             StackPanel panel = new StackPanel
             {
                 Height = height,
@@ -67,7 +60,7 @@ namespace SharpReader
                 Margin = new Thickness(20)
             };
             Image image = new Image{
-                Source = new BitmapImage(cover),
+                Source = new BitmapImage(new Uri(path,Path.IsPathRooted(path) ? UriKind.Absolute : UriKind.Relative)),
                 Width = width,
                 MaxHeight = height
             };
@@ -89,25 +82,25 @@ namespace SharpReader
             panel.Children.Add(button);
             panel.MouseDown += (sender, e) =>
             {
-                // Tworzenie panelu czytania komiksu
                 ComicsWrapPanel.Children.Clear();
                 ComicsWrapPanel.Orientation = Orientation.Vertical;
+                string imagePath = "./resources/ActionComics/Action Comics 001 (1938) (Digital) (Shadowcat-Empire)_page-0001.jpg";
 
                 // Define the path to the ActionComics directory
                 string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
                 if (Directory.Exists(dirPath))
                 {
-                    var files=comic.getImages();
+                    string[] files = Directory.GetFiles(dirPath);
 
-                    foreach (var file in files)
+                    foreach (string file in files)
                     {
-                        Image img = new Image
+                        Image firstimage = new Image
                         {
-                            Source = new BitmapImage(file),
+                            Source = new BitmapImage(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative)),
                             Width = 800,
                             MaxHeight = 700,
                         };
-                        ComicsWrapPanel.Children.Add(img);
+                        ComicsWrapPanel.Children.Add(firstimage);
                     }
                 }
                 else
@@ -247,7 +240,7 @@ namespace SharpReader
         }
         private void MyButton_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("Button clicked!");
+            MessageBox.Show("Button clicked!");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -261,25 +254,6 @@ namespace SharpReader
         private void ChangeTextColor(bool useDarkText)
         {
             CurrentTextColor = useDarkText ? darkText : lightText;
-        }
-
-        private void NewComic(object sender, RoutedEventArgs e)
-        {
-            using (var fdb = new Forms.FolderBrowserDialog())
-            {
-                fdb.Description = "Select a folder:";
-                fdb.ShowNewFolderButton = false;
-                if (fdb.ShowDialog() == Forms.DialogResult.OK)
-                {
-                    Comic c = new Comic(fdb.SelectedPath,Path.GetFileName(fdb.SelectedPath));
-                    comics.Add(c);
-                    ComicsWrapPanel.Children.Add(LoadComic(c));
-                }
-                else
-                {
-                    MessageBox.Show("Something went wrong!","Error");
-                }
-            }
         }
     }
 }

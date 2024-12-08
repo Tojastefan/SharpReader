@@ -37,7 +37,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -95,6 +94,50 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0001.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0002.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0003.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0004.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0005.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0006.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0007.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0008.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0009.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0010.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0011.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0012.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0013.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0014.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="resources\placeholder.jpg">

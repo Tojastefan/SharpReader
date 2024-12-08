@@ -15,12 +15,7 @@
 
             <!-- Menu na górze -->
             <Menu DockPanel.Dock="Top" Background="#3c3c3c" Foreground="White" Name="MainMenu">
-                <MenuItem Header="Comic" Name="Comic">
-                    <MenuItem Header="New" Name="New" Background="#fff" Foreground="#000" Click="NewComic"/>
-                    <MenuItem Header="Open" Name="Open" Background="#fff" Foreground="#000"/>
-                    <MenuItem Header="Save" Name="Save" Background="#fff" Foreground="#000"/>
-                    <MenuItem Header="Exit" Name="Exit" Background="#fff" Foreground="#000"/>
-                </MenuItem>
+                <MenuItem Header="File" Name="File"/>
                 <MenuItem Header="View" Name="View"/>
                 <MenuItem Header="Goto" Name="Goto"/>
                 <MenuItem Header="Debug" Name="Debug"/>
