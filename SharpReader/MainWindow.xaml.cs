@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Effects;
+using Forms=System.Windows.Forms;
 
 namespace SharpReader
 {
@@ -30,7 +31,7 @@ namespace SharpReader
         Color darkSidebar = (Color)ColorConverter.ConvertFromString("#3c3c3c");
         Color lightSidebar = (Color)ColorConverter.ConvertFromString("#F5F5F5");
         private bool isDarkMode = true;
-
+        private List<Comic> comics = new List<Comic>();
 
         public MainWindow()
         {
@@ -43,16 +44,24 @@ namespace SharpReader
                     Source = this
                 });
             }
+            Comic c = new Comic(".\\Comic", "Superman");
+            comics.Add(c);
             LoadComics();
         }
 
         private void LoadComics(){
-            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title"));
-            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title 2"));
+            comics.ForEach(c =>
+            {
+                ComicsWrapPanel.Children.Add(LoadComic(c));
+            });
         }
-        private StackPanel LoadComic(string path,string title)
+        private StackPanel LoadComic(Comic comic)
         {
-            int width = 150, height = 250;
+            string path=comic.getPath();
+            string title=comic.getTitle();
+            Uri cover=comic.getCoverImage();
+            List<Uri> files = comic.getImages();
+            int width = 150, height = 350;
             StackPanel panel = new StackPanel
             {
                 Height = height,
@@ -60,7 +69,7 @@ namespace SharpReader
                 Margin = new Thickness(20)
             };
             Image image = new Image{
-                Source = new BitmapImage(new Uri(path,Path.IsPathRooted(path) ? UriKind.Absolute : UriKind.Relative)),
+                Source = new BitmapImage(cover),
                 Width = width,
                 MaxHeight = height
             };
@@ -84,19 +93,15 @@ namespace SharpReader
             {
                 ComicsWrapPanel.Children.Clear();
                 ComicsWrapPanel.Orientation = Orientation.Vertical;
-                string imagePath = "./resources/ActionComics/Action Comics 001 (1938) (Digital) (Shadowcat-Empire)_page-0001.jpg";
 
-                // Define the path to the ActionComics directory
                 string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
                 if (Directory.Exists(dirPath))
                 {
-                    string[] files = Directory.GetFiles(dirPath);
-
-                    foreach (string file in files)
+                    foreach (Uri file in files)
                     {
                         Image firstimage = new Image
                         {
-                            Source = new BitmapImage(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative)),
+                            Source = new BitmapImage(file),
                             Width = 800,
                             MaxHeight = 700,
                         };
@@ -254,6 +259,25 @@ namespace SharpReader
         private void ChangeTextColor(bool useDarkText)
         {
             CurrentTextColor = useDarkText ? darkText : lightText;
+        }
+
+        private void NewComic(object sender, RoutedEventArgs e)
+        {
+            using (Forms.FolderBrowserDialog fdb = new Forms.FolderBrowserDialog())
+            {
+                fdb.Description = "Select a comic folder:";
+                fdb.ShowNewFolderButton = false;
+                if (fdb.ShowDialog() == Forms.DialogResult.OK)
+                {
+                    Comic c = new Comic(fdb.SelectedPath,Path.GetFileName(fdb.SelectedPath));
+                    comics.Add(c);
+                    ComicsWrapPanel.Children.Add(LoadComic(c));
+                }
+                else
+                {
+                    MessageBox.Show("Error when adding comic!","Error");
+                }
+            }
         }
     }
 }
