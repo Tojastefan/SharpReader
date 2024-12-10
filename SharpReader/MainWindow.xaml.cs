@@ -48,10 +48,11 @@ namespace SharpReader
                     Source = this
                 });
             }
+            // Example comic
             ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
-            ComicPDF pdf = new ComicPDF("e:\\kpu\\spaw\\mob7.pdf", "mob7");
+            // ComicPDF pdf = new ComicPDF("pdffile.pdf", "Name of pdf");
+            // comics.Add(pdf);
             comics.Add(c);
-            comics.Add(pdf);
             switchToComicSelectionPanel();
         }
 
