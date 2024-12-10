@@ -7,29 +7,20 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Effects;
+using System.Text.RegularExpressions;
 
 namespace SharpReader
 {
     internal class Comic
     {
-        private string path;
-        private string title;
-        List<Uri> images=new List<Uri>();
-        private Uri cover=null;
+        protected string path;
+        protected string title;
+        protected List<Uri> images=new List<Uri>();
+        protected Uri cover=null;
         public Comic(string path,string title)
         {
             this.path = path;
             this.title = title;
-            if (Directory.Exists(path))
-            {
-                string[] files = Directory.GetFiles(path);
-
-                foreach (string file in files)
-                {
-                    images.Add(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative));
-                }
-                cover = images[0];
-            }
         }
         public string getPath()
         {
@@ -45,6 +36,8 @@ namespace SharpReader
         }
         public Uri getCoverImage()
         {
+            if (cover == null)
+                return new Uri("\\resources\\placeholder.jpg",UriKind.Relative);
             return cover;
         }
     }

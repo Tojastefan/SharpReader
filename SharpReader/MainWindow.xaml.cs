@@ -44,9 +44,9 @@ namespace SharpReader
                     Source = this
                 });
             }
-            Comic c = new Comic(".\\Comic", "Superman");
+            ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
             comics.Add(c);
-            LoadComics();
+            switchToComicSelectionPanel();
         }
 
         private void LoadComics(){
@@ -89,33 +89,7 @@ namespace SharpReader
             panel.Children.Add(image);
             panel.Children.Add(textBlock);
             panel.Children.Add(button);
-            panel.MouseDown += (sender, e) =>
-            {
-                ComicsWrapPanel.Children.Clear();
-                ComicsWrapPanel.Orientation = Orientation.Vertical;
-
-                string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
-                if (Directory.Exists(dirPath))
-                {
-                    foreach (Uri file in files)
-                    {
-                        Image firstimage = new Image
-                        {
-                            Source = new BitmapImage(file),
-                            Width = 800,
-                            MaxHeight = 700,
-                        };
-                        ComicsWrapPanel.Children.Add(firstimage);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("The directory does not exist.");
-                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                    Console.WriteLine($"Base Directory: {basePath}");
-
-                }
-            };
+            panel.MouseDown += (sender, e) => switchToReadingPanel(sender,e,files);
             panel.MouseEnter += (sender, e) =>
             {
                 StackPanel obj = sender as StackPanel;
@@ -278,6 +252,44 @@ namespace SharpReader
                     MessageBox.Show("Error when adding comic!","Error");
                 }
             }
+        }
+        private void switchToComicSelectionPanel()
+        {
+            ComicsWrapPanel.Orientation = Orientation.Horizontal;
+            LoadComics();
+        }
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            ComicsWrapPanel.Children.Clear();
+            HomeButton.IsEnabled = false;
+            switchToComicSelectionPanel();
+        }
+        private void switchToReadingPanel(object sender,RoutedEventArgs e,List<Uri> files )
+        {
+            ComicsWrapPanel.Children.Clear();
+            ComicsWrapPanel.Orientation = Orientation.Vertical;
+
+            string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
+            if (Directory.Exists(dirPath))
+            {
+                foreach (Uri file in files)
+                {
+                    Image firstimage = new Image
+                    {
+                        Source = new BitmapImage(file),
+                        Width = 800,
+                        MaxHeight = 700,
+                    };
+                    ComicsWrapPanel.Children.Add(firstimage);
+                }
+            }
+            else
+            {
+                Console.WriteLine("The directory does not exist.");
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                Console.WriteLine($"Base Directory: {basePath}");
+            }
+            HomeButton.IsEnabled = true;
         }
     }
 }

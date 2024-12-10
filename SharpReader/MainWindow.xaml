@@ -31,6 +31,8 @@
             <StackPanel DockPanel.Dock="Left" Background="#3c3c3c" Width="150" Name="SidebarPanel">
                 <TextBlock Text="Options" Foreground="White" FontSize="16" Margin="10"/>
 
+                <Button Name="HomeButton" Content="Home" Margin="10" Click="HomeButton_Click" IsEnabled="False"/>
+
                 <!-- Przycisk do zmiany koloru tła -->
                 <Button Content="Change Background" Margin="10" Click="ChangeBackground_Click"/>
 
