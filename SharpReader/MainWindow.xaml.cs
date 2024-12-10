@@ -7,6 +7,11 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Effects;
+using PdfiumViewer;
+using Forms=System.Windows.Forms;
+using System.Windows.Forms.Integration;
+using static System.Net.WebRequestMethods;
+using System.Text.RegularExpressions;
 
 namespace SharpReader
 {
@@ -14,6 +19,8 @@ namespace SharpReader
     {
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
+        private bool isDarkMode = true;
+        private List<Comic> comics = new List<Comic>();
         private Brush currentTextColor;
         public Brush CurrentTextColor
         {
@@ -29,8 +36,6 @@ namespace SharpReader
         }
         Color darkSidebar = (Color)ColorConverter.ConvertFromString("#3c3c3c");
         Color lightSidebar = (Color)ColorConverter.ConvertFromString("#F5F5F5");
-        private bool isDarkMode = true;
-
 
         public MainWindow()
         {
@@ -43,16 +48,25 @@ namespace SharpReader
                     Source = this
                 });
             }
-            LoadComics();
+            ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
+            ComicPDF pdf = new ComicPDF("e:\\kpu\\spaw\\mob7.pdf", "mob7");
+            comics.Add(c);
+            comics.Add(pdf);
+            switchToComicSelectionPanel();
         }
 
         private void LoadComics(){
-            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title"));
-            ComicsWrapPanel.Children.Add(LoadComic("./resources/placeholder.jpg", "sample title 2"));
+            comics.ForEach(c =>
+            {
+                ComicsWrapPanel.Children.Add(LoadComic(c));
+            });
         }
-        private StackPanel LoadComic(string path,string title)
+        private StackPanel LoadComic(Comic comic)
         {
-            int width = 150, height = 250;
+            string path=comic.getPath();
+            string title=comic.getTitle();
+            BitmapSource cover = comic.getCoverImage();
+            int width = 150, height = 350;
             StackPanel panel = new StackPanel
             {
                 Height = height,
@@ -60,7 +74,7 @@ namespace SharpReader
                 Margin = new Thickness(20)
             };
             Image image = new Image{
-                Source = new BitmapImage(new Uri(path,Path.IsPathRooted(path) ? UriKind.Absolute : UriKind.Relative)),
+                Source = cover,
                 Width = width,
                 MaxHeight = height
             };
@@ -80,37 +94,7 @@ namespace SharpReader
             panel.Children.Add(image);
             panel.Children.Add(textBlock);
             panel.Children.Add(button);
-            panel.MouseDown += (sender, e) =>
-            {
-                ComicsWrapPanel.Children.Clear();
-                ComicsWrapPanel.Orientation = Orientation.Vertical;
-                string imagePath = "./resources/ActionComics/Action Comics 001 (1938) (Digital) (Shadowcat-Empire)_page-0001.jpg";
-
-                // Define the path to the ActionComics directory
-                string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
-                if (Directory.Exists(dirPath))
-                {
-                    string[] files = Directory.GetFiles(dirPath);
-
-                    foreach (string file in files)
-                    {
-                        Image firstimage = new Image
-                        {
-                            Source = new BitmapImage(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative)),
-                            Width = 800,
-                            MaxHeight = 700,
-                        };
-                        ComicsWrapPanel.Children.Add(firstimage);
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("The directory does not exist.");
-                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                    Console.WriteLine($"Base Directory: {basePath}");
-
-                }
-            };
+            panel.MouseDown += (sender, e) => switchToReadingPanel(sender,e,comic);
             panel.MouseEnter += (sender, e) =>
             {
                 StackPanel obj = sender as StackPanel;
@@ -254,6 +238,96 @@ namespace SharpReader
         private void ChangeTextColor(bool useDarkText)
         {
             CurrentTextColor = useDarkText ? darkText : lightText;
+        }
+        private void switchToComicSelectionPanel()
+        {
+            ComicsWrapPanel.Orientation = Orientation.Horizontal;
+            LoadComics();
+        }
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            ComicsWrapPanel.Children.Clear();
+            HomeButton.IsEnabled = false;
+            switchToComicSelectionPanel();
+        }
+        private void switchToReadingPanel(object sender,RoutedEventArgs e,Comic comic )
+        {
+            ComicsWrapPanel.Children.Clear();
+            ComicsWrapPanel.Orientation = Orientation.Vertical;
+            if (comic is ComicPDF comicPDF){
+                var host = new WindowsFormsHost
+                {
+                    Child = comicPDF.Viewer,
+                    Width = MainScrollViewer.ActualWidth,
+                    Height = MainScrollViewer.ActualHeight,
+                };
+                MainScrollViewer.SizeChanged += (s, args) =>
+                {
+                    host.Width = MainScrollViewer.ActualWidth;
+                    host.Height = MainScrollViewer.ActualHeight;
+                };
+                ComicsWrapPanel.Children.Clear();
+                ComicsWrapPanel.Children.Add(host);
+            }
+            else {
+                List<Uri> files = comic.getImages();
+                string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
+                if (Directory.Exists(dirPath))
+                {
+                    foreach (Uri file in files)
+                    {
+                        Image firstimage = new Image
+                        {
+                            Source = new BitmapImage(file),
+                            Width = MainScrollViewer.ActualWidth,
+                            MaxHeight = 700,
+                        };
+                        ComicsWrapPanel.Children.Add(firstimage);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("The directory does not exist.");
+                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                    Console.WriteLine($"Base Directory: {basePath}");
+                }
+            }
+            HomeButton.IsEnabled = true;
+        }
+        private void NewComic(object sender, RoutedEventArgs e)
+        {
+            using (Forms.FolderBrowserDialog fdb = new Forms.FolderBrowserDialog())
+            {
+                fdb.Description = "Select a comic folder:";
+                fdb.ShowNewFolderButton = false;
+                if (fdb.ShowDialog() == Forms.DialogResult.OK)
+                {
+                    Comic c = new Comic(fdb.SelectedPath, Path.GetFileName(fdb.SelectedPath));
+                    comics.Add(c);
+                    ComicsWrapPanel.Children.Add(LoadComic(c));
+                }
+                else
+                {
+                    MessageBox.Show("Error when adding comic!", "Error");
+                }
+            }
+        }
+        private void NewComicPDF(object sender, RoutedEventArgs e)
+        {
+            using (Forms.OpenFileDialog ofd = new Forms.OpenFileDialog())
+            {
+                ofd.Filter = "PDF Files (*.pdf)|*.pdf|CBZ Files (*.cbz)|*.cbz";
+                if (ofd.ShowDialog() == Forms.DialogResult.OK)
+                {
+                    ComicPDF c = new ComicPDF(ofd.FileName,Path.GetFileName(Regex.Replace(ofd.FileName,@"\.[^.\\]+$","")));
+                    comics.Add(c);
+                    ComicsWrapPanel.Children.Add(LoadComic(c));
+                }
+                else
+                {
+                    MessageBox.Show("Error when adding comic!", "Error");
+                }
+            }
         }
     }
 }

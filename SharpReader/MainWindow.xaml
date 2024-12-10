@@ -15,7 +15,13 @@
 
             <!-- Menu na górze -->
             <Menu DockPanel.Dock="Top" Background="#3c3c3c" Foreground="White" Name="MainMenu">
-                <MenuItem Header="File" Name="File"/>
+                <MenuItem Header="Comic" Name="Comic">
+                    <MenuItem Header="New Folder" Name="New" Background="#fff" Foreground="#000" Click="NewComic"/>
+                    <MenuItem Header="New PDF" Name="NewPDF" Background="#fff" Foreground="#000" Click="NewComicPDF"/>
+                    <MenuItem Header="Open" Name="Open" Background="#fff" Foreground="#000"/>
+                    <MenuItem Header="Save" Name="Save" Background="#fff" Foreground="#000"/>
+                    <MenuItem Header="Exit" Name="Exit" Background="#fff" Foreground="#000"/>
+                </MenuItem>
                 <MenuItem Header="View" Name="View"/>
                 <MenuItem Header="Goto" Name="Goto"/>
                 <MenuItem Header="Debug" Name="Debug"/>
@@ -25,6 +31,8 @@
             <!-- Pasek boczny (Sidebar) po lewej stronie z przyciskami i tekstami -->
             <StackPanel DockPanel.Dock="Left" Background="#3c3c3c" Width="150" Name="SidebarPanel">
                 <TextBlock Text="Options" Foreground="White" FontSize="16" Margin="10"/>
+
+                <Button Name="HomeButton" Content="Home" Margin="10" Click="HomeButton_Click" IsEnabled="False"/>
 
                 <!-- Przycisk do zmiany koloru tła -->
                 <Button Content="Change Background" Margin="10" Click="ChangeBackground_Click"/>
@@ -36,8 +44,10 @@
             </StackPanel>
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <ScrollViewer Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            MinWidth="{Binding ActualWidth, ElementName=MainScrollViewer}" 
+                            MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}">
                     
                 </WrapPanel>
             </ScrollViewer>
