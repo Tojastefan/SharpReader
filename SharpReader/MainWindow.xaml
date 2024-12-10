@@ -16,7 +16,8 @@
             <!-- Menu na górze -->
             <Menu DockPanel.Dock="Top" Background="#3c3c3c" Foreground="White" Name="MainMenu">
                 <MenuItem Header="Comic" Name="Comic">
-                    <MenuItem Header="New" Name="New" Background="#fff" Foreground="#000" Click="NewComic"/>
+                    <MenuItem Header="New Folder" Name="New" Background="#fff" Foreground="#000" Click="NewComic"/>
+                    <MenuItem Header="New PDF" Name="NewPDF" Background="#fff" Foreground="#000" Click="NewComicPDF"/>
                     <MenuItem Header="Open" Name="Open" Background="#fff" Foreground="#000"/>
                     <MenuItem Header="Save" Name="Save" Background="#fff" Foreground="#000"/>
                     <MenuItem Header="Exit" Name="Exit" Background="#fff" Foreground="#000"/>
@@ -43,8 +44,10 @@
             </StackPanel>
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <ScrollViewer Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            MinWidth="{Binding ActualWidth, ElementName=MainScrollViewer}" 
+                            MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}">
                     
                 </WrapPanel>
             </ScrollViewer>

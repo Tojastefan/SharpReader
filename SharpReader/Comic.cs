@@ -34,11 +34,11 @@ namespace SharpReader
         {
             return images;
         }
-        public Uri getCoverImage()
+        public virtual BitmapSource getCoverImage()
         {
             if (cover == null)
-                return new Uri("\\resources\\placeholder.jpg",UriKind.Relative);
-            return cover;
+                return new BitmapImage(new Uri("\\resources\\placeholder.jpg",UriKind.Relative));
+            return new BitmapImage(cover);
         }
     }
 }
