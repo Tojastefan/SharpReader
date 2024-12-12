@@ -46,12 +46,6 @@ namespace SharpReader
                 var darkTheme = AppSettings.Default.darkTheme;
                 CurrentTextColor=darkTheme ? lightText : darkText;
                 isDarkMode = darkTheme;
-                // --------------
-                //var savedComics=JsonSerializer.Deserialize<Dictionary<string,string>>
-                string jsonString = AppSettings.Default.savedComics;
-
-                // Deserialize the JSON string back into a Dictionary
-                // Dictionary<string, string> comicDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
             }
             catch(NullReferenceException e)
             {
@@ -60,6 +54,27 @@ namespace SharpReader
                 AppSettings.Default.darkTheme = false;
                 isDarkMode = false;
             }
+            try
+            {
+                var savedComics = JsonSerializer.Deserialize<Dictionary<string, string>>(AppSettings.Default.savedComics);
+                foreach (var kvp in savedComics)
+                {
+                    string path = kvp.Key;
+                    int pos = kvp.Value.IndexOf(';');
+                    string type = kvp.Value.Substring(0, pos);
+                    string title = kvp.Value.Substring(pos+1);
+                    switch (type)
+                    {
+                        case "SharpReader.ComicImages":
+                            comics.Add(new ComicImages(path, title));
+                            break;
+                        case "SharpReader.ComicPDF":
+                            comics.Add(new ComicPDF(path, title));
+                            break;
+                    }
+                }
+            }
+            catch (JsonException e) { }
             InitializeComponent();
             ChangeBackground_Click(null, null);
             foreach (var tb in FindVisualChildren<TextBlock>(SidebarPanel))
@@ -227,16 +242,6 @@ namespace SharpReader
             }
             AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
             Console.WriteLine(AppSettings.Default.savedComics);
-            // var deser = AppSettings.Default.savedComics;
-            // Dictionary<string, string> deserializedComicDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(deser);
-
-            // Display the deserialized dictionary
-            /*
-            foreach (var item in deserializedComicDictionary)
-            {
-                Console.WriteLine($"Key: {item.Key}, Value: {item.Value}");
-            }
-            */
             AppSettings.Default.Save();
         }
         private void GridLayout_Click(object sender, RoutedEventArgs e)
