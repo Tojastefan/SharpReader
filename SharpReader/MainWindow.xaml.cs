@@ -12,6 +12,8 @@ using Forms=System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using static System.Net.WebRequestMethods;
 using System.Text.RegularExpressions;
+using System.Text.Json;
+using System.Collections.Specialized;
 
 namespace SharpReader
 {
@@ -19,7 +21,7 @@ namespace SharpReader
     {
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
-        private bool isDarkMode = true;
+        private bool isDarkMode;
         private List<Comic> comics = new List<Comic>();
         private Brush currentTextColor;
         public Brush CurrentTextColor
@@ -39,8 +41,27 @@ namespace SharpReader
 
         public MainWindow()
         {
-            CurrentTextColor = darkText;
+            try
+            {
+                var darkTheme = AppSettings.Default.darkTheme;
+                CurrentTextColor=darkTheme ? lightText : darkText;
+                isDarkMode = darkTheme;
+                // --------------
+                //var savedComics=JsonSerializer.Deserialize<Dictionary<string,string>>
+                string jsonString = AppSettings.Default.savedComics;
+
+                // Deserialize the JSON string back into a Dictionary
+                // Dictionary<string, string> comicDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+            }
+            catch(NullReferenceException e)
+            {
+                MessageBox.Show(e.ToString(),"Error when loading settings!");
+                CurrentTextColor = darkText;
+                AppSettings.Default.darkTheme = false;
+                isDarkMode = false;
+            }
             InitializeComponent();
+            ChangeBackground_Click(null, null);
             foreach (var tb in FindVisualChildren<TextBlock>(SidebarPanel))
             {
                 tb.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
@@ -49,10 +70,13 @@ namespace SharpReader
                 });
             }
             // Example comic
-            ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
-            // ComicPDF pdf = new ComicPDF("pdffile.pdf", "Name of pdf");
-            // comics.Add(pdf);
-            comics.Add(c);
+            if (comics.Count < 1)
+            {
+                ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
+                // ComicPDF pdf = new ComicPDF("pdffile.pdf", "Name of pdf");
+                // comics.Add(pdf);
+                comics.Add(c);
+            }
             switchToComicSelectionPanel();
         }
 
@@ -124,42 +148,11 @@ namespace SharpReader
 
             return panel;
         }
-        private void ChangeBackground_Click(object sender, RoutedEventArgs e){
-            if(isDarkMode)
+        private void ChangeBackground_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeTextColor(isDarkMode);
+            if (isDarkMode)
             {
-                ChangeTextColor(false);
-                MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0"));
-                MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
-                MainMenu.Background = new SolidColorBrush(lightSidebar);
-                SidebarPanel.Background = new SolidColorBrush(lightSidebar);
-
-                // Zmiana koloru tekstu i tła przycisków na jasny motyw
-                foreach (var child in MainDockPanel.Children)
-                {
-                    if (child is Button button)
-                    {
-                        button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
-                        button.Foreground = Brushes.Black;
-                    }
-                    else if (child is TextBlock textBlock)
-                    {
-                        textBlock.Foreground = currentTextColor;
-                    }
-                }
-
-                // Zmiana koloru menu na jasny
-                foreach (var item in MainMenu.Items)
-                {
-                    if (item is MenuItem menuItem)
-                    {
-                        menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
-                        menuItem.Foreground = currentTextColor;
-                    }
-                }
-            }
-            else
-            {
-                ChangeTextColor(true);
                 // Zmiana na ciemny motyw
                 MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
                 MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
@@ -190,9 +183,62 @@ namespace SharpReader
                     }
                 }
             }
+            else
+            {
+                MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0"));
+                MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
+                MainMenu.Background = new SolidColorBrush(lightSidebar);
+                SidebarPanel.Background = new SolidColorBrush(lightSidebar);
+
+                // Zmiana koloru tekstu i tła przycisków na jasny motyw
+                foreach (var child in MainDockPanel.Children)
+                {
+                    if (child is Button button)
+                    {
+                        button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
+                        button.Foreground = Brushes.Black;
+                    }
+                    else if (child is TextBlock textBlock)
+                    {
+                        textBlock.Foreground = currentTextColor;
+                    }
+                }
+
+                // Zmiana koloru menu na jasny
+                foreach (var item in MainMenu.Items)
+                {
+                    if (item is MenuItem menuItem)
+                    {
+                        menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
+                        menuItem.Foreground = currentTextColor;
+                    }
+                }
+            }
+            AppSettings.Default.darkTheme = isDarkMode;
             isDarkMode = !isDarkMode;
         }
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            Dictionary<string,string> comicDictionary = new Dictionary<string,string>();
+            foreach (Comic c in comics)
+            {
+                comicDictionary.Add(c.getPath(), c.GetType()+";"+c.getTitle());
+            }
+            AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
+            Console.WriteLine(AppSettings.Default.savedComics);
+            // var deser = AppSettings.Default.savedComics;
+            // Dictionary<string, string> deserializedComicDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(deser);
 
+            // Display the deserialized dictionary
+            /*
+            foreach (var item in deserializedComicDictionary)
+            {
+                Console.WriteLine($"Key: {item.Key}, Value: {item.Value}");
+            }
+            */
+            AppSettings.Default.Save();
+        }
         private void GridLayout_Click(object sender, RoutedEventArgs e)
         {
 
