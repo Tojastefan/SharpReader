@@ -22,6 +22,7 @@ namespace SharpReader
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         private bool isDarkMode;
+        private List<string> categories=new List<string>();
         private List<Comic> comics = new List<Comic>();
         private Brush currentTextColor;
         public Brush CurrentTextColor
@@ -41,10 +42,12 @@ namespace SharpReader
 
         public MainWindow()
         {
+            categories.Add("Favourite");
+            categories.Add("Other");
             try
             {
                 var darkTheme = AppSettings.Default.darkTheme;
-                CurrentTextColor=darkTheme ? lightText : darkText;
+                CurrentTextColor = darkTheme ? darkText : lightText;
                 isDarkMode = darkTheme;
             }
             catch(NullReferenceException e)
@@ -96,10 +99,42 @@ namespace SharpReader
         }
 
         private void LoadComics(){
+            ComicsWrapPanel.Orientation = Orientation.Vertical;
+            foreach (var item in categories)
+            {
+                WrapPanel wp = new WrapPanel
+                {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Orientation = Orientation.Vertical,
+                };
+                WrapPanel innerwp = new WrapPanel
+                {
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Orientation = Orientation.Horizontal,
+                };
+                wp.Children.Add(getText(item, 36));
+                List<Comic> filteredComics=comics.FindAll((e) =>
+                {
+                    if(e.getCategory()==item)
+                        return true;
+                    return false;
+                });
+                filteredComics.ForEach((e) =>
+                {
+                    innerwp.Children.Add(LoadComic(e));
+                });
+                wp.Children.Add(innerwp);
+                ComicsWrapPanel.Children.Add(wp);
+            }
+            
+            /*
             comics.ForEach(c =>
             {
                 ComicsWrapPanel.Children.Add(LoadComic(c));
             });
+            */
         }
         private StackPanel LoadComic(Comic comic)
         {
@@ -144,7 +179,7 @@ namespace SharpReader
                 image.Effect = new DropShadowEffect
                 {
                     RenderingBias = RenderingBias.Quality,
-                    Color = isDarkMode ? Colors.White : Colors.Black,
+                    Color = isDarkMode ? Colors.Black : Colors.White,
                     BlurRadius = 15,
                     Opacity = 0.7,
                     ShadowDepth=0,
@@ -231,6 +266,21 @@ namespace SharpReader
             }
             AppSettings.Default.darkTheme = isDarkMode;
             isDarkMode = !isDarkMode;
+        }
+        private TextBlock getText(string text,int size)
+        {
+            if (size < 1)
+                size = 1;
+            TextBlock tb = new TextBlock
+            {
+                Text = text,
+                FontSize = size,
+            };
+            tb.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
+            {
+                Source = this
+            });
+            return tb;
         }
         protected override void OnClosing(CancelEventArgs e)
         {
@@ -354,9 +404,10 @@ namespace SharpReader
                 fdb.ShowNewFolderButton = false;
                 if (fdb.ShowDialog() == Forms.DialogResult.OK)
                 {
-                    Comic c = new Comic(fdb.SelectedPath, Path.GetFileName(fdb.SelectedPath));
+                    ComicImages c = new ComicImages(fdb.SelectedPath, Path.GetFileName(fdb.SelectedPath));
                     comics.Add(c);
-                    ComicsWrapPanel.Children.Add(LoadComic(c));
+                    ComicsWrapPanel.Children.Clear();
+                    LoadComics();
                 }
                 else
                 {
@@ -373,7 +424,8 @@ namespace SharpReader
                 {
                     ComicPDF c = new ComicPDF(ofd.FileName,Path.GetFileName(Regex.Replace(ofd.FileName,@"\.[^.\\]+$","")));
                     comics.Add(c);
-                    ComicsWrapPanel.Children.Add(LoadComic(c));
+                    ComicsWrapPanel.Children.Clear();
+                    LoadComics();
                 }
                 else
                 {

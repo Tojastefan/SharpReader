@@ -184,9 +184,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="resources\placeholder.jpg">
+    <Content Include="resources\placeholder.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Comic\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0001.jpg">

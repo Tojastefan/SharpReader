@@ -48,7 +48,6 @@
                 <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top"
                             MinWidth="{Binding ActualWidth, ElementName=MainScrollViewer}" 
                             MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}">
-                    
                 </WrapPanel>
             </ScrollViewer>
         </DockPanel>

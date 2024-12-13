@@ -15,12 +15,20 @@ namespace SharpReader
     {
         protected string path;
         protected string title;
+        protected string category;
         protected List<Uri> images=new List<Uri>();
         protected Uri cover=null;
-        public Comic(string path,string title)
+        public Comic(string path,string title,string category)
         {
             this.path = path;
             this.title = title;
+            this.category = category;
+        }
+        public Comic(string path, string title)
+        {
+            this.path = path;
+            this.title = title;
+            this.category = "Other";
         }
         public string getPath()
         {
@@ -29,6 +37,10 @@ namespace SharpReader
         public string getTitle()
         {
             return title;
+        }
+        public string getCategory()
+        {
+            return category;
         }
         public List<Uri> getImages()
         {

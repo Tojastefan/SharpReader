@@ -17,7 +17,17 @@ namespace SharpReader
         {
             get { return pdfViewer; }
         }
-        public ComicPDF(string path, string title):base(path,title)
+        public ComicPDF(string path, string title) : base(path, title)
+        {
+            pdfViewer = new PdfViewer
+            {
+                Dock = DockStyle.Fill,
+                ShowToolbar = false,
+            };
+            pdfDocument = PdfDocument.Load(path);
+            pdfViewer.Document = pdfDocument;
+        }
+        public ComicPDF(string path, string title, string category) : base(path, title, category)
         {
             pdfViewer = new PdfViewer
             {
