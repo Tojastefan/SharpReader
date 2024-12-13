@@ -20,7 +20,7 @@ namespace SharpReader
         protected Uri cover=null;
         public Comic(string path,string title,string category)
         {
-            this.path = path;
+            this.path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,path);
             this.title = title;
             this.category = category;
         }
@@ -49,7 +49,7 @@ namespace SharpReader
         public virtual BitmapSource getCoverImage()
         {
             if (cover == null)
-                return new BitmapImage(new Uri("\\resources\\placeholder.jpg",UriKind.Relative));
+                return new BitmapImage(new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"\\resources\\placeholder.jpg"),UriKind.Relative));
             return new BitmapImage(cover);
         }
     }

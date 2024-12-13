@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -17,12 +18,18 @@ using System.Collections.Specialized;
 
 namespace SharpReader
 {
-    public partial class MainWindow : Window , INotifyPropertyChanged
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public enum Mode
+        {
+            SELECTION,
+            READING
+        }
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         private bool isDarkMode;
-        private List<string> categories=new List<string>();
+        private Mode currentMode = Mode.SELECTION;
+        private List<string> categories = new List<string>();
         private List<Comic> comics = new List<Comic>();
         private Brush currentTextColor;
         public Brush CurrentTextColor
@@ -50,9 +57,9 @@ namespace SharpReader
                 CurrentTextColor = darkTheme ? darkText : lightText;
                 isDarkMode = darkTheme;
             }
-            catch(NullReferenceException e)
+            catch (NullReferenceException e)
             {
-                MessageBox.Show(e.ToString(),"Error when loading settings!");
+                MessageBox.Show(e.ToString(), "Error when loading settings!");
                 CurrentTextColor = darkText;
                 AppSettings.Default.darkTheme = false;
                 isDarkMode = false;
@@ -65,7 +72,7 @@ namespace SharpReader
                     string path = kvp.Key;
                     int pos = kvp.Value.IndexOf(';');
                     string type = kvp.Value.Substring(0, pos);
-                    string title = kvp.Value.Substring(pos+1);
+                    string title = kvp.Value.Substring(pos + 1);
                     switch (type)
                     {
                         case "SharpReader.ComicImages":
@@ -98,7 +105,8 @@ namespace SharpReader
             switchToComicSelectionPanel();
         }
 
-        private void LoadComics(){
+        private void LoadComics()
+        {
             ComicsWrapPanel.Orientation = Orientation.Vertical;
             foreach (var item in categories)
             {
@@ -115,9 +123,9 @@ namespace SharpReader
                     Orientation = Orientation.Horizontal,
                 };
                 wp.Children.Add(getText(item, 36));
-                List<Comic> filteredComics=comics.FindAll((e) =>
+                List<Comic> filteredComics = comics.FindAll((e) =>
                 {
-                    if(e.getCategory()==item)
+                    if (e.getCategory() == item)
                         return true;
                     return false;
                 });
@@ -128,7 +136,7 @@ namespace SharpReader
                 wp.Children.Add(innerwp);
                 ComicsWrapPanel.Children.Add(wp);
             }
-            
+
             /*
             comics.ForEach(c =>
             {
@@ -138,8 +146,8 @@ namespace SharpReader
         }
         private StackPanel LoadComic(Comic comic)
         {
-            string path=comic.getPath();
-            string title=comic.getTitle();
+            string path = comic.getPath();
+            string title = comic.getTitle();
             BitmapSource cover = comic.getCoverImage();
             int width = 150, height = 350;
             StackPanel panel = new StackPanel
@@ -148,17 +156,20 @@ namespace SharpReader
                 Width = width,
                 Margin = new Thickness(20)
             };
-            Image image = new Image{
+            Image image = new Image
+            {
                 Source = cover,
                 Width = width,
                 MaxHeight = height
             };
-            TextBlock textBlock = new TextBlock{
+            TextBlock textBlock = new TextBlock
+            {
                 Text = title,
                 FontSize = 15,
                 TextWrapping = TextWrapping.Wrap
             };
-            textBlock.SetBinding(TextBlock.ForegroundProperty,new System.Windows.Data.Binding("CurrentTextColor"){
+            textBlock.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
+            {
                 Source = this
             });
             Button button = new Button
@@ -169,11 +180,11 @@ namespace SharpReader
             panel.Children.Add(image);
             panel.Children.Add(textBlock);
             panel.Children.Add(button);
-            panel.MouseDown += (sender, e) => switchToReadingPanel(sender,e,comic);
+            panel.MouseDown += (sender, e) => switchToReadingPanel(sender, e, comic);
             panel.MouseEnter += (sender, e) =>
             {
                 StackPanel obj = sender as StackPanel;
-                Image imageInside= obj.Children[0] as Image;
+                Image imageInside = obj.Children[0] as Image;
                 imageInside.Width = imageInside.Width + 5;
                 obj.Width = obj.Width + 5;
                 image.Effect = new DropShadowEffect
@@ -182,11 +193,11 @@ namespace SharpReader
                     Color = isDarkMode ? Colors.Black : Colors.White,
                     BlurRadius = 15,
                     Opacity = 0.7,
-                    ShadowDepth=0,
+                    ShadowDepth = 0,
                 };
                 button.Visibility = Visibility.Visible;
             };
-            panel.MouseLeave+= (sender, e) =>
+            panel.MouseLeave += (sender, e) =>
             {
                 StackPanel obj = sender as StackPanel;
                 Image imageInside = obj.Children[0] as Image;
@@ -267,7 +278,7 @@ namespace SharpReader
             AppSettings.Default.darkTheme = isDarkMode;
             isDarkMode = !isDarkMode;
         }
-        private TextBlock getText(string text,int size)
+        private TextBlock getText(string text, int size)
         {
             if (size < 1)
                 size = 1;
@@ -285,10 +296,10 @@ namespace SharpReader
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
-            Dictionary<string,string> comicDictionary = new Dictionary<string,string>();
+            Dictionary<string, string> comicDictionary = new Dictionary<string, string>();
             foreach (Comic c in comics)
             {
-                comicDictionary.Add(c.getPath(), c.GetType()+";"+c.getTitle());
+                comicDictionary.Add(c.getPath(), c.GetType() + ";" + c.getTitle());
             }
             AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
             Console.WriteLine(AppSettings.Default.savedComics);
@@ -343,7 +354,9 @@ namespace SharpReader
         }
         private void switchToComicSelectionPanel()
         {
+            currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
+            MainScrollViewer.ScrollToTop();
             LoadComics();
         }
         private void HomeButton_Click(object sender, RoutedEventArgs e)
@@ -352,11 +365,56 @@ namespace SharpReader
             HomeButton.IsEnabled = false;
             switchToComicSelectionPanel();
         }
-        private void switchToReadingPanel(object sender,RoutedEventArgs e,Comic comic )
+        protected override void OnKeyDown(KeyEventArgs e)
         {
+            base.OnKeyDown(e);
+            if (currentMode == Mode.READING)
+            {
+                double lastPos = 0.0d;
+                Console.WriteLine(e.Key);
+                switch (e.Key)
+                {
+                    case Key.A:
+                        for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
+                        {
+                            Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                            if (a.Y >= 0)
+                            {
+                                double pos = MainScrollViewer.VerticalOffset + lastPos;
+                                MainScrollViewer.ScrollToVerticalOffset(pos > 0d ? pos : 0d);
+                                break;
+                            }
+                            lastPos = a.Y;
+                        }
+                        break;
+                    case Key.D:
+                        for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
+                        {
+                            Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                            if (a.Y > 0)
+                            {
+                                Console.WriteLine($"{MainScrollViewer.VerticalOffset} - {a.Y}");
+                                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
+                                break;
+                            }
+                        }
+                        break;
+                    case Key.T:
+                        MainScrollViewer.ScrollToTop();
+                        break;
+                    case Key.B:
+                        MainScrollViewer.ScrollToEnd();
+                        break;
+                }
+            }
+        }
+        private void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
+        {
+            currentMode = Mode.READING;
             ComicsWrapPanel.Children.Clear();
             ComicsWrapPanel.Orientation = Orientation.Vertical;
-            if (comic is ComicPDF comicPDF){
+            if (comic is ComicPDF comicPDF)
+            {
                 var host = new WindowsFormsHost
                 {
                     Child = comicPDF.Viewer,
@@ -371,7 +429,8 @@ namespace SharpReader
                 ComicsWrapPanel.Children.Clear();
                 ComicsWrapPanel.Children.Add(host);
             }
-            else {
+            else
+            {
                 List<Uri> files = comic.getImages();
                 string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
                 if (Directory.Exists(dirPath))
@@ -422,7 +481,7 @@ namespace SharpReader
                 ofd.Filter = "PDF Files (*.pdf)|*.pdf|CBZ Files (*.cbz)|*.cbz";
                 if (ofd.ShowDialog() == Forms.DialogResult.OK)
                 {
-                    ComicPDF c = new ComicPDF(ofd.FileName,Path.GetFileName(Regex.Replace(ofd.FileName,@"\.[^.\\]+$","")));
+                    ComicPDF c = new ComicPDF(ofd.FileName, Path.GetFileName(Regex.Replace(ofd.FileName, @"\.[^.\\]+$", "")));
                     comics.Add(c);
                     ComicsWrapPanel.Children.Clear();
                     LoadComics();
