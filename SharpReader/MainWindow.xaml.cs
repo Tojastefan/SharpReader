@@ -483,7 +483,15 @@ namespace SharpReader
                         foreach (Uri file in files)
                         {
                             Image img;
-                            string path = Path.GetFullPath(file.ToString());
+                            string path;
+                            try
+                            {
+                                path = file.LocalPath;
+                            }
+                            catch (InvalidOperationException ex)
+                            {
+                                path = Path.GetFullPath(file.ToString());
+                            }
                             if (!comicImages.ContainsKey(path))
                             {
                                 img = new Image
@@ -503,9 +511,13 @@ namespace SharpReader
                     }
                     else
                     {
-                        Image img = getImageByIndex(currentImageIndex);
-                        currentImage = img;
-                        ComicsWrapPanel.Children.Add(img);
+                        currentImage = new Image
+                        {
+                            Source = getImageByIndex(currentImageIndex).Source,
+                            Width = MainScrollViewer.ActualWidth,
+                            MaxHeight = 700,
+                        };
+                        ComicsWrapPanel.Children.Add(currentImage);
                     }
                 }
                 else
@@ -524,7 +536,15 @@ namespace SharpReader
             List<Uri> files = currentComic.getImages();
             Image img = null;
             Uri file = files[currentImageIndex];
-            string path = Path.GetFullPath(file.ToString());
+            string path;
+            try
+            {
+                path = file.LocalPath;
+            }
+            catch(InvalidOperationException ex)
+            {
+                path = Path.GetFullPath(file.ToString());
+            }
             if (!comicImages.ContainsKey(path))
             {
                 img = new Image
