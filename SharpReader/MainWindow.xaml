@@ -48,7 +48,7 @@
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->
             <ScrollViewer Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <WrapPanel Name="ComicsWrapPanel" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top"
+                <WrapPanel Name="ComicsWrapPanel" HorizontalAlignment="Left" VerticalAlignment="Top"
                             MinWidth="{Binding ActualWidth, ElementName=MainScrollViewer}" 
                             MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}">
                 </WrapPanel>
