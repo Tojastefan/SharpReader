@@ -41,6 +41,9 @@
                 <TextBlock Text="Layout" Foreground="White" FontSize="14" Margin="10"/>
                 <Button Content="Grid Layout" Margin="10" Click="GridLayout_Click"/>
                 <Button Content="List Layout" Margin="10" Click="ListLayout_Click"/>
+                <TextBlock Text="Reading mode" Foreground="White" FontSize="14" Margin="10"/>
+                <Button Content="Scrollbar" Name="ScrollbarButton"  Margin="10" Click="toggleToScrollbar"/>
+                <Button Content="Page" Name="PageButton" Margin="10" Click="toggleToPage"/>
             </StackPanel>
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->

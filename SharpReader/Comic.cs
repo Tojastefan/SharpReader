@@ -46,6 +46,10 @@ namespace SharpReader
         {
             return images;
         }
+        public int getImageCount()
+        {
+            return images.Count;
+        }
         public virtual BitmapSource getCoverImage()
         {
             if (cover == null)

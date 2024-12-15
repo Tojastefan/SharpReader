@@ -15,6 +15,8 @@ using static System.Net.WebRequestMethods;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Collections.Specialized;
+using System.Net.Http.Headers;
+using Spire.Pdf.AI;
 
 namespace SharpReader
 {
@@ -25,12 +27,22 @@ namespace SharpReader
             SELECTION,
             READING
         }
+        public enum ReadingMode
+        {
+            SCROLL,
+            PAGE
+        }
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         private bool isDarkMode;
-        private Mode currentMode = Mode.SELECTION;
+        private Mode currentMode;
+        private ReadingMode currentReadingMode;
         private List<string> categories = new List<string>();
         private List<Comic> comics = new List<Comic>();
+        private int currentImageIndex=0;
+        private Image currentImage;
+        private Comic currentComic;
+        private Dictionary<string, Image> comicImages = new Dictionary<string, Image>();
         private Brush currentTextColor;
         public Brush CurrentTextColor
         {
@@ -51,6 +63,9 @@ namespace SharpReader
         {
             categories.Add("Favourite");
             categories.Add("Other");
+            InitializeComponent();
+            currentMode = Mode.SELECTION;
+            toggleToScrollbar(null, null);
             try
             {
                 var darkTheme = AppSettings.Default.darkTheme;
@@ -85,7 +100,6 @@ namespace SharpReader
                 }
             }
             catch (JsonException e) { }
-            InitializeComponent();
             ChangeBackground_Click(null, null);
             foreach (var tb in FindVisualChildren<TextBlock>(SidebarPanel))
             {
@@ -371,31 +385,59 @@ namespace SharpReader
             if (currentMode == Mode.READING)
             {
                 double lastPos = 0.0d;
+                Console.WriteLine(getImageByIndex(0).Source);
                 Console.WriteLine(e.Key);
                 switch (e.Key)
                 {
                     case Key.A:
-                        for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
+                        if (currentReadingMode == ReadingMode.SCROLL)
                         {
-                            Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
-                            if (a.Y >= 0)
+                            for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
                             {
-                                double pos = MainScrollViewer.VerticalOffset + lastPos;
-                                MainScrollViewer.ScrollToVerticalOffset(pos > 0d ? pos : 0d);
-                                break;
+                                Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                                if (a.Y >= 0)
+                                {
+                                    double pos = MainScrollViewer.VerticalOffset + lastPos;
+                                    MainScrollViewer.ScrollToVerticalOffset(pos > 0d ? pos : 0d);
+                                    break;
+                                }
+                                lastPos = a.Y;
                             }
-                            lastPos = a.Y;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{currentImageIndex}");
+                            if (currentImageIndex>0)
+                            {
+                                Image temp = currentImage;
+                                currentImageIndex -= 1;
+                                Image newImage = getImageByIndex(currentImageIndex);
+                                temp.Source = newImage.Source;
+                            }
                         }
                         break;
                     case Key.D:
-                        for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
+                        if (currentReadingMode == ReadingMode.SCROLL)
                         {
-                            Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
-                            if (a.Y > 0)
+                            for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
                             {
-                                Console.WriteLine($"{MainScrollViewer.VerticalOffset} - {a.Y}");
-                                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
-                                break;
+                                Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                                if (a.Y > 0)
+                                {
+                                    Console.WriteLine($"{MainScrollViewer.VerticalOffset} - {a.Y}");
+                                    MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(currentComic.getImageCount() > currentImageIndex + 1)
+                            {
+                                Image temp = currentImage;
+                                currentImageIndex += 1;
+                                Image newImage = getImageByIndex(currentImageIndex);
+                                temp.Source = newImage.Source;
                             }
                         }
                         break;
@@ -411,9 +453,10 @@ namespace SharpReader
         private void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
         {
             currentMode = Mode.READING;
+            currentComic = comic;
             ComicsWrapPanel.Children.Clear();
             ComicsWrapPanel.Orientation = Orientation.Vertical;
-            if (comic is ComicPDF comicPDF)
+            if (currentComic is ComicPDF comicPDF)
             {
                 var host = new WindowsFormsHost
                 {
@@ -431,19 +474,38 @@ namespace SharpReader
             }
             else
             {
-                List<Uri> files = comic.getImages();
                 string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
                 if (Directory.Exists(dirPath))
                 {
-                    foreach (Uri file in files)
+                    if (currentReadingMode == ReadingMode.SCROLL)
                     {
-                        Image firstimage = new Image
+                        List<Uri> files = currentComic.getImages();
+                        foreach (Uri file in files)
                         {
-                            Source = new BitmapImage(file),
-                            Width = MainScrollViewer.ActualWidth,
-                            MaxHeight = 700,
-                        };
-                        ComicsWrapPanel.Children.Add(firstimage);
+                            Image img;
+                            string path = Path.GetFullPath(file.ToString());
+                            if (!comicImages.ContainsKey(path))
+                            {
+                                img = new Image
+                                {
+                                    Source = new BitmapImage(file),
+                                    Width = MainScrollViewer.ActualWidth,
+                                    MaxHeight = 700,
+                                };
+                                comicImages.Add(path, img);
+                            }
+                            else
+                            {
+                                img = comicImages[path];
+                            }
+                            ComicsWrapPanel.Children.Add(img);
+                        }
+                    }
+                    else
+                    {
+                        Image img = getImageByIndex(currentImageIndex);
+                        currentImage = img;
+                        ComicsWrapPanel.Children.Add(img);
                     }
                 }
                 else
@@ -454,6 +516,30 @@ namespace SharpReader
                 }
             }
             HomeButton.IsEnabled = true;
+        }
+        private Image getImageByIndex(int index)
+        {
+            if (index < 0)
+                index = 0;
+            List<Uri> files = currentComic.getImages();
+            Image img = null;
+            Uri file = files[currentImageIndex];
+            string path = Path.GetFullPath(file.ToString());
+            if (!comicImages.ContainsKey(path))
+            {
+                img = new Image
+                {
+                    Source = new BitmapImage(file),
+                    Width = MainScrollViewer.ActualWidth,
+                    MaxHeight = 700,
+                };
+                comicImages.Add(path, img);
+            }
+            else
+            {
+                img = comicImages[path];
+            }
+            return img;
         }
         private void NewComic(object sender, RoutedEventArgs e)
         {
@@ -491,6 +577,23 @@ namespace SharpReader
                     MessageBox.Show("Error when adding comic!", "Error");
                 }
             }
+        }
+
+        private void toggleToScrollbar(object sender, RoutedEventArgs e)
+        {
+            if (currentMode == Mode.READING)
+                return;
+            currentReadingMode = ReadingMode.SCROLL;
+            PageButton.IsEnabled = true;
+            ScrollbarButton.IsEnabled = false;
+        }
+        private void toggleToPage(object sender, RoutedEventArgs e)
+        {
+            if (currentMode == Mode.READING)
+                return;
+            currentReadingMode = ReadingMode.PAGE;
+            PageButton.IsEnabled = false;
+            ScrollbarButton.IsEnabled = true;
         }
     }
 }
