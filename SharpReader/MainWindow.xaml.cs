@@ -483,15 +483,7 @@ namespace SharpReader
                         foreach (Uri file in files)
                         {
                             Image img;
-                            string path;
-                            try
-                            {
-                                path = file.LocalPath;
-                            }
-                            catch (InvalidOperationException ex)
-                            {
-                                path = Path.GetFullPath(file.ToString());
-                            }
+                            string path = file.ToString();
                             if (!comicImages.ContainsKey(path))
                             {
                                 img = new Image
@@ -536,15 +528,7 @@ namespace SharpReader
             List<Uri> files = currentComic.getImages();
             Image img = null;
             Uri file = files[currentImageIndex];
-            string path;
-            try
-            {
-                path = file.LocalPath;
-            }
-            catch(InvalidOperationException ex)
-            {
-                path = Path.GetFullPath(file.ToString());
-            }
+            string path = file.ToString();
             if (!comicImages.ContainsKey(path))
             {
                 img = new Image
