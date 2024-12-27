@@ -81,20 +81,17 @@ namespace SharpReader
             }
             try
             {
-                var savedComics = JsonSerializer.Deserialize<Dictionary<string, string>>(AppSettings.Default.savedComics);
+                var savedComics = JsonSerializer.Deserialize<Dictionary<string, Comic>>(AppSettings.Default.savedComics);
                 foreach (var kvp in savedComics)
                 {
-                    string path = kvp.Key;
-                    int pos = kvp.Value.IndexOf(';');
-                    string type = kvp.Value.Substring(0, pos);
-                    string title = kvp.Value.Substring(pos + 1);
-                    switch (type)
+                    Comic c= kvp.Value;
+                    switch (c.ComicType)
                     {
-                        case "SharpReader.ComicImages":
-                            comics.Add(new ComicImages(path, title));
+                        case "Images":
+                            comics.Add(new ComicImages(kvp.Key, c.Title, c.Category));
                             break;
-                        case "SharpReader.ComicPDF":
-                            comics.Add(new ComicPDF(path, title));
+                        case "PDF":
+                            comics.Add(new ComicPDF(kvp.Key, c.Title, c.Category));
                             break;
                     }
                 }
@@ -139,7 +136,7 @@ namespace SharpReader
                 wp.Children.Add(getText(item, 36));
                 List<Comic> filteredComics = comics.FindAll((e) =>
                 {
-                    if (e.getCategory() == item)
+                    if (e.Category == item)
                         return true;
                     return false;
                 });
@@ -160,8 +157,8 @@ namespace SharpReader
         }
         private StackPanel LoadComic(Comic comic)
         {
-            string path = comic.getPath();
-            string title = comic.getTitle();
+            string path = comic.Path;
+            string title = comic.Title;
             BitmapSource cover = comic.getCoverImage();
             int width = 150, height = 350;
             StackPanel panel = new StackPanel
@@ -310,10 +307,10 @@ namespace SharpReader
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
-            Dictionary<string, string> comicDictionary = new Dictionary<string, string>();
+            Dictionary<string, Comic> comicDictionary = new Dictionary<string, Comic>();
             foreach (Comic c in comics)
             {
-                comicDictionary.Add(c.getPath(), c.GetType() + ";" + c.getTitle());
+                comicDictionary.Add(c.Path,c);
             }
             AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
             Console.WriteLine(AppSettings.Default.savedComics);
@@ -360,8 +357,6 @@ namespace SharpReader
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
-        // Example method to change the text color
         private void ChangeTextColor(bool useDarkText)
         {
             CurrentTextColor = useDarkText ? darkText : lightText;

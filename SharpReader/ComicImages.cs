@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 
 namespace SharpReader
 {
@@ -12,35 +13,27 @@ namespace SharpReader
     {
         public ComicImages(string path, string title):base(path, title)
         {
-            if (Directory.Exists(path))
-            {
-                string[] files = Directory.GetFiles(path);
-
-                foreach (string file in files)
-                {
-                    bool isImage = Regex.IsMatch(file, @"\.(jpg|jpeg|png|gif|bmp|tiff|tif)$", RegexOptions.IgnoreCase);
-                    if (isImage)
-                    {
-                        images.Add(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative));
-                    }
-                }
-                if (images.Count < 1)
-                    throw new Exception("No images");
-                cover = images[0];
-            }
+            this.ComicType = "Images";
+            setup();
         }
         public ComicImages(string path, string title, string category) : base(path, title, category)
         {
-            if (Directory.Exists(path))
+            this.ComicType = "Images";
+            setup();
+        }
+        public override void setup()
+        {
+
+            if (Directory.Exists(Path))
             {
-                string[] files = Directory.GetFiles(path);
+                string[] files = Directory.GetFiles(Path);
 
                 foreach (string file in files)
                 {
                     bool isImage = Regex.IsMatch(file, @"\.(jpg|jpeg|png|gif|bmp|tiff|tif)$", RegexOptions.IgnoreCase);
                     if (isImage)
                     {
-                        images.Add(new Uri(file, Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative));
+                        images.Add(new Uri(file, System.IO.Path.IsPathRooted(file) ? UriKind.Absolute : UriKind.Relative));
                     }
                 }
                 if (images.Count < 1)

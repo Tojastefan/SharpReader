@@ -19,22 +19,22 @@ namespace SharpReader
         }
         public ComicPDF(string path, string title) : base(path, title)
         {
-            pdfViewer = new PdfViewer
-            {
-                Dock = DockStyle.Fill,
-                ShowToolbar = false,
-            };
-            pdfDocument = PdfDocument.Load(path);
-            pdfViewer.Document = pdfDocument;
+            this.ComicType = "PDF";
+            setup();
         }
         public ComicPDF(string path, string title, string category) : base(path, title, category)
+        {
+            this.ComicType = "PDF";
+            setup();
+        }
+        public override void setup()
         {
             pdfViewer = new PdfViewer
             {
                 Dock = DockStyle.Fill,
                 ShowToolbar = false,
             };
-            pdfDocument = PdfDocument.Load(path);
+            pdfDocument = PdfDocument.Load(Path);
             pdfViewer.Document = pdfDocument;
         }
         public override BitmapSource getCoverImage()

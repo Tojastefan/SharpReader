@@ -13,35 +13,27 @@ namespace SharpReader
 {
     internal class Comic
     {
-        protected string path;
-        protected string title;
-        protected string category;
+        public string Path { get; set; }
+        public string Title { get; set; }
+        public string Category { get; set; }
+        public string ComicType { get; set; }
         protected List<Uri> images=new List<Uri>();
         protected Uri cover=null;
-        public Comic(string path,string title,string category)
+        public Comic() { }
+        public Comic(string path, string title, string category)
         {
-            this.path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,path);
-            this.title = title;
-            this.category = category;
+            this.Path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
+            this.Title = title;
+            this.Category = category;
         }
         public Comic(string path, string title)
         {
-            this.path = path;
-            this.title = title;
-            this.category = "Other";
+            this.Path = path;
+            this.Title = title;
+            this.Category = "Other";
+            this.ComicType = "Comic";
         }
-        public string getPath()
-        {
-            return path;
-        }
-        public string getTitle()
-        {
-            return title;
-        }
-        public string getCategory()
-        {
-            return category;
-        }
+        public virtual void setup() { }
         public List<Uri> getImages()
         {
             return images;
@@ -53,7 +45,7 @@ namespace SharpReader
         public virtual BitmapSource getCoverImage()
         {
             if (cover == null)
-                return new BitmapImage(new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"\\resources\\placeholder.jpg"),UriKind.Relative));
+                return new BitmapImage(new Uri(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"\\resources\\placeholder.jpg"),UriKind.Relative));
             return new BitmapImage(cover);
         }
     }
