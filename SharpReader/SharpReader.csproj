@@ -109,6 +109,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>AppSettings.settings</DependentUpon>
     </Compile>
+    <Page Include="ComicSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -124,6 +128,9 @@
     <Compile Include="Comic.cs" />
     <Compile Include="ComicPDF.cs" />
     <Compile Include="ComicImages.cs" />
+    <Compile Include="ComicSettings.xaml.cs">
+      <DependentUpon>ComicSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialog.xaml.cs">
       <DependentUpon>Dialog.xaml</DependentUpon>
     </Compile>

@@ -69,6 +69,8 @@ namespace SharpReader
             try
             {
                 categories = JsonSerializer.Deserialize<List<string>>(AppSettings.Default.categories);
+                if (categories.Count < 1)
+                    throw new Exception("No categories");
             }catch (Exception ex)
             {
                 categories = new List<string> { "Favourite", "Other" };
@@ -514,8 +516,39 @@ namespace SharpReader
         }
         private void comicSettings(object sender, RoutedEventArgs e, Comic comic)
         {
-            Console.WriteLine("settings: " + comic.Title);
-            MessageBox.Show("AGG", "asfasfsf");
+            var dialog = new ComicSettings();
+            TextBlock titleLabel = new TextBlock { Text = "Title:" };
+            TextBox titleTextBox = new TextBox { Width = 200, Text = comic.Title };
+            dialog.Form.Children.Add(new TextBlock { Text = "Properties", FontWeight = FontWeights.Bold, });
+            dialog.Form.Children.Add(titleLabel);
+            dialog.Form.Children.Add(titleTextBox);
+
+            dialog.Form.Children.Add(new TextBlock { Text = "Category", FontWeight = FontWeights.Bold, });
+            List<RadioButton> radioButtons = new List<RadioButton>();
+            categories.ForEach((name) =>
+            {
+                RadioButton rb = new RadioButton
+                {
+                    Name = name,
+                    Content = name,
+                    IsChecked = (comic.Category == name),
+                };
+                radioButtons.Add(rb);
+                dialog.Form.Children.Add(rb);
+            });
+            bool result=dialog.ShowDialog().Value;
+            if (result)
+            {
+                for (int i = 0; i< radioButtons.Count; ++i)
+                {
+                    if (radioButtons[i].IsChecked == true)
+                    {
+                        comic.Category = radioButtons[i].Name;
+                        break;
+                    }
+                }
+                switchToComicSelectionPanel();
+            }
         }
         private Image getImageByIndex(int index)
         {
@@ -631,7 +664,6 @@ namespace SharpReader
                     comicDictionary.Add(c.Path, c);
                 }
                 AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
-                //Console.WriteLine(AppSettings.Default.savedComics);
 
                 AppSettings.Default.categories = JsonSerializer.Serialize(categories);
 
