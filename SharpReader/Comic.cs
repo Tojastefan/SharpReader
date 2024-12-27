@@ -13,10 +13,16 @@ namespace SharpReader
 {
     internal class Comic
     {
+        public enum COMICTYPE
+        {
+            COMIC,
+            IMAGES,
+            PDF,
+        }
         public string Path { get; set; }
         public string Title { get; set; }
         public string Category { get; set; }
-        public string ComicType { get; set; }
+        public COMICTYPE ComicType { get; set; }
         protected List<Uri> images=new List<Uri>();
         protected Uri cover=null;
         public Comic() { }
@@ -31,9 +37,9 @@ namespace SharpReader
             this.Path = path;
             this.Title = title;
             this.Category = "Other";
-            this.ComicType = "Comic";
+            this.ComicType = COMICTYPE.COMIC;
         }
-        public virtual void setup() { }
+        protected virtual void setup() { }
         public List<Uri> getImages()
         {
             return images;

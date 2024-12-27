@@ -13,15 +13,15 @@ namespace SharpReader
     {
         public ComicImages(string path, string title):base(path, title)
         {
-            this.ComicType = "Images";
+            this.ComicType = COMICTYPE.IMAGES;
             setup();
         }
         public ComicImages(string path, string title, string category) : base(path, title, category)
         {
-            this.ComicType = "Images";
+            this.ComicType = COMICTYPE.IMAGES;
             setup();
         }
-        public override void setup()
+        protected override void setup()
         {
 
             if (Directory.Exists(Path))

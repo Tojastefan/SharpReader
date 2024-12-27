@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Comic Viewer" Height="720" Width="1280"
         MaxWidth="1920" MaxHeight="1080" WindowStartupLocation="CenterScreen"
-        WindowState="Maximized"
+        WindowState="Maximized" Closing="Window_Closing"
         
         >
 
@@ -18,14 +18,15 @@
                 <MenuItem Header="Comic" Name="Comic">
                     <MenuItem Header="New Folder" Name="New" Background="#fff" Foreground="#000" Click="NewComic"/>
                     <MenuItem Header="New PDF" Name="NewPDF" Background="#fff" Foreground="#000" Click="NewComicPDF"/>
-                    <MenuItem Header="Open" Name="Open" Background="#fff" Foreground="#000"/>
-                    <MenuItem Header="Save" Name="Save" Background="#fff" Foreground="#000"/>
                     <MenuItem Header="Exit" Name="Exit" Background="#fff" Foreground="#000"/>
                 </MenuItem>
-                <MenuItem Header="View" Name="View"/>
-                <MenuItem Header="Goto" Name="Goto"/>
-                <MenuItem Header="Debug" Name="Debug"/>
-                <MenuItem Header="Help" Name="Help"/>
+                <MenuItem Header="Categories" Name="Categories">
+                    <MenuItem Header="New Category" Name="NewCategory" Background="#fff" Foreground="#000" Click="NewCategory_Click"/>
+                </MenuItem>
+                <!-- <MenuItem Header="View" Name="View"/> -->
+                <!-- <MenuItem Header="Goto" Name="Goto"/> -->
+                <!-- <MenuItem Header="Debug" Name="Debug"/> -->
+                <!-- <MenuItem Header="Help" Name="Help"/> -->
             </Menu>
 
             <!-- Pasek boczny (Sidebar) po lewej stronie z przyciskami i tekstami -->

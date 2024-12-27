@@ -17,6 +17,8 @@ using System.Text.Json;
 using System.Collections.Specialized;
 using System.Net.Http.Headers;
 using Spire.Pdf.AI;
+using static SharpReader.Comic;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace SharpReader
 {
@@ -37,7 +39,7 @@ namespace SharpReader
         private bool isDarkMode;
         private Mode currentMode;
         private ReadingMode currentReadingMode;
-        private List<string> categories = new List<string>();
+        private List<string> categories;
         private List<Comic> comics = new List<Comic>();
         private int currentImageIndex=0;
         private Image currentImage;
@@ -61,11 +63,16 @@ namespace SharpReader
 
         public MainWindow()
         {
-            categories.Add("Favourite");
-            categories.Add("Other");
             InitializeComponent();
             currentMode = Mode.SELECTION;
             toggleToScrollbar(null, null);
+            try
+            {
+                categories = JsonSerializer.Deserialize<List<string>>(AppSettings.Default.categories);
+            }catch (Exception ex)
+            {
+                categories = new List<string> { "Favourite", "Other" };
+            }
             try
             {
                 var darkTheme = AppSettings.Default.darkTheme;
@@ -87,10 +94,10 @@ namespace SharpReader
                     Comic c= kvp.Value;
                     switch (c.ComicType)
                     {
-                        case "Images":
+                        case COMICTYPE.IMAGES:
                             comics.Add(new ComicImages(kvp.Key, c.Title, c.Category));
                             break;
-                        case "PDF":
+                        case COMICTYPE.PDF:
                             comics.Add(new ComicPDF(kvp.Key, c.Title, c.Category));
                             break;
                     }
@@ -188,6 +195,7 @@ namespace SharpReader
                 Content = "Settings",
                 Visibility = Visibility.Hidden,
             };
+            button.Click += (sender, e) => comicSettings(sender, e, comic);
             panel.Children.Add(image);
             panel.Children.Add(textBlock);
             panel.Children.Add(button);
@@ -304,18 +312,6 @@ namespace SharpReader
             });
             return tb;
         }
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            base.OnClosing(e);
-            Dictionary<string, Comic> comicDictionary = new Dictionary<string, Comic>();
-            foreach (Comic c in comics)
-            {
-                comicDictionary.Add(c.Path,c);
-            }
-            AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
-            Console.WriteLine(AppSettings.Default.savedComics);
-            AppSettings.Default.Save();
-        }
         private void GridLayout_Click(object sender, RoutedEventArgs e)
         {
 
@@ -363,6 +359,8 @@ namespace SharpReader
         }
         private void switchToComicSelectionPanel()
         {
+            ComicsWrapPanel.Children.Clear();
+            HomeButton.IsEnabled = false;
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
@@ -370,8 +368,6 @@ namespace SharpReader
         }
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            ComicsWrapPanel.Children.Clear();
-            HomeButton.IsEnabled = false;
             switchToComicSelectionPanel();
         }
         protected override void OnKeyDown(KeyEventArgs e)
@@ -516,6 +512,11 @@ namespace SharpReader
             }
             HomeButton.IsEnabled = true;
         }
+        private void comicSettings(object sender, RoutedEventArgs e, Comic comic)
+        {
+            Console.WriteLine("settings: " + comic.Title);
+            MessageBox.Show("AGG", "asfasfsf");
+        }
         private Image getImageByIndex(int index)
         {
             if (index < 0)
@@ -593,6 +594,53 @@ namespace SharpReader
             currentReadingMode = ReadingMode.PAGE;
             PageButton.IsEnabled = false;
             ScrollbarButton.IsEnabled = true;
+        }
+
+        private void NewCategory_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Dialog
+            {
+                Header="New category",
+                PromptText = "Enter new category name:",
+            };
+            bool result = dialog.ShowDialog().Value;
+            if (result)
+            {
+                string name = dialog.InputText;
+                if (!categories.Contains(name))
+                {
+                    categories.Add(name);
+                    if(currentMode==Mode.SELECTION)
+                        switchToComicSelectionPanel();
+                }
+            }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            string messageBoxText = "Do you want to save changes?";
+            string caption = "Quitting SharpReader";
+            MessageBoxButton button = MessageBoxButton.YesNoCancel;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+            MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+            if (result == MessageBoxResult.Yes)
+            {
+                Dictionary<string, Comic> comicDictionary = new Dictionary<string, Comic>();
+                foreach (Comic c in comics)
+                {
+                    comicDictionary.Add(c.Path, c);
+                }
+                AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
+                //Console.WriteLine(AppSettings.Default.savedComics);
+
+                AppSettings.Default.categories = JsonSerializer.Serialize(categories);
+
+                AppSettings.Default.Save();
+            }
+            else if (result == MessageBoxResult.Cancel)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }
