@@ -40,6 +40,7 @@ namespace SharpReader
             this.Title = title;
             this.Category = "Other";
             this.ComicType = COMICTYPE.COMIC;
+            this.SavedPage = 0;
         }
         protected virtual void setup() { }
         public List<Uri> getImages()
