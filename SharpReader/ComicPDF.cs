@@ -22,7 +22,7 @@ namespace SharpReader
             this.ComicType = COMICTYPE.PDF;
             setup();
         }
-        public ComicPDF(string path, string title, string category) : base(path, title, category)
+        public ComicPDF(string path, string title, string category) : base(path, title, category, 0)
         {
             this.ComicType = COMICTYPE.PDF;
             setup();

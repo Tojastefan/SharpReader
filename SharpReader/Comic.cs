@@ -22,15 +22,17 @@ namespace SharpReader
         public string Path { get; set; }
         public string Title { get; set; }
         public string Category { get; set; }
+        public int SavedPage { get; set; }
         public COMICTYPE ComicType { get; set; }
         protected List<Uri> images=new List<Uri>();
         protected Uri cover=null;
         public Comic() { }
-        public Comic(string path, string title, string category)
+        public Comic(string path, string title, string category,int savedPage)
         {
             this.Path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
             this.Title = title;
             this.Category = category;
+            this.SavedPage = savedPage;
         }
         public Comic(string path, string title)
         {

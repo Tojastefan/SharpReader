@@ -16,7 +16,7 @@ namespace SharpReader
             this.ComicType = COMICTYPE.IMAGES;
             setup();
         }
-        public ComicImages(string path, string title, string category) : base(path, title, category)
+        public ComicImages(string path, string title, string category, int savedPage) : base(path, title, category, savedPage)
         {
             this.ComicType = COMICTYPE.IMAGES;
             setup();
