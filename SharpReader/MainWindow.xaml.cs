@@ -27,18 +27,24 @@ namespace SharpReader
         public enum Mode
         {
             SELECTION,
-            READING
+            READING,
+        }
+        public enum SelectionMode
+        {
+            GRID,
+            LIST,
         }
         public enum ReadingMode
         {
             SCROLL,
-            PAGE
+            PAGE,
         }
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         private bool isDarkMode;
         private Mode currentMode;
         private ReadingMode currentReadingMode;
+        private SelectionMode currentSelectionMode;
         private List<string> categories;
         private List<Comic> comics = new List<Comic>();
         private int currentImageIndex=0;
@@ -65,6 +71,8 @@ namespace SharpReader
         {
             InitializeComponent();
             currentMode = Mode.SELECTION;
+            currentSelectionMode = SelectionMode.GRID;
+            GridButton.IsEnabled = false;
             toggleToScrollbar(null, null);
             try
             {
@@ -122,8 +130,6 @@ namespace SharpReader
             if (comics.Count < 1)
             {
                 ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
-                // ComicPDF pdf = new ComicPDF("pdffile.pdf", "Name of pdf");
-                // comics.Add(pdf);
                 comics.Add(c);
             }
             switchToComicSelectionPanel();
@@ -144,15 +150,10 @@ namespace SharpReader
                 {
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Orientation = Orientation.Horizontal,
+                    Orientation = currentSelectionMode == SelectionMode.GRID ? Orientation.Horizontal : Orientation.Vertical,
                 };
                 wp.Children.Add(getText(item, 36));
-                List<Comic> filteredComics = comics.FindAll((e) =>
-                {
-                    if (e.Category == item)
-                        return true;
-                    return false;
-                });
+                List<Comic> filteredComics = comics.FindAll((e) => e.Category == item ? true : false);
                 filteredComics.ForEach((e) =>
                 {
                     innerwp.Children.Add(LoadComic(e));
@@ -320,12 +321,22 @@ namespace SharpReader
         }
         private void GridLayout_Click(object sender, RoutedEventArgs e)
         {
-
+            currentSelectionMode = SelectionMode.GRID;
+            GridButton.IsEnabled = !GridButton.IsEnabled;
+            ListButton.IsEnabled = !ListButton.IsEnabled;
+            if (currentMode == Mode.READING)
+                return;
+            switchToComicSelectionPanel();
         }
 
         private void ListLayout_Click(object sender, RoutedEventArgs e)
         {
-
+            currentSelectionMode = SelectionMode.LIST;
+            GridButton.IsEnabled = !GridButton.IsEnabled;
+            ListButton.IsEnabled = !ListButton.IsEnabled;
+            if (currentMode == Mode.READING)
+                return;
+            switchToComicSelectionPanel();
         }
 
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
