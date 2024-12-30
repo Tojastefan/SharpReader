@@ -757,6 +757,56 @@ namespace SharpReader
             }
         }
 
+        private void SetLanguageToEnglish(object sender, RoutedEventArgs e)
+        {
+            // Przykład: zmiana tekstów na angielski
+            Comic.Header = "Comic";
+            Categories.Header = "Categories";
+            Language.Header = "Language";
+            Exit.Header = "Exit";
+            New.Header = "New Folder";
+            NewPDF.Header = "New PDF";
+            NewCategory.Header = "New Category";
+
+            // Sidebar buttons
+            HomeButton.Content = "Home";
+            ChangeBackground.Content = "Change Background";
+            GridButton.Content = "Grid Layout";
+            ListButton.Content = "List Layout";
+            ScrollbarButton.Content = "Scrollbar";
+            PageButton.Content = "Page";
+
+            // Sidebar sections
+            Options.Text = "Options";
+            Layout.Text = "Layout";
+            Reading_Mode.Text = "Reading Mode";
+        }
+
+        private void SetLanguageToPolish(object sender, RoutedEventArgs e)
+        {
+            // Przykład: zmiana tekstów na polski
+            Comic.Header = "Komiks";
+            Categories.Header = "Kategorie";
+            Language.Header = "Język";
+            Exit.Header = "Zakończ";
+            New.Header = "Nowy Folder";
+            NewPDF.Header = "Nowy PDF";
+            NewCategory.Header = "Nowa Kategoria";
+
+            // Sidebar buttons
+            HomeButton.Content = "Strona główna";
+            ChangeBackground.Content = "Zmień tło";
+            GridButton.Content = "Układ siatki";
+            ListButton.Content = "Układ listy";
+            ScrollbarButton.Content = "Pasek przewijania";
+            PageButton.Content = "Strona";
+
+            // Sidebar sections
+            Options.Text = "Opcje";
+            Layout.Text = "Układ";
+            Reading_Mode.Text = "Tryb czytania";
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             string messageBoxText = "Do you want to save changes?";
