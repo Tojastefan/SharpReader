@@ -213,7 +213,7 @@ namespace SharpReader
                 };
                 TextBlock percentText = new TextBlock
                 {
-                    Text = $"{progressBar.Value}%",
+                    Text = progressBar.Value < 100 ? $"{progressBar.Value}%" : "Finished",
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
                     FontSize = 12,
