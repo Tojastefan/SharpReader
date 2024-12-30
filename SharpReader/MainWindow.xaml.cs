@@ -158,21 +158,13 @@ namespace SharpReader
                 wp.Children.Add(innerwp);
                 ComicsWrapPanel.Children.Add(wp);
             }
-
-            /*
-            comics.ForEach(c =>
-            {
-                ComicsWrapPanel.Children.Add(LoadComic(c));
-            });
-            */
         }
         private StackPanel LoadComic(Comic comic)
         {
-            //Tutaj Robic
             string path = comic.Path;
             string title = comic.Title;
             BitmapSource cover = comic.getCoverImage();
-            int width = 150, height = 350;
+            int width = 150, height = 400;
             StackPanel panel = new StackPanel
             {
                 Height = height,
@@ -195,32 +187,6 @@ namespace SharpReader
             {
                 Source = this
             });
-
-            Grid progressContainer = new Grid
-            {
-                Width = width,
-                Height = 25,
-            };
-
-            ProgressBar progressBar = new ProgressBar
-            {
-                Width = width,
-                Height = 20,
-                Minimum = 0,
-                Maximum = 100, // Zakres w procentach
-                Value = comic.SavedPage * 100 / comic.getImageCount(), // Obliczenie postępu
-                Padding = new Thickness(0, 5, 0, 0),
-            };
-
-            TextBlock percentText = new TextBlock
-            {
-                Text = $"{progressBar.Value}%", // Wyświetlany tekst z procentem
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 12,
-                Foreground = Brushes.Black,
-            };
-
             Button button = new Button
             {
                 Content = "Settings",
@@ -229,9 +195,34 @@ namespace SharpReader
             button.Click += (sender, e) => comicSettings(sender, e, comic);
             panel.Children.Add(image);
             panel.Children.Add(textBlock);
-            progressContainer.Children.Add(progressBar);
-            progressContainer.Children.Add(percentText);
-            panel.Children.Add(progressContainer);
+            if (comic.ComicType != COMICTYPE.PDF)
+            {
+                Grid progressContainer = new Grid
+                {
+                    Width = width,
+                    Height = 25,
+                };
+                ProgressBar progressBar = new ProgressBar
+                {
+                    Width = width,
+                    Height = 25,
+                    Minimum = 0,
+                    Maximum = 100,
+                    Value = comic.SavedPage * 100 / comic.getImageCount(),
+                    Padding = new Thickness(0, 5, 0, 0),
+                };
+                TextBlock percentText = new TextBlock
+                {
+                    Text = $"{progressBar.Value}%",
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 12,
+                    Foreground = Brushes.Black,
+                };
+                progressContainer.Children.Add(progressBar);
+                progressContainer.Children.Add(percentText);
+                panel.Children.Add(progressContainer);
+            }
             panel.Children.Add(button);
             panel.MouseDown += (sender, e) => switchToReadingPanel(sender, e, comic);
             panel.MouseEnter += (sender, e) =>
