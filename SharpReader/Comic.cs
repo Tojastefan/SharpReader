@@ -25,7 +25,7 @@ namespace SharpReader
         public int SavedPage { get; set; }
         public COMICTYPE ComicType { get; set; }
         protected List<Uri> images=new List<Uri>();
-        protected Uri cover=null;
+        public Uri cover=null;
         public Comic() { }
         public Comic(string path, string title, string category,int savedPage)
         {

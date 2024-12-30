@@ -154,10 +154,7 @@ namespace SharpReader
                 };
                 wp.Children.Add(getText(item, 36));
                 List<Comic> filteredComics = comics.FindAll((e) => e.Category == item ? true : false);
-                filteredComics.ForEach((e) =>
-                {
-                    innerwp.Children.Add(LoadComic(e));
-                });
+                filteredComics.ForEach((e) => innerwp.Children.Add(LoadComic(e)));
                 wp.Children.Add(innerwp);
                 ComicsWrapPanel.Children.Add(wp);
             }
@@ -341,8 +338,8 @@ namespace SharpReader
 
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
         {
-            if (parent == null) yield break;
-
+            if (parent == null)
+                yield break;
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)
             {
@@ -601,6 +598,27 @@ namespace SharpReader
                 radioButtons.Add(rb);
                 dialog.Form.Children.Add(rb);
             });
+            dialog.Form.Children.Add(new TextBlock { Text = "Cover", FontWeight = FontWeights.Bold, });
+            String tempPathToCover = null;
+            Button coverButton = new Button
+            {
+                Content="Select Cover",
+            };
+            TextBlock label = new TextBlock { Text = "Not assigned" };
+            coverButton.Click += (btnSender, btnE) =>
+            {
+                using (Forms.OpenFileDialog ofd = new Forms.OpenFileDialog())
+                {
+                    ofd.Filter = "Image (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
+                    if (ofd.ShowDialog() == Forms.DialogResult.OK)
+                    {
+                        tempPathToCover=ofd.FileName;
+                        label.Text = Path.GetFileName(ofd.FileName);
+                    }
+                }
+            };
+            dialog.Form.Children.Add(coverButton);
+            dialog.Form.Children.Add(label);
             bool result=dialog.ShowDialog().Value;
             if (result)
             {
@@ -612,6 +630,8 @@ namespace SharpReader
                         break;
                     }
                 }
+                if (tempPathToCover != null)
+                    comic.cover = new Uri(tempPathToCover);
                 switchToComicSelectionPanel();
             }
         }
