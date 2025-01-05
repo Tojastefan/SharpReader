@@ -24,7 +24,7 @@
                     <MenuItem Header="New Category" Name="NewCategory" Background="#fff" Foreground="#000" Click="NewCategory_Click"/>
                 </MenuItem>
                 <MenuItem Header="Language" Name="Language">
-                    <MenuItem Header="Enghlish" Name="English" Background="#fff" Foreground="#000" Click="SetLanguageToEnglish"/>
+                    <MenuItem Header="English" Name="English" Background="#fff" Foreground="#000" Click="SetLanguageToEnglish"/>
                     <MenuItem Header="Poland" Name="Polish" Background="#fff" Foreground="#000" Click="SetLanguageToPolish"/>
                 </MenuItem>
                 <!-- <MenuItem Header="View" Name="View"/> -->

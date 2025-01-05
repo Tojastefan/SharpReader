@@ -8,17 +8,12 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Effects;
-using PdfiumViewer;
 using Forms=System.Windows.Forms;
 using System.Windows.Forms.Integration;
-using static System.Net.WebRequestMethods;
 using System.Text.RegularExpressions;
 using System.Text.Json;
-using System.Collections.Specialized;
-using System.Net.Http.Headers;
-using Spire.Pdf.AI;
 using static SharpReader.Comic;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Runtime.InteropServices;
 
 namespace SharpReader
 {
@@ -557,11 +552,12 @@ namespace SharpReader
                         {
                             Image img;
                             string path = file.ToString();
+                            BitmapImage bitmap = new BitmapImage(file);
                             if (!comicImages.ContainsKey(path))
                             {
                                 img = new Image
                                 {
-                                    Source = new BitmapImage(file),
+                                    Source = bitmap,
                                     Width = MainScrollViewer.ActualWidth,
                                     MaxHeight = 700,
                                 };
@@ -571,6 +567,7 @@ namespace SharpReader
                             {
                                 img = comicImages[path];
                             }
+
                             ComicsWrapPanel.Children.Add(img);
                         }
                         int tempPageIndex = currentComic.SavedPage;
@@ -831,6 +828,50 @@ namespace SharpReader
             {
                 e.Cancel = true;
             }
+        }
+        private BitmapImage changeBrigthness(BitmapImage bitmap,int brightness)
+        {
+            if (brightness == 0)
+                return bitmap;
+            WriteableBitmap writeableBitmap = new WriteableBitmap(bitmap);
+            IntPtr backBuffer = writeableBitmap.BackBuffer;
+
+            for (int y = 0; y < writeableBitmap.PixelHeight; y++)
+            {
+                for (int x = 0; x < writeableBitmap.PixelWidth; x++)
+                {
+                    int pixelIndex = (y * writeableBitmap.BackBufferStride) + (x * 4);
+                    byte blue = Marshal.ReadByte(backBuffer, pixelIndex);
+                    byte green = Marshal.ReadByte(backBuffer, pixelIndex + 1);
+                    byte red = Marshal.ReadByte(backBuffer, pixelIndex + 2);
+                    byte alpha = Marshal.ReadByte(backBuffer, pixelIndex + 3);
+                    red = (byte)Math.Max(Math.Min(255, red + brightness), 0);
+                    green = (byte)Math.Max(Math.Min(255, green + brightness), 0);
+                    blue = (byte)Math.Max(Math.Min(255, blue + brightness), 0);
+                    Marshal.WriteByte(backBuffer, pixelIndex, blue);
+                    Marshal.WriteByte(backBuffer, pixelIndex + 1, green);
+                    Marshal.WriteByte(backBuffer, pixelIndex + 2, red);
+                    Marshal.WriteByte(backBuffer, pixelIndex + 3, alpha);
+                }
+            }
+            writeableBitmap.Lock();
+            writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight));
+            writeableBitmap.Unlock();
+            BitmapImage resultImage = new BitmapImage();
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                PngBitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(writeableBitmap));
+                encoder.Save(memoryStream);
+                memoryStream.Position = 0;
+                resultImage.BeginInit();
+                resultImage.StreamSource = memoryStream;
+                resultImage.CacheOption = BitmapCacheOption.OnLoad;
+                resultImage.EndInit();
+                resultImage.Freeze();
+            }
+            writeableBitmap.Lock();
+            return resultImage;
         }
     }
 }
