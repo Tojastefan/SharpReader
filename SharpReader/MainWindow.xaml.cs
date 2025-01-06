@@ -790,15 +790,15 @@ namespace SharpReader
             zoomOut.Header = "Zoom Out";
 
             // Sidebar buttons
-            HomeButton.Content = "Home";
-            ChangeBackground.Content = "Change Background";
-            GridButton.Content = "Grid Layout";
-            ListButton.Content = "List Layout";
-            ScrollbarButton.Content = "Scrollbar";
-            PageButton.Content = "Page";
-            BrightnessUpButton.Content = "Lighten up";
-            BrightnessDownButton.Content = "Darked";
-            Reset.Content = "Reset";
+            HomeText.Text = "Home";
+            ChangeBackgroudText.Text = "Change Background";
+            GridLayout.Text = "Grid Layout";
+            ListLayout.Text = "List Layout";
+            Scrollbar.Text = "Scrollbar";
+            Page.Text = "Page";
+            Lightnes.Text = "Lighten up";
+            Darked.Text = "Darked";
+            ResetText.Text = "Reset";
 
             // Sidebar sections
             Options.Text = "Options";
@@ -823,15 +823,15 @@ namespace SharpReader
 
 
             // Sidebar buttons
-            HomeButton.Content = "Strona główna";
-            ChangeBackground.Content = "Zmień tło";
-            GridButton.Content = "Układ siatki";
-            ListButton.Content = "Układ listy";
-            ScrollbarButton.Content = "Pasek przewijania";
-            PageButton.Content = "Strona";
-            BrightnessUpButton.Content = "Rozjaśnanie";
-            BrightnessDownButton.Content = "Przyciemnanie";
-            Reset.Content = "Resetuj";
+            HomeText.Text = "Strona główna";
+            ChangeBackgroudText.Text = "Zmień tło";
+            GridLayout.Text = "Układ siatki";
+            ListLayout.Text = "Układ listy";
+            Scrollbar.Text = "Pasek przewijania";
+            Page.Text = "Strona";
+            Lightnes.Text = "Rozjaśnanie";
+            Darked.Text = "Przyciemnanie";
+            ResetText.Text = "Resetuj";
 
             // Sidebar sections
             Options.Text = "Opcje";

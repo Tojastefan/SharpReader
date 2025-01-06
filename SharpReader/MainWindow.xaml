@@ -46,26 +46,89 @@
             </Menu>
 
             <!-- Pasek boczny (Sidebar) po lewej stronie z przyciskami i tekstami -->
-            <StackPanel DockPanel.Dock="Left" Background="#3c3c3c" Width="150" Name="SidebarPanel">
+            <StackPanel DockPanel.Dock="Left" Background="#3c3c3c" Width="200" Name="SidebarPanel">
                 <TextBlock Text="Options" Name="Options" Foreground="White" FontSize="16" Margin="10"/>
 
-                <Button Name="HomeButton" Content="Home" Margin="10" Click="HomeButton_Click" IsEnabled="False"/>
-
+                <Button Name="HomeButton" Margin="10" Click="HomeButton_Click" IsEnabled="False">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="resources\SharpReaderHome.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Change Background" VerticalAlignment="Center" HorizontalAlignment="Center" Name="HomeText"/>
+                    </StackPanel>
+                </Button.Content>
+                </Button>
+            
                 <!-- Przycisk do zmiany koloru tła -->
-                <Button Content="Change Background" Name="ChangeBackground" Margin="10" Click="ChangeBackground_Click"/>
-                
+                <Button Name="ChangeBackground" Margin="10" Click="ChangeBackground_Click" >
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderChangeBackground.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Change Background" VerticalAlignment="Center" HorizontalAlignment="Center" Name="ChangeBackgroudText"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+
                 <TextBlock Text="Filters" Name="Filter" Foreground="White" FontSize="16" Margin="10"/>
-                <Button Name="BrightnessUpButton" Content="Lighten up" Margin="10" Click="BrightnessUpButton_Click" />
-                <Button Name="BrightnessDownButton" Content="Darked" Margin="10" Click="BrightnessDownButton_Click" />
-                <Button Name="Reset" Content="Reset" Margin="10" Click="Reset_Click" />
+                <Button Name="BrightnessUpButton" Margin="10" Click="BrightnessUpButton_Click" >
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderBrightness.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Lighten up" VerticalAlignment="Center" HorizontalAlignment="Center" Name="Lightnes"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button Name="BrightnessDownButton" Margin="10" Click="BrightnessDownButton_Click" >
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderDarked.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Darked" VerticalAlignment="Center" HorizontalAlignment="Center" Name="Darked"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button Name="Reset" Margin="10" Click="Reset_Click" >
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderReset.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Reset" VerticalAlignment="Center" HorizontalAlignment="Center" Name="ResetText"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
 
                 <!-- Sekcja zmiany układu -->
                 <TextBlock Text="Layout" Name="Layout" Foreground="White" FontSize="14" Margin="10"/>
-                <Button Content="Grid Layout" Name="GridButton" Margin="10" Click="GridLayout_Click"/>
-                <Button Content="List Layout" Name="ListButton" Margin="10" Click="ListLayout_Click"/>
+                <Button Name="GridButton" Margin="10" Click="GridLayout_Click">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderGrid.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Grid Layout" VerticalAlignment="Center" HorizontalAlignment="Center" Name="GridLayout"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button Name="ListButton" Margin="10" Click="ListLayout_Click">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderList.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="List Layout" VerticalAlignment="Center" HorizontalAlignment="Center" Name="ListLayout"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
                 <TextBlock Text="Reading mode" Name="Reading_Mode" Foreground="White" FontSize="14" Margin="10"/>
-                <Button Content="Scrollbar" Name="ScrollbarButton"  Margin="10" Click="toggleToScrollbar"/>
-                <Button Content="Page" Name="PageButton" Margin="10" Click="toggleToPage"/>
+                <Button Name="ScrollbarButton"  Margin="10" Click="toggleToScrollbar">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderScrollBar.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Scrollbar" VerticalAlignment="Center" HorizontalAlignment="Center" Name="Scrollbar"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button Name="PageButton" Margin="10" Click="toggleToPage">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderPage.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Page" VerticalAlignment="Center" HorizontalAlignment="Center" Name="Page"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
             </StackPanel>
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->
