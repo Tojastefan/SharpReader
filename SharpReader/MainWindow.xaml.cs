@@ -14,6 +14,8 @@ using System.Text.RegularExpressions;
 using System.Text.Json;
 using static SharpReader.Comic;
 using System.Runtime.InteropServices;
+using System.Linq;
+using System.Drawing.Imaging;
 
 namespace SharpReader
 {
@@ -42,11 +44,12 @@ namespace SharpReader
         private SelectionMode currentSelectionMode;
         private List<string> categories;
         private List<Comic> comics = new List<Comic>();
-        private int currentImageIndex=0;
+        private int currentImageIndex = 0;
         private Image currentImage;
         private Comic currentComic;
         private Dictionary<string, Image> comicImages = new Dictionary<string, Image>();
         private Brush currentTextColor;
+        private int brightness = 0;
         public Brush CurrentTextColor
         {
             get => currentTextColor;
@@ -74,7 +77,8 @@ namespace SharpReader
                 categories = JsonSerializer.Deserialize<List<string>>(AppSettings.Default.categories);
                 if (categories.Count < 1)
                     throw new Exception("No categories");
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 categories = new List<string> { "Favourite", "Other" };
             }
@@ -432,7 +436,7 @@ namespace SharpReader
                         }
                         else
                         {
-                            if (currentImageIndex>0)
+                            if (currentImageIndex > 0)
                             {
                                 Image temp = currentImage;
                                 saveCurrentPage(currentImageIndex - 1);
@@ -458,7 +462,7 @@ namespace SharpReader
                         }
                         else
                         {
-                            if(currentComic.getImageCount() > currentImageIndex + 1)
+                            if (currentComic.getImageCount() > currentImageIndex + 1)
                             {
                                 Image temp = currentImage;
                                 saveCurrentPage(currentImageIndex + 1);
@@ -552,7 +556,7 @@ namespace SharpReader
                         {
                             Image img;
                             string path = file.ToString();
-                            BitmapImage bitmap = new BitmapImage(file);
+                            BitmapImage bitmap = changeBrigthness(new BitmapImage(file), brightness);
                             if (!comicImages.ContainsKey(path))
                             {
                                 img = new Image
@@ -622,7 +626,7 @@ namespace SharpReader
             String tempPathToCover = null;
             Button coverButton = new Button
             {
-                Content="Select Cover",
+                Content = "Select Cover",
             };
             TextBlock label = new TextBlock { Text = "Not assigned" };
             coverButton.Click += (btnSender, btnE) =>
@@ -632,17 +636,17 @@ namespace SharpReader
                     ofd.Filter = "Image (*.jpg;*.jpeg;*.png)|*.jpg;*.jpeg;*.png";
                     if (ofd.ShowDialog() == Forms.DialogResult.OK)
                     {
-                        tempPathToCover=ofd.FileName;
+                        tempPathToCover = ofd.FileName;
                         label.Text = Path.GetFileName(ofd.FileName);
                     }
                 }
             };
             dialog.Form.Children.Add(coverButton);
             dialog.Form.Children.Add(label);
-            bool result=dialog.ShowDialog().Value;
+            bool result = dialog.ShowDialog().Value;
             if (result)
             {
-                for (int i = 0; i< radioButtons.Count; ++i)
+                for (int i = 0; i < radioButtons.Count; ++i)
                 {
                     if (radioButtons[i].IsChecked == true)
                     {
@@ -738,7 +742,7 @@ namespace SharpReader
         {
             var dialog = new Dialog
             {
-                Header="New category",
+                Header = "New category",
                 PromptText = "Enter new category name:",
             };
             bool result = dialog.ShowDialog().Value;
@@ -748,7 +752,7 @@ namespace SharpReader
                 if (!categories.Contains(name))
                 {
                     categories.Add(name);
-                    if(currentMode==Mode.SELECTION)
+                    if (currentMode == Mode.SELECTION)
                         switchToComicSelectionPanel();
                 }
             }
@@ -772,11 +776,15 @@ namespace SharpReader
             ListButton.Content = "List Layout";
             ScrollbarButton.Content = "Scrollbar";
             PageButton.Content = "Page";
+            BrightnessUpButton.Content = "Lighten up";
+            BrightnessDownButton.Content = "Darked";
+            Reset.Content = "Reset";
 
             // Sidebar sections
             Options.Text = "Options";
             Layout.Text = "Layout";
             Reading_Mode.Text = "Reading Mode";
+            Filter.Text = "Filters";
         }
 
         private void SetLanguageToPolish(object sender, RoutedEventArgs e)
@@ -789,6 +797,7 @@ namespace SharpReader
             New.Header = "Nowy Folder";
             NewPDF.Header = "Nowy PDF";
             NewCategory.Header = "Nowa Kategoria";
+            
 
             // Sidebar buttons
             HomeButton.Content = "Strona główna";
@@ -797,11 +806,15 @@ namespace SharpReader
             ListButton.Content = "Układ listy";
             ScrollbarButton.Content = "Pasek przewijania";
             PageButton.Content = "Strona";
+            BrightnessUpButton.Content = "Rozjaśnanie";
+            BrightnessDownButton.Content = "Przyciemnanie";
+            Reset.Content = "Resetuj";
 
             // Sidebar sections
             Options.Text = "Opcje";
             Layout.Text = "Układ";
             Reading_Mode.Text = "Tryb czytania";
+            Filter.Text = "Filtr";
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -829,7 +842,38 @@ namespace SharpReader
                 e.Cancel = true;
             }
         }
-        private BitmapImage changeBrigthness(BitmapImage bitmap,int brightness)
+
+       private void BrightnessUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            brightness += 100;
+            foreach (var kvp in comicImages)
+            {
+               kvp.Value.Source =  changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
+            }
+            //ComicsWrapPanel.UpdateLayout();
+        }
+
+        private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
+        {
+            brightness -= 100;
+            foreach (var kvp in comicImages)
+            {
+                kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
+
+            }
+            //ComicsWrapPanel.UpdateLayout();
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            brightness = 0;
+            foreach (var kvp in comicImages)
+            {
+                kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
+            }
+        }
+
+        private BitmapImage changeBrigthness(BitmapImage bitmap, int brightness)
         {
             if (brightness == 0)
                 return bitmap;

@@ -41,6 +41,11 @@
 
                 <!-- Przycisk do zmiany koloru tła -->
                 <Button Content="Change Background" Name="ChangeBackground" Margin="10" Click="ChangeBackground_Click"/>
+                
+                <TextBlock Text="Filters" Name="Filter" Foreground="White" FontSize="16" Margin="10"/>
+                <Button Name="BrightnessUpButton" Content="Lighten up" Margin="10" Click="BrightnessUpButton_Click" />
+                <Button Name="BrightnessDownButton" Content="Darked" Margin="10" Click="BrightnessDownButton_Click" />
+                <Button Name="Reset" Content="Reset" Margin="10" Click="Reset_Click" />
 
                 <!-- Sekcja zmiany układu -->
                 <TextBlock Text="Layout" Name="Layout" Foreground="White" FontSize="14" Margin="10"/>
