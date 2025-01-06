@@ -53,7 +53,7 @@
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <Image Source="resources\SharpReaderHome.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Change Background" VerticalAlignment="Center" HorizontalAlignment="Center" Name="HomeText"/>
+                        <TextBlock Text="Home" VerticalAlignment="Center" HorizontalAlignment="Center" Name="HomeText"/>
                     </StackPanel>
                 </Button.Content>
                 </Button>
