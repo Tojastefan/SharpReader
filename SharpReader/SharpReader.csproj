@@ -213,6 +213,7 @@
     <Content Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0014.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="resources\SharpReaderIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\placeholder.jpg">

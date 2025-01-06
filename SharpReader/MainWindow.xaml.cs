@@ -50,6 +50,10 @@ namespace SharpReader
         private Dictionary<string, Image> comicImages = new Dictionary<string, Image>();
         private Brush currentTextColor;
         private int brightness = 0;
+        private double currentZoom = 1.0;  // Początkowy poziom zoomu
+        private const double zoomStep = 0.2;  // Krok zoomu
+        private Point lastMousePosition;         // Przechowywanie ostatniej pozycji myszy
+        private bool isMouseDown = false;        // Flaga, czy przycisk myszy jest wciśnięty
         public Brush CurrentTextColor
         {
             get => currentTextColor;
@@ -494,6 +498,17 @@ namespace SharpReader
                         }
                         break;
                 }
+                if(currentReadingMode == ReadingMode.SCROLL || currentReadingMode == ReadingMode.PAGE)
+                {
+                    if (e.Key == Key.Add) // "+" to dodawanie
+                    {
+                        ApplyZoom(zoomStep);
+                    }
+                    else if (e.Key == Key.Subtract) // "-" to odejmowanie
+                    {
+                        ApplyZoom(-zoomStep); 
+                    }
+                }
             }
         }
         private void MainScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
@@ -564,6 +579,8 @@ namespace SharpReader
                                     Source = bitmap,
                                     Width = MainScrollViewer.ActualWidth,
                                     MaxHeight = 700,
+                                    RenderTransform = new ScaleTransform(1.0, 1.0),  // Dodanie transformacji
+                                    RenderTransformOrigin = new Point(0.5, 0.5)      // Środek transformacji
                                 };
                                 comicImages.Add(path, img);
                             }
@@ -768,6 +785,9 @@ namespace SharpReader
             New.Header = "New Folder";
             NewPDF.Header = "New PDF";
             NewCategory.Header = "New Category";
+            Tools.Header = "Tools";
+            zoomIn.Header = "Zoom In";
+            zoomOut.Header = "Zoom Out";
 
             // Sidebar buttons
             HomeButton.Content = "Home";
@@ -797,7 +817,10 @@ namespace SharpReader
             New.Header = "Nowy Folder";
             NewPDF.Header = "Nowy PDF";
             NewCategory.Header = "Nowa Kategoria";
-            
+            Tools.Header = "Narzędzia";
+            zoomIn.Header = "Powiększ";
+            zoomOut.Header = "Pomniejsz";
+
 
             // Sidebar buttons
             HomeButton.Content = "Strona główna";
@@ -870,6 +893,104 @@ namespace SharpReader
             foreach (var kvp in comicImages)
             {
                 kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
+            }
+        }
+
+        private void ZoomInMenuItem(object sender, RoutedEventArgs e)
+        {
+            ApplyZoom(zoomStep);  // Przybliżenie
+        }
+
+        private void ZoomOutMenuItem(object sender, RoutedEventArgs e)
+        {
+            ApplyZoom(-zoomStep);  //Oddalanie
+        }
+
+        private void ApplyZoom(double zoomDelta)
+        {
+            currentZoom += zoomDelta;
+            currentZoom = Math.Max(0.1, Math.Min(3.0, currentZoom)); // Zoom w zakresie [0.1, 3.0]
+
+            if (currentReadingMode == ReadingMode.SCROLL)
+            {
+                foreach (var item in ComicsWrapPanel.Children)
+                {
+                    if (item is Image img)
+                    {
+                        ApplyScaleTransform(img);
+                    }
+                }
+            }
+            else if (currentReadingMode == ReadingMode.PAGE)
+            {
+                if (currentImage != null)
+                {
+                    ApplyScaleTransform(currentImage);
+                }
+            }
+        }
+
+        private void ApplyScaleTransform(Image image)
+        {
+            var transform = image.RenderTransform as ScaleTransform;
+            if (transform == null)
+            {
+                transform = new ScaleTransform(1.0, 1.0);
+                image.RenderTransform = transform;
+                image.RenderTransformOrigin = new Point(0.5, 0.5);
+                image.Stretch = Stretch.Uniform;
+                image.Width = MainScrollViewer.ActualWidth;
+            }
+            if (image.RenderTransform is ScaleTransform)
+            {
+                transform.ScaleX = currentZoom;
+                transform.ScaleY = currentZoom;
+            }
+            // Dodajemy eventy do obsługi przesuwania myszy
+            image.MouseDown += Image_MouseDown;
+            image.MouseMove += Image_MouseMove;
+            image.MouseUp += Image_MouseUp;
+        }
+
+        // Zdarzenie uruchamiane po kliknięciu myszy na obraz
+        private void Image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Image img)
+            {
+                isMouseDown = true;  // Flaga wskazująca, że użytkownik nacisnął przycisk myszy
+
+                // Zapisujemy ostatnią pozycję myszy
+                lastMousePosition = e.GetPosition(img);
+            }
+        }
+
+        // Zdarzenie uruchamiane, gdy użytkownik przesuwa myszką po obrazie
+        private void Image_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMouseDown && sender is Image img)
+            {
+                // Obliczamy przesunięcie myszy
+                Point currentMousePosition = e.GetPosition(img);
+                Vector delta = currentMousePosition - lastMousePosition;
+
+                // Zmieniamy pozycję obrazu w panelu
+                if (img.RenderTransform is ScaleTransform transform)
+                {
+                    transform.CenterX += delta.X;
+                    transform.CenterY += delta.Y;
+                }
+
+                // Ustawiamy ostatnią pozycję myszy jako aktualną
+                lastMousePosition = currentMousePosition;
+            }
+        }
+
+        // Zdarzenie uruchamiane, gdy użytkownik zwalnia przycisk myszy
+        private void Image_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Image)
+            {
+                isMouseDown = false;  // Flaga, gdy użytkownik zwalnia przycisk myszy
             }
         }
 
