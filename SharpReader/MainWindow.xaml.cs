@@ -211,12 +211,13 @@ namespace SharpReader
                     Height = 25,
                     Minimum = 0,
                     Maximum = 100,
-                    Value = comic.SavedPage * 100 / comic.getImageCount(),
+                    Value = comic.SavedPage  * 100 / (comic.getImageCount() - 1),
                     Padding = new Thickness(0, 5, 0, 0),
                 };
                 TextBlock percentText = new TextBlock
                 {
                     Text = progressBar.Value < 100 ? $"{progressBar.Value}%" : "Finished",
+                    //Text = $"{comic.SavedPage}, {comic.getImageCount()}",
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
                     FontSize = 12,
@@ -520,12 +521,13 @@ namespace SharpReader
         {
             if (currentReadingMode == ReadingMode.SCROLL)
             {
-                for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
+                for (int i = 0; i <= ComicsWrapPanel.Children.Count; ++i)
                 {
                     Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
                     if (a.Y > 0)
                     {
                         Console.WriteLine("Saving " + i);
+                        Console.WriteLine("index: " + ComicsWrapPanel.Children.Count); //14
                         saveCurrentPage(i);
                         break;
                     }
@@ -534,8 +536,10 @@ namespace SharpReader
         }
         private void saveCurrentPage(int pageIndex)
         {
-            currentImageIndex = pageIndex;
-            currentComic.SavedPage = pageIndex;
+            currentImageIndex = pageIndex; //13
+            currentComic.SavedPage = pageIndex; //13
+            Console.WriteLine("Index Image: " + currentImageIndex);
+            Console.WriteLine("Save Page: " +  currentComic.SavedPage);
         }
         private void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
         {
