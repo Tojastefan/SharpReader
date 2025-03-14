@@ -16,6 +16,10 @@ using static SharpReader.Comic;
 using System.Runtime.InteropServices;
 using System.Linq;
 using System.Drawing.Imaging;
+using SharpReader;
+using System.Windows.Threading;
+using System.Globalization;
+using System.Threading.Tasks;
 
 namespace SharpReader
 {
@@ -54,6 +58,12 @@ namespace SharpReader
         private const double zoomStep = 0.2;  // Krok zoomu
         private Point lastMousePosition;         // Przechowywanie ostatniej pozycji myszy
         private bool isMouseDown = false;        // Flaga, czy przycisk myszy jest wciśnięty
+
+        private DateTime _startTime;
+        private DispatcherTimer _timer;
+        private int _clickCount = 0; // Licznik kliknięć
+        private Dictionary<string, int> _clickStats = new Dictionary<string, int>(); // Słownik zliczający kliknięcia w różne elementy
+
         public Brush CurrentTextColor
         {
             get => currentTextColor;
@@ -72,6 +82,32 @@ namespace SharpReader
         public MainWindow()
         {
             InitializeComponent();
+            TestSlack();
+
+            this.PreviewMouseDown += (sender, e) =>
+            {
+                _clickCount++;
+                string clickedElement = "Nieznany element"; // Domyślnie
+
+                if (e.OriginalSource is FrameworkElement element)
+                {
+                    clickedElement = element.Name; // Pobranie nazwy elementu
+                    if (string.IsNullOrEmpty(clickedElement))
+                        clickedElement = element.GetType().Name; // Jeśli element nie ma nazwy, używamy jego typu
+                }
+
+                // Zliczanie kliknięć w dany element
+                if (_clickStats.ContainsKey(clickedElement))
+                {
+                    _clickStats[clickedElement]++;
+                }
+                else
+                {
+                    _clickStats[clickedElement] = 1;
+                }
+                Console.WriteLine($"🖱️ Kliknięcie! Licznik: {_clickCount}");
+            };
+
             currentMode = Mode.SELECTION;
             currentSelectionMode = SelectionMode.GRID;
             GridButton.IsEnabled = false;
@@ -136,6 +172,18 @@ namespace SharpReader
                 comics.Add(c);
             }
             switchToComicSelectionPanel();
+        }
+        private void TestSlack()
+        {
+            // Start śledzenia czasu
+            _startTime = DateTime.Now;
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _timer.Tick += (sender, e) =>
+            {
+                TimeSpan elapsed = DateTime.Now - _startTime;
+                //this.Title = $"⏳ Czas: {elapsed:mm\\:ss}";
+            };
+            _timer.Start();
         }
 
         private void LoadComics()
@@ -843,14 +891,29 @@ namespace SharpReader
             Reading_Mode.Text = "Tryb czytania";
             Filter.Text = "Filtr";
         }
-
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private bool _isClosingHandled = false; // Flaga zapobiegająca wielokrotnemu zamykaniu
+        private async void Window_Closing(object sender, CancelEventArgs e)
         {
+           
+            if (_isClosingHandled)
+                return; // Jeśli już obsługujemy zamykanie, nie rób nic więcej
+
+            _isClosingHandled = true; // Ustawiamy flagę, aby zapobiec ponownemu wywołaniu
+
             string messageBoxText = "Do you want to save changes?";
             string caption = "Quitting SharpReader";
             MessageBoxButton button = MessageBoxButton.YesNoCancel;
             MessageBoxImage icon = MessageBoxImage.Warning;
+
             MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+
+            if (result == MessageBoxResult.Cancel)
+            {
+                e.Cancel = true;
+                _isClosingHandled = false; // Cofamy flagę, aby móc ponownie zamykać w przyszłości
+                return;
+            }
+
             if (result == MessageBoxResult.Yes)
             {
                 Dictionary<string, Comic> comicDictionary = new Dictionary<string, Comic>();
@@ -858,19 +921,37 @@ namespace SharpReader
                 {
                     comicDictionary.Add(c.Path, c);
                 }
+
                 AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
-
                 AppSettings.Default.categories = JsonSerializer.Serialize(categories);
-
                 AppSettings.Default.Save();
             }
-            else if (result == MessageBoxResult.Cancel)
-            {
-                e.Cancel = true;
-            }
+
+            // Jeśli użytkownik kliknął "No" lub "Yes", wysyłamy raport
+            TimeSpan totalTime = DateTime.Now - _startTime;
+
+            string closeDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            string clickReport = string.Join("\n", _clickStats.Select(kv => $"🔹 {kv.Key}: {kv.Value}x"));
+
+            string report = $"📊 Statystyki aplikacji:\n" +
+                            $"⏳ Czas spędzony: {totalTime:mm\\:ss} min\n" +
+                            $"📅 Zamknięto: {closeDateTime}\n" +
+                            $"🖱️ Liczba kliknięć: {_clickCount}\n" +
+                            $"🎯 Kliknięte elementy:\n{clickReport}\n" +
+                            $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}";
+
+            Console.WriteLine("🚀 Wysyłam raport na Slacka...");
+
+            e.Cancel = true; // Tymczasowo anulujemy zamykanie
+
+            await SlackLoger.SendMessageAsync(report);
+
+            // Wymuszamy zamknięcie aplikacji po wysłaniu raportu
+            Application.Current.Shutdown();
         }
 
-       private void BrightnessUpButton_Click(object sender, RoutedEventArgs e)
+        private void BrightnessUpButton_Click(object sender, RoutedEventArgs e)
         {
             brightness += 100;
             foreach (var kvp in comicImages)
