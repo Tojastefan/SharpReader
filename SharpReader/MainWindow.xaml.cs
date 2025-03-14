@@ -156,6 +156,7 @@ namespace SharpReader
                     }
                 }
             }
+
             catch (JsonException e) { }
             ChangeBackground_Click(null, null);
             foreach (var tb in FindVisualChildren<TextBlock>(SidebarPanel))
