@@ -570,7 +570,7 @@ namespace SharpReader
         {
             if (currentReadingMode == ReadingMode.SCROLL)
             {
-                for (int i = 0; i <= ComicsWrapPanel.Children.Count; ++i)
+                for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
                 {
                     Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
                     if (a.Y > 0)
