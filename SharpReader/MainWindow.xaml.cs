@@ -990,18 +990,21 @@ namespace SharpReader
 
             string clickReport = string.Join("\n", _clickStats.Select(kv => $"🔹 {kv.Key}: {kv.Value}x"));
 
+            string systemInfo = SystemInfoCollector.GetSystemInfo();
+
             string report = $"📊 Statystyki aplikacji:\n" +
                             $"⏳ Czas spędzony: {totalTime:mm\\:ss} min\n" +
                             $"📅 Zamknięto: {closeDateTime}\n" +
                             $"🖱️ Liczba kliknięć: {_clickCount}\n" +
                             $"🎯 Kliknięte elementy:\n{clickReport}\n" +
-                            $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}";
+                            $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}\n" +
+                            $"{systemInfo}\n";
 
             Console.WriteLine("🚀 Wysyłam raport na Slacka...");
 
             e.Cancel = true; // Tymczasowo anulujemy zamykanie
 
-            // await SlackLoger.SendMessageAsync(report);
+            await SlackLoger.SendMessageAsync(report);
 
             // Wymuszamy zamknięcie aplikacji po wysłaniu raportu
             Application.Current.Shutdown();
