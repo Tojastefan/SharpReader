@@ -37,6 +37,7 @@
                             <TextBlock FontFamily="Segoe UI Symbol" FontSize="10" Text="🔍-" Foreground="#000"/>
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Reset app settings" Name="ResetPreferences" Background="#fff" Foreground="#000" Click="ResetPreferences_Click"/>
                 </MenuItem>
 
                 <!-- <MenuItem Header="View" Name="View"/> -->

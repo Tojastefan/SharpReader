@@ -20,6 +20,7 @@ using SharpReader;
 using System.Windows.Threading;
 using System.Globalization;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace SharpReader
 {
@@ -306,73 +307,81 @@ namespace SharpReader
 
             return panel;
         }
+        private void setBackgroundToDark()
+        {
+            // Zmiana na ciemny motyw
+            MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
+            ComicsWrapPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
+            MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
+            MainMenu.Background = new SolidColorBrush(darkSidebar);
+            SidebarPanel.Background = new SolidColorBrush(darkSidebar);
+
+            // Zmiana koloru tekstu i tła przycisków na ciemny motyw
+            foreach (var child in MainDockPanel.Children)
+            {
+                if (child is Button button)
+                {
+                    button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
+                    button.Foreground = currentTextColor;
+                }
+                else if (child is TextBlock textBlock)
+                {
+                    textBlock.Foreground = currentTextColor;
+                }
+            }
+
+            // Zmiana koloru menu na ciemny
+            foreach (var item in MainMenu.Items)
+            {
+                if (item is MenuItem menuItem)
+                {
+                    menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
+                    menuItem.Foreground = currentTextColor;
+                }
+            }
+        }
+        private void setBackgroundToLight()
+        {
+            MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0")); //#232323 -> #E0E0E0
+            ComicsWrapPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0"));
+            MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
+            MainMenu.Background = new SolidColorBrush(lightSidebar);
+            SidebarPanel.Background = new SolidColorBrush(lightSidebar);
+
+            // Zmiana koloru tekstu i tła przycisków na jasny motyw
+            foreach (var child in MainDockPanel.Children)
+            {
+                if (child is Button button)
+                {
+                    button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
+                    button.Foreground = Brushes.Black;
+                }
+                else if (child is TextBlock textBlock)
+                {
+                    textBlock.Foreground = currentTextColor;
+                }
+            }
+
+            // Zmiana koloru menu na jasny
+            foreach (var item in MainMenu.Items)
+            {
+                if (item is MenuItem menuItem)
+                {
+                    menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
+                    menuItem.Foreground = currentTextColor;
+                }
+            }
+        }
         private void ChangeBackground_Click(object sender, RoutedEventArgs e)
         {
             ChangeTextColor(isDarkMode);
             if (isDarkMode)
             {
-                // Zmiana na ciemny motyw
-                MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
-                ComicsWrapPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#232323"));
-                MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
-                MainMenu.Background = new SolidColorBrush(darkSidebar);
-                SidebarPanel.Background = new SolidColorBrush(darkSidebar);
-
-                // Zmiana koloru tekstu i tła przycisków na ciemny motyw
-                foreach (var child in MainDockPanel.Children)
-                {
-                    if (child is Button button)
-                    {
-                        button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
-                        button.Foreground = currentTextColor;
-                    }
-                    else if (child is TextBlock textBlock)
-                    {
-                        textBlock.Foreground = currentTextColor;
-                    }
-                }
-
-                // Zmiana koloru menu na ciemny
-                foreach (var item in MainMenu.Items)
-                {
-                    if (item is MenuItem menuItem)
-                    {
-                        menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3c3c3c"));
-                        menuItem.Foreground = currentTextColor;
-                    }
-                }
+                setBackgroundToDark();
             }
             else
             {
-                MainGrid.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0")); //#232323 -> #E0E0E0
-                ComicsWrapPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0E0E0"));
-                MainDockPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
-                MainMenu.Background = new SolidColorBrush(lightSidebar);
-                SidebarPanel.Background = new SolidColorBrush(lightSidebar);
-
-                // Zmiana koloru tekstu i tła przycisków na jasny motyw
-                foreach (var child in MainDockPanel.Children)
-                {
-                    if (child is Button button)
-                    {
-                        button.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
-                        button.Foreground = Brushes.Black;
-                    }
-                    else if (child is TextBlock textBlock)
-                    {
-                        textBlock.Foreground = currentTextColor;
-                    }
-                }
-
-                // Zmiana koloru menu na jasny
-                foreach (var item in MainMenu.Items)
-                {
-                    if (item is MenuItem menuItem)
-                    {
-                        menuItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#D3D3D3"));
-                        menuItem.Foreground = currentTextColor;
-                    }
-                }
+                setBackgroundToLight();
             }
             AppSettings.Default.darkTheme = isDarkMode;
             isDarkMode = !isDarkMode;
@@ -946,7 +955,7 @@ namespace SharpReader
 
             e.Cancel = true; // Tymczasowo anulujemy zamykanie
 
-            await SlackLoger.SendMessageAsync(report);
+            // await SlackLoger.SendMessageAsync(report);
 
             // Wymuszamy zamknięcie aplikacji po wysłaniu raportu
             Application.Current.Shutdown();
@@ -1123,6 +1132,39 @@ namespace SharpReader
             }
             writeableBitmap.Lock();
             return resultImage;
+        }
+
+        private void ResetPreferences_Click(object sender, RoutedEventArgs e)
+        {
+            string messageBoxText = "Do you want to reset app settings?";
+            string caption = "Reset app settings";
+
+            MessageBoxButton button = MessageBoxButton.OKCancel;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+
+            MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
+
+            if (result == MessageBoxResult.Cancel)
+            {
+                return;
+            }
+            if (result == MessageBoxResult.OK)
+            {
+                AppSettings.Default.savedComics = JsonSerializer.Serialize("");
+                AppSettings.Default.categories = JsonSerializer.Serialize("");
+                AppSettings.Default.darkTheme = false;
+                AppSettings.Default.Save();
+                categories.Clear();
+                comics.Clear();
+                categories.Add("Favourite");
+                categories.Add("Other");
+                ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
+                comics.Add(c);
+                isDarkMode = false;
+                ChangeTextColor(isDarkMode);
+                setBackgroundToLight();
+                switchToComicSelectionPanel();
+            }
         }
     }
 }
