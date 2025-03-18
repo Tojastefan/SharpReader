@@ -46,6 +46,19 @@ namespace SharpReader
                 return ConvertToBitmapSource(image);
             }
         }
+        public override int getImageCount()
+        {
+            return pdfDocument.PageCount;
+        }
+        public override BitmapSource pageToImage(int page)
+        {
+            var dpi = 80;
+
+            using (var image = pdfDocument.Render(page, dpi, dpi, PdfRenderFlags.CorrectFromDpi))
+            {
+                return ConvertToBitmapSource(image);
+            }
+        }
         private BitmapSource ConvertToBitmapSource(Image image)
         {
             using (var memoryStream = new MemoryStream())

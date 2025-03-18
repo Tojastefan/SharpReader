@@ -472,8 +472,8 @@ namespace SharpReader
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (currentComic is ComicPDF comicPDF)
-                return;
+            //if (currentComic is ComicPDF comicPDF)
+            //    return;
             if (currentMode == Mode.READING)
             {
                 double lastPos = 0.0d;
@@ -607,19 +607,50 @@ namespace SharpReader
             ComicsWrapPanel.Orientation = Orientation.Vertical;
             if (currentComic is ComicPDF comicPDF)
             {
-                var host = new WindowsFormsHost
+                if (currentReadingMode == ReadingMode.SCROLL)
                 {
-                    Child = comicPDF.Viewer,
-                    Width = MainScrollViewer.ActualWidth,
-                    Height = MainScrollViewer.ActualHeight,
-                };
-                MainScrollViewer.SizeChanged += (s, args) =>
+                    for (int i = 0; i < currentComic.getImageCount(); i++)
+                    {
+                        BitmapImage bitmap = changeBrigthness(BitmapSourceToBitmapImage(currentComic.pageToImage(i)), brightness);
+                        Image img = new Image
+                        {
+                            Source = bitmap,
+                            Width = MainScrollViewer.ActualWidth,
+                            MaxHeight = 700,
+                            RenderTransform = new ScaleTransform(1.0, 1.0),
+                            RenderTransformOrigin = new Point(0.5, 0.5)
+                        };
+                        ComicsWrapPanel.Children.Add(img);
+                    }
+                    int tempPageIndex = currentComic.SavedPage;
+                    ComicsWrapPanel.UpdateLayout();
+                    saveCurrentPage(tempPageIndex);
+                    Point a = ComicsWrapPanel.Children[currentImageIndex].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                    MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
+                }
+                else
                 {
-                    host.Width = MainScrollViewer.ActualWidth;
-                    host.Height = MainScrollViewer.ActualHeight;
-                };
-                ComicsWrapPanel.Children.Clear();
-                ComicsWrapPanel.Children.Add(host);
+                    currentImage = new Image
+                    {
+                        Source = getImageByIndex(currentImageIndex).Source,
+                        Width = MainScrollViewer.ActualWidth,
+                        MaxHeight = 700,
+                    };
+                    ComicsWrapPanel.Children.Add(currentImage);
+                }
+                //var host = new WindowsFormsHost
+                //{
+                //    Child = comicPDF.Viewer,
+                //    Width = MainScrollViewer.ActualWidth,
+                //    Height = MainScrollViewer.ActualHeight,
+                //};
+                //MainScrollViewer.SizeChanged += (s, args) =>
+                //{
+                //    host.Width = MainScrollViewer.ActualWidth;
+                //    host.Height = MainScrollViewer.ActualHeight;
+                //};
+                //ComicsWrapPanel.Children.Clear();
+                //ComicsWrapPanel.Children.Add(host);
             }
             else
             {
@@ -733,8 +764,10 @@ namespace SharpReader
                         break;
                     }
                 }
-                if (tempPathToCover != null)
+                if (!string.IsNullOrEmpty(tempPathToCover))
                     comic.cover = new Uri(tempPathToCover);
+                if (!string.IsNullOrEmpty(titleTextBox.Text))
+                    comic.Title = titleTextBox.Text;
                 switchToComicSelectionPanel();
             }
         }
@@ -742,25 +775,38 @@ namespace SharpReader
         {
             if (index < 0)
                 index = 0;
-            List<Uri> files = currentComic.getImages();
-            Image img = null;
-            Uri file = files[currentImageIndex];
-            string path = file.ToString();
-            if (!comicImages.ContainsKey(path))
+            if (currentComic is ComicPDF comicPDF)
             {
-                img = new Image
+                Image img = new Image
                 {
-                    Source = new BitmapImage(file),
+                    Source = currentComic.pageToImage(index),
                     Width = MainScrollViewer.ActualWidth,
                     MaxHeight = 700,
                 };
-                comicImages.Add(path, img);
+                return img;
             }
             else
             {
-                img = comicImages[path];
+                List<Uri> files = currentComic.getImages();
+                Image img = null;
+                Uri file = files[currentImageIndex];
+                string path = file.ToString();
+                if (!comicImages.ContainsKey(path))
+                {
+                    img = new Image
+                    {
+                        Source = new BitmapImage(file),
+                        Width = MainScrollViewer.ActualWidth,
+                        MaxHeight = 700,
+                    };
+                    comicImages.Add(path, img);
+                }
+                else
+                {
+                    img = comicImages[path];
+                }
+                return img;
             }
-            return img;
         }
         private void NewComic(object sender, RoutedEventArgs e)
         {
@@ -1071,8 +1117,8 @@ namespace SharpReader
                 // Zmieniamy pozycję obrazu w panelu
                 if (img.RenderTransform is ScaleTransform transform)
                 {
-                    transform.CenterX += delta.X;
-                    transform.CenterY += delta.Y;
+                    transform.CenterX -= delta.X;
+                    transform.CenterY -= delta.Y;
                 }
 
                 // Ustawiamy ostatnią pozycję myszy jako aktualną
@@ -1133,7 +1179,28 @@ namespace SharpReader
             writeableBitmap.Lock();
             return resultImage;
         }
+        public static BitmapImage BitmapSourceToBitmapImage(BitmapSource bitmapSource)
+        {
+            // Create a MemoryStream to hold the image data
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                // Encode the BitmapSource to a PNG format and save it to the MemoryStream
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+                encoder.Save(memoryStream);
 
+                // Create a BitmapImage and set its stream source to the MemoryStream
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                memoryStream.Seek(0, SeekOrigin.Begin); // Reset the stream position
+                bitmapImage.StreamSource = memoryStream;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad; // Load the image into memory
+                bitmapImage.EndInit();
+                bitmapImage.Freeze(); // Freeze the BitmapImage for cross-thread access
+
+                return bitmapImage;
+            }
+        }
         private void ResetPreferences_Click(object sender, RoutedEventArgs e)
         {
             string messageBoxText = "Do you want to reset app settings?";
@@ -1144,27 +1211,24 @@ namespace SharpReader
 
             MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.OK);
 
-            if (result == MessageBoxResult.Cancel)
+            if (result != MessageBoxResult.OK)
             {
                 return;
             }
-            if (result == MessageBoxResult.OK)
-            {
-                AppSettings.Default.savedComics = JsonSerializer.Serialize("");
-                AppSettings.Default.categories = JsonSerializer.Serialize("");
-                AppSettings.Default.darkTheme = false;
-                AppSettings.Default.Save();
-                categories.Clear();
-                comics.Clear();
-                categories.Add("Favourite");
-                categories.Add("Other");
-                ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
-                comics.Add(c);
-                isDarkMode = false;
-                ChangeTextColor(isDarkMode);
-                setBackgroundToLight();
-                switchToComicSelectionPanel();
-            }
+            AppSettings.Default.savedComics = JsonSerializer.Serialize("");
+            AppSettings.Default.categories = JsonSerializer.Serialize("");
+            AppSettings.Default.darkTheme = false;
+            AppSettings.Default.Save();
+            categories.Clear();
+            comics.Clear();
+            categories.Add("Favourite");
+            categories.Add("Other");
+            ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
+            comics.Add(c);
+            isDarkMode = false;
+            ChangeTextColor(isDarkMode);
+            setBackgroundToLight();
+            switchToComicSelectionPanel();
         }
     }
 }

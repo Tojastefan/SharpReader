@@ -23,7 +23,6 @@ namespace SharpReader
         }
         protected override void setup()
         {
-
             if (Directory.Exists(Path))
             {
                 string[] files = Directory.GetFiles(Path);

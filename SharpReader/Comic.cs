@@ -43,11 +43,15 @@ namespace SharpReader
             this.SavedPage = 0;
         }
         protected virtual void setup() { }
+        public virtual BitmapSource pageToImage(int page)
+        {
+            return null;
+        }
         public List<Uri> getImages()
         {
             return images;
         }
-        public int getImageCount()
+        public virtual int getImageCount()
         {
             return images.Count;
         }
