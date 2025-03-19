@@ -27,6 +27,11 @@ namespace SharpReader
             this.ComicType = COMICTYPE.PDF;
             setup();
         }
+        public ComicPDF(string path, string title, string category, int savedPage) : base(path, title, category, savedPage)
+        {
+            this.ComicType = COMICTYPE.PDF;
+            setup();
+        }
         protected override void setup()
         {
             pdfViewer = new PdfViewer
