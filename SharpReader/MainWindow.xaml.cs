@@ -101,7 +101,7 @@ namespace SharpReader
                 {
                     _clickStats[clickedElement] = 1;
                 }
-                Console.WriteLine($"🖱️ Kliknięcie! Licznik: {_clickCount}");
+                // Console.WriteLine($"🖱️ Kliknięcie! Licznik: {_clickCount}");
             };
 
             currentMode = Mode.SELECTION;
@@ -469,8 +469,8 @@ namespace SharpReader
             if (currentMode == Mode.READING)
             {
                 double lastPos = 0.0d;
-                Console.WriteLine(getImageByIndex(0).Source);
-                Console.WriteLine(e.Key);
+                // Console.WriteLine(getImageByIndex(0).Source);
+                // Console.WriteLine(e.Key);
                 switch (e.Key)
                 {
                     case Key.A:
@@ -508,7 +508,7 @@ namespace SharpReader
                                 Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
                                 if (a.Y > 0)
                                 {
-                                    Console.WriteLine($"{MainScrollViewer.VerticalOffset} - {a.Y}");
+                                    // Console.WriteLine($"{MainScrollViewer.VerticalOffset} - {a.Y}");
                                     MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
                                     saveCurrentPage(i);
                                     break;
@@ -576,8 +576,8 @@ namespace SharpReader
                     Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
                     if (a.Y > 0)
                     {
-                        Console.WriteLine("Saving " + i);
-                        Console.WriteLine("index: " + ComicsWrapPanel.Children.Count);
+                        // Console.WriteLine("Saving " + i);
+                        // Console.WriteLine("index: " + ComicsWrapPanel.Children.Count);
                         saveCurrentPage(i);
                         break;
                     }
@@ -588,8 +588,8 @@ namespace SharpReader
         {
             currentImageIndex = pageIndex;
             currentComic.SavedPage = pageIndex;
-            Console.WriteLine("Index Image: " + currentImageIndex);
-            Console.WriteLine("Save Page: " +  currentComic.SavedPage);
+            // Console.WriteLine("Index Image: " + currentImageIndex);
+            // Console.WriteLine("Save Page: " +  currentComic.SavedPage);
         }
         private void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
         {
@@ -706,9 +706,9 @@ namespace SharpReader
                 }
                 else
                 {
-                    Console.WriteLine("The directory does not exist.");
+                    // Console.WriteLine("The directory does not exist.");
                     string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                    Console.WriteLine($"Base Directory: {basePath}");
+                    // Console.WriteLine($"Base Directory: {basePath}");
                 }
             }
             HomeButton.IsEnabled = true;
@@ -985,14 +985,9 @@ namespace SharpReader
                 AppSettings.Default.categories = JsonSerializer.Serialize(categories);
                 AppSettings.Default.Save();
             }
-
-            // Jeśli użytkownik kliknął "No" lub "Yes", wysyłamy raport
             TimeSpan totalTime = DateTime.Now - _startTime;
-
             string closeDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
             string clickReport = string.Join("\n", _clickStats.Select(kv => $"🔹 {kv.Key}: {kv.Value}x"));
-
             string systemInfo = SystemInfoCollector.GetSystemInfo();
 
             string report = $"📊 Statystyki aplikacji:\n" +
@@ -1003,13 +998,9 @@ namespace SharpReader
                             $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}\n" +
                             $"{systemInfo}\n";
 
-            Console.WriteLine("🚀 Wysyłam raport na Slacka...");
-
-            e.Cancel = true; // Tymczasowo anulujemy zamykanie
-
-            await SlackLoger.SendMessageAsync(report);
-
-            // Wymuszamy zamknięcie aplikacji po wysłaniu raportu
+            // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
+            e.Cancel = true;
+            // await SlackLoger.SendMessageAsync(report);
             Application.Current.Shutdown();
         }
 
