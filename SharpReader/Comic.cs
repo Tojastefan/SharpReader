@@ -26,14 +26,26 @@ namespace SharpReader
             this.Title = title;
             this.Category = category;
             this.SavedPage = savedPage;
+            if (path.Contains("Action"))
+            {
+                Console.WriteLine("------------Konstruktor 1------------");
+                Console.WriteLine(this.Path);
+                Console.WriteLine("------------Konstruktor 1------------");
+            }
         }
         public Comic(string path, string title)
         {
-            this.Path = path;
+            this.Path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
             this.Title = title;
             this.Category = "Other";
             this.ComicType = COMICTYPE.COMIC;
             this.SavedPage = 0;
+            if (path.Contains("Action"))
+            {
+                Console.WriteLine("------------Konstruktor 2------------");
+                Console.WriteLine(this.Path);
+                Console.WriteLine("------------Konstruktor 2------------");
+            }
         }
         protected virtual void setup() { }
         public virtual BitmapSource pageToImage(int page)
