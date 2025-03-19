@@ -165,7 +165,7 @@ namespace SharpReader
             // Example comic
             if (comics.Count < 1)
             {
-                ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
+                ComicImages c = new ComicImages("resources\\ActionComics", "Superman");
                 comics.Add(c);
             }
             switchToComicSelectionPanel();
@@ -1229,7 +1229,7 @@ namespace SharpReader
             comics.Clear();
             categories.Add("Favourite");
             categories.Add("Other");
-            ComicImages c = new ComicImages(".\\resources\\ActionComics", "Superman");
+            ComicImages c = new ComicImages("resources\\ActionComics", "Superman");
             comics.Add(c);
             isDarkMode = false;
             ChangeTextColor(isDarkMode);
