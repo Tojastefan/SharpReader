@@ -883,7 +883,7 @@ namespace SharpReader
 
         private void SetLanguageToEnglish(object sender, RoutedEventArgs e)
         {
-            // Przykład: zmiana tekstów na angielski
+            // Toolbar
             Comic.Header = "Comic";
             Categories.Header = "Categories";
             Language.Header = "Language";
@@ -916,7 +916,7 @@ namespace SharpReader
 
         private void SetLanguageToPolish(object sender, RoutedEventArgs e)
         {
-            // Przykład: zmiana tekstów na polski
+            // Toolbar
             Comic.Header = "Komiks";
             Categories.Header = "Kategorie";
             Language.Header = "Język";
@@ -928,7 +928,6 @@ namespace SharpReader
             zoomIn.Header = "Powiększ";
             zoomOut.Header = "Pomniejsz";
             ResetPreferences.Header = "Resetuj ustawienia";
-
 
             // Sidebar buttons
             HomeText.Text = "Strona główna";
