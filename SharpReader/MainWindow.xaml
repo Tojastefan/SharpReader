@@ -23,8 +23,22 @@
                     <MenuItem Header="New Category" Name="NewCategory" Background="#fff" Foreground="#000" Click="NewCategory_Click"/>
                 </MenuItem>
                 <MenuItem Header="Language" Name="Language">
-                    <MenuItem Header="English" Name="English" Background="#fff" Foreground="#000" Click="SetLanguageToEnglish"/>
-                    <MenuItem Header="Polish" Name="Polish" Background="#fff" Foreground="#000" Click="SetLanguageToPolish"/>
+                    <MenuItem Name="English" Background="#fff" Foreground="#000" Click="SetLanguageToEnglish">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Width="16" Height="10" Source="resources\eng.png" />
+                                <ContentPresenter Content="English" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Name="Polish" Background="#fff" Foreground="#000" Click="SetLanguageToPolish">
+                        <MenuItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Width="16" Height="10" Source="resources\pl.png" />
+                                <ContentPresenter Content="Polish" />
+                            </StackPanel>
+                        </MenuItem.Header>
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Tools" Name="Tools">
                     <MenuItem Header="zoom in" Name="zoomIn" Click="ZoomInMenuItem" Foreground="#000">
