@@ -6,7 +6,7 @@ namespace SharpReader
 {
     internal class ComicImages : Comic
     {
-        public ComicImages(string path, string title):base(path, title)
+        public ComicImages(string path, string title) : base(path, title)
         {
             this.ComicType = COMICTYPE.IMAGES;
             setup();
