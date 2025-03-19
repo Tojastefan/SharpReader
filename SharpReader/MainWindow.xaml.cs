@@ -548,17 +548,12 @@ namespace SharpReader
                             temp.Source = newImage.Source;
                         }
                         break;
-                }
-                if(currentReadingMode == ReadingMode.SCROLL || currentReadingMode == ReadingMode.PAGE)
-                {
-                    if (e.Key == Key.Add) // "+" to dodawanie
-                    {
+                    case Key.Add:
                         ApplyZoom(zoomStep);
-                    }
-                    else if (e.Key == Key.Subtract) // "-" to odejmowanie
-                    {
-                        ApplyZoom(-zoomStep); 
-                    }
+                        break;
+                    case Key.Subtract:
+                        ApplyZoom(-zoomStep);
+                        break;
                 }
             }
         }
@@ -899,6 +894,7 @@ namespace SharpReader
             Tools.Header = "Tools";
             zoomIn.Header = "Zoom In";
             zoomOut.Header = "Zoom Out";
+            ResetPreferences.Header = "Reset app settings";
 
             // Sidebar buttons
             HomeText.Text = "Home";
@@ -908,7 +904,7 @@ namespace SharpReader
             Scrollbar.Text = "Scrollbar";
             Page.Text = "Page";
             Lightnes.Text = "Lighten up";
-            Darked.Text = "Darked";
+            Darken.Text = "Darken";
             ResetText.Text = "Reset";
 
             // Sidebar sections
@@ -931,6 +927,7 @@ namespace SharpReader
             Tools.Header = "Narzędzia";
             zoomIn.Header = "Powiększ";
             zoomOut.Header = "Pomniejsz";
+            ResetPreferences.Header = "Resetuj ustawienia";
 
 
             // Sidebar buttons
@@ -941,7 +938,7 @@ namespace SharpReader
             Scrollbar.Text = "Pasek przewijania";
             Page.Text = "Strona";
             Lightnes.Text = "Rozjaśnanie";
-            Darked.Text = "Przyciemnanie";
+            Darken.Text = "Przyciemnanie";
             ResetText.Text = "Resetuj";
 
             // Sidebar sections

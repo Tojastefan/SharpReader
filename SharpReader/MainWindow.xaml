@@ -15,29 +15,23 @@
             <!-- Menu na górze -->
             <Menu DockPanel.Dock="Top" Background="#3c3c3c" Foreground="White" Name="MainMenu">
                 <MenuItem Header="Comic" Name="Comic">
-                    <MenuItem Header="New Folder" Name="New" Background="#fff" Foreground="#000" Click="NewComic"/>
-                    <MenuItem Header="New PDF" Name="NewPDF" Background="#fff" Foreground="#000" Click="NewComicPDF"/>
-                    <MenuItem Header="Exit" Name="Exit" Background="#fff" Foreground="#000"/>
+                    <MenuItem Header="New Folder" Name="New" Foreground="#000" Click="NewComic"/>
+                    <MenuItem Header="New PDF" Name="NewPDF" Foreground="#000" Click="NewComicPDF"/>
+                    <MenuItem Header="Exit" Name="Exit" Foreground="#000"/>
                 </MenuItem>
                 <MenuItem Header="Categories" Name="Categories">
-                    <MenuItem Header="New Category" Name="NewCategory" Background="#fff" Foreground="#000" Click="NewCategory_Click"/>
+                    <MenuItem Header="New Category" Name="NewCategory" Foreground="#000" Click="NewCategory_Click"/>
                 </MenuItem>
                 <MenuItem Header="Language" Name="Language">
-                    <MenuItem Name="English" Background="#fff" Foreground="#000" Click="SetLanguageToEnglish">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <Image Width="16" Height="10" Source="resources\eng.png" />
-                                <ContentPresenter Content="English" />
-                            </StackPanel>
-                        </MenuItem.Header>
+                    <MenuItem Header="English" Name="English" Foreground="#000" Click="SetLanguageToEnglish">
+                        <MenuItem.Icon>
+                            <Image Width="16" Height="10" Source="resources\eng.png" />
+                        </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Name="Polish" Background="#fff" Foreground="#000" Click="SetLanguageToPolish">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <Image Width="16" Height="10" Source="resources\pl.png" />
-                                <ContentPresenter Content="Polish" />
-                            </StackPanel>
-                        </MenuItem.Header>
+                    <MenuItem Header="Polish" Name="Polish" Foreground="#000" Click="SetLanguageToPolish">
+                        <MenuItem.Icon>
+                            <Image Width="16" Height="10" Source="resources\pl.png" />
+                        </MenuItem.Icon>
                     </MenuItem>
                 </MenuItem>
                 <MenuItem Header="Tools" Name="Tools">
@@ -51,7 +45,7 @@
                             <TextBlock FontFamily="Segoe UI Symbol" FontSize="10" Text="🔍-" Foreground="#000"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Reset app settings" Name="ResetPreferences" Background="#fff" Foreground="#000" Click="ResetPreferences_Click"/>
+                    <MenuItem Header="Reset app settings" Name="ResetPreferences" Foreground="#000" Click="ResetPreferences_Click"/>
                 </MenuItem>
 
                 <!-- <MenuItem Header="View" Name="View"/> -->
@@ -96,7 +90,7 @@
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
                             <Image Source="resources\SharpReaderDarked.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Darked" VerticalAlignment="Center" HorizontalAlignment="Center" Name="Darked"/>
+                            <TextBlock Text="Darken" VerticalAlignment="Center" HorizontalAlignment="Center" Name="Darken"/>
                         </StackPanel>
                     </Button.Content>
                 </Button>
