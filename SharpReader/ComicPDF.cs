@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using PdfiumViewer;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Drawing;
 

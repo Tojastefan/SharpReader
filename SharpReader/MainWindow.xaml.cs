@@ -577,7 +577,7 @@ namespace SharpReader
                     if (a.Y > 0)
                     {
                         Console.WriteLine("Saving " + i);
-                        Console.WriteLine("index: " + ComicsWrapPanel.Children.Count); //14
+                        Console.WriteLine("index: " + ComicsWrapPanel.Children.Count);
                         saveCurrentPage(i);
                         break;
                     }
@@ -586,8 +586,8 @@ namespace SharpReader
         }
         private void saveCurrentPage(int pageIndex)
         {
-            currentImageIndex = pageIndex; //13
-            currentComic.SavedPage = pageIndex; //13
+            currentImageIndex = pageIndex;
+            currentComic.SavedPage = pageIndex;
             Console.WriteLine("Index Image: " + currentImageIndex);
             Console.WriteLine("Save Page: " +  currentComic.SavedPage);
         }
@@ -603,15 +603,26 @@ namespace SharpReader
                 {
                     for (int i = 0; i < currentComic.getImageCount(); i++)
                     {
-                        BitmapImage bitmap = changeBrigthness(BitmapSourceToBitmapImage(currentComic.pageToImage(i)), brightness);
-                        Image img = new Image
+                        Image img;
+                        string path = currentComic.Path+i;
+                        if (!comicImages.ContainsKey(path))
                         {
-                            Source = bitmap,
-                            Width = MainScrollViewer.ActualWidth,
-                            MaxHeight = 700,
-                            RenderTransform = new ScaleTransform(1.0, 1.0),
-                            RenderTransformOrigin = new Point(0.5, 0.5)
-                        };
+                            BitmapImage bitmap = changeBrigthness(BitmapSourceToBitmapImage(currentComic.pageToImage(i)), brightness);
+                            img = new Image
+                            {
+                                Source = bitmap,
+                                Width = MainScrollViewer.ActualWidth,
+                                MaxHeight = 700,
+                                RenderTransform = new ScaleTransform(1.0, 1.0),  // Dodanie transformacji
+                                RenderTransformOrigin = new Point(0.5, 0.5)      // Środek transformacji
+                            };
+                            comicImages.Add(path, img);
+                        }
+                        else
+                        {
+                            img = comicImages[path];
+                        }
+
                         ComicsWrapPanel.Children.Add(img);
                     }
                     int tempPageIndex = currentComic.SavedPage;
@@ -656,9 +667,9 @@ namespace SharpReader
                         {
                             Image img;
                             string path = file.ToString();
-                            BitmapImage bitmap = changeBrigthness(new BitmapImage(file), brightness);
                             if (!comicImages.ContainsKey(path))
                             {
+                                BitmapImage bitmap = changeBrigthness(new BitmapImage(file), brightness);
                                 img = new Image
                                 {
                                     Source = bitmap,
