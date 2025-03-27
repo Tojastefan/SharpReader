@@ -16,7 +16,6 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Windows.Threading;
 using System.Globalization;
-using System.Windows.Media.Media3D;
 
 namespace SharpReader
 {
