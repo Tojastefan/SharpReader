@@ -39,6 +39,7 @@ namespace SharpReader
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         private bool isDarkMode;
+        private bool mirrorOn = false;
         private Mode currentMode;
         private ReadingMode currentReadingMode;
         private SelectionMode currentSelectionMode;
@@ -168,7 +169,7 @@ namespace SharpReader
                 ComicImages c = new ComicImages("resources\\ActionComics", "Superman");
                 comics.Add(c);
             }
-            switchToComicSelectionPanel();
+            switchToSelectionPanel();
         }
         private void TestSlack()
         {
@@ -254,7 +255,7 @@ namespace SharpReader
                 Height = 25,
                 Minimum = 0,
                 Maximum = 100,
-                Value = comic.SavedPage  * 100 / (comic.getImageCount() - 1),
+                Value = comic.SavedPage <=0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount(),
                 Padding = new Thickness(0, 5, 0, 0),
             };
             TextBlock percentText = new TextBlock
@@ -400,7 +401,7 @@ namespace SharpReader
             ListButton.IsEnabled = !ListButton.IsEnabled;
             if (currentMode == Mode.READING)
                 return;
-            switchToComicSelectionPanel();
+            switchToSelectionPanel();
         }
 
         private void ListLayout_Click(object sender, RoutedEventArgs e)
@@ -410,7 +411,7 @@ namespace SharpReader
             ListButton.IsEnabled = !ListButton.IsEnabled;
             if (currentMode == Mode.READING)
                 return;
-            switchToComicSelectionPanel();
+            switchToSelectionPanel();
         }
 
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
@@ -425,14 +426,35 @@ namespace SharpReader
                 {
                     yield return typedChild;
                 }
-
-                // Recursively find children of the child
                 foreach (var grandChild in FindVisualChildren<T>(child))
                 {
                     yield return grandChild;
                 }
             }
         }
+        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null)
+                return null;
+
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childrenCount; i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild)
+                {
+                    return typedChild;
+                }
+                var result = FindVisualChild<T>(child);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
         private void MyButton_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Button clicked!");
@@ -448,7 +470,7 @@ namespace SharpReader
         {
             CurrentTextColor = useDarkText ? darkText : lightText;
         }
-        private void switchToComicSelectionPanel()
+        private void switchToSelectionPanel()
         {
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
@@ -459,7 +481,7 @@ namespace SharpReader
         }
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            switchToComicSelectionPanel();
+            switchToSelectionPanel();
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -608,8 +630,8 @@ namespace SharpReader
                                 Source = bitmap,
                                 Width = MainScrollViewer.ActualWidth,
                                 MaxHeight = 700,
-                                RenderTransform = new ScaleTransform(1.0, 1.0),  // Dodanie transformacji
-                                RenderTransformOrigin = new Point(0.5, 0.5)      // Środek transformacji
+                                RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                                RenderTransformOrigin = new Point(0.5, 0.5),
                             };
                             comicImages.Add(path, img);
                         }
@@ -633,6 +655,8 @@ namespace SharpReader
                         Source = getImageByIndex(currentImageIndex).Source,
                         Width = MainScrollViewer.ActualWidth,
                         MaxHeight = 700,
+                        RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                        RenderTransformOrigin = new Point(0.5, 0.5),
                     };
                     ComicsWrapPanel.Children.Add(currentImage);
                 }
@@ -670,8 +694,8 @@ namespace SharpReader
                                     Source = bitmap,
                                     Width = MainScrollViewer.ActualWidth,
                                     MaxHeight = 700,
-                                    RenderTransform = new ScaleTransform(1.0, 1.0),  // Dodanie transformacji
-                                    RenderTransformOrigin = new Point(0.5, 0.5)      // Środek transformacji
+                                    RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                                    RenderTransformOrigin = new Point(0.5, 0.5),
                                 };
                                 comicImages.Add(path, img);
                             }
@@ -695,6 +719,8 @@ namespace SharpReader
                             Source = getImageByIndex(currentImageIndex).Source,
                             Width = MainScrollViewer.ActualWidth,
                             MaxHeight = 700,
+                            RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                            RenderTransformOrigin = new Point(0.5, 0.5),
                         };
                         ComicsWrapPanel.Children.Add(currentImage);
                     }
@@ -766,7 +792,7 @@ namespace SharpReader
                     comic.cover = new Uri(tempPathToCover);
                 if (!string.IsNullOrEmpty(titleTextBox.Text))
                     comic.Title = titleTextBox.Text;
-                switchToComicSelectionPanel();
+                switchToSelectionPanel();
             }
         }
         private Image getImageByIndex(int index)
@@ -780,6 +806,8 @@ namespace SharpReader
                     Source = currentComic.pageToImage(index),
                     Width = MainScrollViewer.ActualWidth,
                     MaxHeight = 700,
+                    RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                    RenderTransformOrigin = new Point(0.5, 0.5),
                 };
                 return img;
             }
@@ -796,6 +824,8 @@ namespace SharpReader
                         Source = new BitmapImage(file),
                         Width = MainScrollViewer.ActualWidth,
                         MaxHeight = 700,
+                        RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                        RenderTransformOrigin = new Point(0.5, 0.5),
                     };
                     comicImages.Add(path, img);
                 }
@@ -876,7 +906,7 @@ namespace SharpReader
                 {
                     categories.Add(name);
                     if (currentMode == Mode.SELECTION)
-                        switchToComicSelectionPanel();
+                        switchToSelectionPanel();
                 }
             }
         }
@@ -1221,7 +1251,32 @@ namespace SharpReader
             isDarkMode = false;
             ChangeTextColor(isDarkMode);
             setBackgroundToLight();
-            switchToComicSelectionPanel();
+            switchToSelectionPanel();
+        }
+
+        private void mirror_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (MenuItem)sender;
+            mirrorOn = !mirrorOn;
+            var a = FindVisualChild<TextBlock>(item);
+            if (a != null)
+            {
+                a.Text = mirrorOn ? "✔" : "";
+            }
+            foreach (var img in comicImages.Values)
+            {
+                if (img.RenderTransform is ScaleTransform scaleTransform)
+                {
+                    if (mirrorOn)
+                    {
+                        scaleTransform.ScaleX *= scaleTransform.ScaleX > 0 ? -1 : 1;
+                    }
+                    else
+                    {
+                        scaleTransform.ScaleX *= scaleTransform.ScaleX < 0 ? -1 : 1;
+                    }
+                }
+            }
         }
     }
 }
