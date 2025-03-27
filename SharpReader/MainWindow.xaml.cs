@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Windows.Threading;
 using System.Globalization;
+using System.Windows.Media.Media3D;
 
 namespace SharpReader
 {
@@ -1253,7 +1254,20 @@ namespace SharpReader
             setBackgroundToLight();
             switchToSelectionPanel();
         }
-
+        private void adjustImageXAxis(Image img)
+        {
+            if (img.RenderTransform is ScaleTransform scaleTransform)
+            {
+                if (mirrorOn)
+                {
+                    scaleTransform.ScaleX *= scaleTransform.ScaleX > 0 ? -1 : 1;
+                }
+                else
+                {
+                    scaleTransform.ScaleX *= scaleTransform.ScaleX < 0 ? -1 : 1;
+                }
+            }
+        }
         private void mirror_Click(object sender, RoutedEventArgs e)
         {
             var item = (MenuItem)sender;
@@ -1265,17 +1279,11 @@ namespace SharpReader
             }
             foreach (var img in comicImages.Values)
             {
-                if (img.RenderTransform is ScaleTransform scaleTransform)
-                {
-                    if (mirrorOn)
-                    {
-                        scaleTransform.ScaleX *= scaleTransform.ScaleX > 0 ? -1 : 1;
-                    }
-                    else
-                    {
-                        scaleTransform.ScaleX *= scaleTransform.ScaleX < 0 ? -1 : 1;
-                    }
-                }
+                adjustImageXAxis(img);
+            }
+            if(currentImage != null)
+            {
+                adjustImageXAxis(currentImage);
             }
         }
     }
