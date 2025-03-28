@@ -184,16 +184,36 @@ namespace SharpReader
             ct = src.Token;
             scrollingTask = Task.Run(() =>
             {
+                const int startingValue = 1000;
+                int pageDelay = startingValue;
                 try
                 {
                     while (true)
                     {
                         ct.ThrowIfCancellationRequested();
-                        Thread.Sleep((int)(10 / scrollingSpeed));
-                        Dispatcher.Invoke(() =>
+                        if (currentReadingMode == ReadingMode.PAGE)
                         {
-                            MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + 1.0d);
-                        });
+                            Console.WriteLine("pageDelay: ");
+                            Console.WriteLine(pageDelay);
+                            --pageDelay;
+                            if (pageDelay <= 0)
+                            {
+                                pageDelay = startingValue;
+                                Dispatcher.Invoke(() =>
+                                {
+                                    turnPageForward();
+                                });
+                            }
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + 1.0d);
+                                saveCurrentPage();
+                            });
+                        }
+                        Thread.Sleep((int)(10 / scrollingSpeed));
                     }
                 }
                 catch (OperationCanceledException ex)
@@ -202,6 +222,7 @@ namespace SharpReader
                 }
                 finally
                 {
+                    src.Dispose();
                     src = null;
                 }
             }, ct);
@@ -537,6 +558,26 @@ namespace SharpReader
         {
             switchToSelectionPanel();
         }
+        private void turnPageForward()
+        {
+            if (currentComic.getImageCount() > currentImageIndex + 1)
+            {
+                Image temp = currentImage;
+                saveCurrentPage(currentImageIndex + 1);
+                Image newImage = getImageByIndex(currentImageIndex);
+                temp.Source = newImage.Source;
+            }
+        }
+        private void turnPageBackward()
+        {
+            if (currentImageIndex > 0)
+            {
+                Image temp = currentImage;
+                saveCurrentPage(currentImageIndex - 1);
+                Image newImage = getImageByIndex(currentImageIndex);
+                temp.Source = newImage.Source;
+            }
+        }
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -545,11 +586,10 @@ namespace SharpReader
             if (currentMode == Mode.READING)
             {
                 double lastPos = 0.0d;
-                // Console.WriteLine(getImageByIndex(0).Source);
-                // Console.WriteLine(e.Key);
                 switch (e.Key)
                 {
                     case Key.A:
+                        stopAutoScrolling();
                         if (currentReadingMode == ReadingMode.SCROLL)
                         {
                             for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
@@ -567,16 +607,11 @@ namespace SharpReader
                         }
                         else
                         {
-                            if (currentImageIndex > 0)
-                            {
-                                Image temp = currentImage;
-                                saveCurrentPage(currentImageIndex - 1);
-                                Image newImage = getImageByIndex(currentImageIndex);
-                                temp.Source = newImage.Source;
-                            }
+                            turnPageBackward();
                         }
                         break;
                     case Key.D:
+                        stopAutoScrolling();
                         if (currentReadingMode == ReadingMode.SCROLL)
                         {
                             for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
@@ -584,7 +619,6 @@ namespace SharpReader
                                 Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
                                 if (a.Y > 0)
                                 {
-                                    // Console.WriteLine($"{MainScrollViewer.VerticalOffset} - {a.Y}");
                                     MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
                                     saveCurrentPage(i);
                                     break;
@@ -593,16 +627,11 @@ namespace SharpReader
                         }
                         else
                         {
-                            if (currentComic.getImageCount() > currentImageIndex + 1)
-                            {
-                                Image temp = currentImage;
-                                saveCurrentPage(currentImageIndex + 1);
-                                Image newImage = getImageByIndex(currentImageIndex);
-                                temp.Source = newImage.Source;
-                            }
+                            turnPageForward();
                         }
                         break;
                     case Key.T:
+                        stopAutoScrolling();
                         if (currentReadingMode == ReadingMode.SCROLL)
                             MainScrollViewer.ScrollToTop();
                         else
@@ -614,6 +643,7 @@ namespace SharpReader
                         }
                         break;
                     case Key.B:
+                        stopAutoScrolling();
                         if (currentReadingMode == ReadingMode.SCROLL)
                             MainScrollViewer.ScrollToEnd();
                         else
@@ -973,7 +1003,6 @@ namespace SharpReader
             Comic.Header = "Comic";
             Categories.Header = "Categories";
             Language.Header = "Language";
-            Exit.Header = "Exit";
             New.Header = "New Folder";
             NewPDF.Header = "New PDF";
             NewCategory.Header = "New Category";
@@ -1007,7 +1036,6 @@ namespace SharpReader
             Comic.Header = "Komiks";
             Categories.Header = "Kategorie";
             Language.Header = "Język";
-            Exit.Header = "Zakończ";
             New.Header = "Nowy Folder";
             NewPDF.Header = "Nowy PDF";
             NewCategory.Header = "Nowa Kategoria";
@@ -1037,6 +1065,7 @@ namespace SharpReader
 
         private void BrightnessUpButton_Click(object sender, RoutedEventArgs e)
         {
+            stopAutoScrolling();
             brightness += 100;
             foreach (var kvp in comicImages)
             {
@@ -1047,6 +1076,7 @@ namespace SharpReader
 
         private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
         {
+            stopAutoScrolling();
             brightness -= 100;
             foreach (var kvp in comicImages)
             {
@@ -1058,6 +1088,7 @@ namespace SharpReader
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
+            stopAutoScrolling();
             brightness = 0;
             foreach (var kvp in comicImages)
             {
@@ -1231,6 +1262,7 @@ namespace SharpReader
         }
         private void ResetPreferences_Click(object sender, RoutedEventArgs e)
         {
+            stopAutoScrolling();
             string messageBoxText = "Do you want to reset app settings?";
             string caption = "Reset app settings";
 

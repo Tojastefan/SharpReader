@@ -17,7 +17,6 @@
                 <MenuItem Header="Comic" Name="Comic">
                     <MenuItem Header="New Folder" Name="New" Foreground="#000" Click="NewComic"/>
                     <MenuItem Header="New PDF" Name="NewPDF" Foreground="#000" Click="NewComicPDF"/>
-                    <MenuItem Header="Exit" Name="Exit" Foreground="#000"/>
                 </MenuItem>
                 <MenuItem Header="Categories" Name="Categories">
                     <MenuItem Header="New Category" Name="NewCategory" Foreground="#000" Click="NewCategory_Click"/>
