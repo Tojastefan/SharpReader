@@ -193,8 +193,6 @@ namespace SharpReader
                         ct.ThrowIfCancellationRequested();
                         if (currentReadingMode == ReadingMode.PAGE)
                         {
-                            Console.WriteLine("pageDelay: ");
-                            Console.WriteLine(pageDelay);
                             --pageDelay;
                             if (pageDelay <= 0)
                             {
@@ -554,29 +552,158 @@ namespace SharpReader
             MainScrollViewer.ScrollToTop();
             LoadComics();
         }
+        private void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
+        {
+            currentMode = Mode.READING;
+            currentComic = comic;
+            ComicsWrapPanel.Children.Clear();
+            ComicsWrapPanel.Orientation = Orientation.Vertical;
+            if (currentComic is ComicPDF comicPDF)
+            {
+                if (currentReadingMode == ReadingMode.SCROLL)
+                {
+                    for (int i = 0; i < currentComic.getImageCount(); i++)
+                    {
+                        Image img;
+                        string path = currentComic.Path + i;
+                        if (!comicImages.ContainsKey(path))
+                        {
+                            BitmapImage bitmap = changeBrigthness(BitmapSourceToBitmapImage(currentComic.pageToImage(i)), brightness);
+                            img = new Image
+                            {
+                                Source = bitmap,
+                                Width = MainScrollViewer.ActualWidth,
+                                MaxHeight = 700,
+                                RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                                RenderTransformOrigin = new Point(0.5, 0.5),
+                            };
+                            comicImages.Add(path, img);
+                        }
+                        else
+                        {
+                            img = comicImages[path];
+                        }
+
+                        ComicsWrapPanel.Children.Add(img);
+                    }
+                    int tempPageIndex = currentComic.SavedPage;
+                    ComicsWrapPanel.UpdateLayout();
+                    saveCurrentPage(tempPageIndex);
+                    Point a = ComicsWrapPanel.Children[currentImageIndex].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                    MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
+                }
+                else
+                {
+                    currentImage = new Image
+                    {
+                        Source = getImageByIndex(currentComic.SavedPage).Source,
+                        Width = MainScrollViewer.ActualWidth,
+                        MaxHeight = 700,
+                        RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                        RenderTransformOrigin = new Point(0.5, 0.5),
+                    };
+                    currentImageIndex = currentComic.SavedPage;
+                    ComicsWrapPanel.Children.Add(currentImage);
+                }
+                //var host = new WindowsFormsHost
+                //{
+                //    Child = comicPDF.Viewer,
+                //    Width = MainScrollViewer.ActualWidth,
+                //    Height = MainScrollViewer.ActualHeight,
+                //};
+                //MainScrollViewer.SizeChanged += (s, args) =>
+                //{
+                //    host.Width = MainScrollViewer.ActualWidth;
+                //    host.Height = MainScrollViewer.ActualHeight;
+                //};
+                //ComicsWrapPanel.Children.Clear();
+                //ComicsWrapPanel.Children.Add(host);
+            }
+            else
+            {
+                string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
+                if (Directory.Exists(dirPath))
+                {
+                    if (currentReadingMode == ReadingMode.SCROLL)
+                    {
+                        List<Uri> files = currentComic.getImages();
+                        foreach (Uri file in files)
+                        {
+                            Image img;
+                            string path = file.ToString();
+                            if (!comicImages.ContainsKey(path))
+                            {
+                                BitmapImage bitmap = changeBrigthness(new BitmapImage(file), brightness);
+                                img = new Image
+                                {
+                                    Source = bitmap,
+                                    Width = MainScrollViewer.ActualWidth,
+                                    MaxHeight = 700,
+                                    RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                                    RenderTransformOrigin = new Point(0.5, 0.5),
+                                };
+                                comicImages.Add(path, img);
+                            }
+                            else
+                            {
+                                img = comicImages[path];
+                            }
+
+                            ComicsWrapPanel.Children.Add(img);
+                        }
+                        int tempPageIndex = currentComic.SavedPage;
+                        ComicsWrapPanel.UpdateLayout();
+                        saveCurrentPage(tempPageIndex);
+                        Point a = ComicsWrapPanel.Children[currentImageIndex].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                        MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
+                    }
+                    else
+                    {
+                        currentImage = new Image
+                        {
+                            Source = getImageByIndex(currentComic.SavedPage).Source,
+                            Width = MainScrollViewer.ActualWidth,
+                            MaxHeight = 700,
+                            RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
+                            RenderTransformOrigin = new Point(0.5, 0.5),
+                        };
+                        currentImageIndex = currentComic.SavedPage;
+                        ComicsWrapPanel.Children.Add(currentImage);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("The directory does not exist.");
+                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                    Console.WriteLine($"Base Directory: {basePath}");
+                }
+            }
+            HomeButton.IsEnabled = true;
+            StartScrollingButton.IsEnabled = true;
+            stopAutoScrolling();
+        }
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
             switchToSelectionPanel();
         }
+        private void turnPageBy(int n)
+        {
+            int nextPage = currentImageIndex + n;
+
+            if (nextPage < currentComic.getImageCount() && nextPage >= 0)
+            {
+                saveCurrentPage(currentImageIndex + n);
+                Image newImage = getImageByIndex(currentImageIndex);
+                currentImage.Source = newImage.Source;
+            }
+        }
         private void turnPageForward()
         {
-            if (currentComic.getImageCount() > currentImageIndex + 1)
-            {
-                Image temp = currentImage;
-                saveCurrentPage(currentImageIndex + 1);
-                Image newImage = getImageByIndex(currentImageIndex);
-                temp.Source = newImage.Source;
-            }
+            turnPageBy(1);
         }
         private void turnPageBackward()
         {
-            if (currentImageIndex > 0)
-            {
-                Image temp = currentImage;
-                saveCurrentPage(currentImageIndex - 1);
-                Image newImage = getImageByIndex(currentImageIndex);
-                temp.Source = newImage.Source;
-            }
+            turnPageBy(-1);
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
@@ -689,136 +816,6 @@ namespace SharpReader
         {
             currentImageIndex = pageIndex;
             currentComic.SavedPage = pageIndex;
-            // Console.WriteLine("Index Image: " + currentImageIndex);
-            // Console.WriteLine("Save Page: " +  currentComic.SavedPage);
-        }
-        private void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
-        {
-            currentMode = Mode.READING;
-            currentComic = comic;
-            ComicsWrapPanel.Children.Clear();
-            ComicsWrapPanel.Orientation = Orientation.Vertical;
-            if (currentComic is ComicPDF comicPDF)
-            {
-                if (currentReadingMode == ReadingMode.SCROLL)
-                {
-                    for (int i = 0; i < currentComic.getImageCount(); i++)
-                    {
-                        Image img;
-                        string path = currentComic.Path+i;
-                        if (!comicImages.ContainsKey(path))
-                        {
-                            BitmapImage bitmap = changeBrigthness(BitmapSourceToBitmapImage(currentComic.pageToImage(i)), brightness);
-                            img = new Image
-                            {
-                                Source = bitmap,
-                                Width = MainScrollViewer.ActualWidth,
-                                MaxHeight = 700,
-                                RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
-                                RenderTransformOrigin = new Point(0.5, 0.5),
-                            };
-                            comicImages.Add(path, img);
-                        }
-                        else
-                        {
-                            img = comicImages[path];
-                        }
-
-                        ComicsWrapPanel.Children.Add(img);
-                    }
-                    int tempPageIndex = currentComic.SavedPage;
-                    ComicsWrapPanel.UpdateLayout();
-                    saveCurrentPage(tempPageIndex);
-                    Point a = ComicsWrapPanel.Children[currentImageIndex].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
-                    MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
-                }
-                else
-                {
-                    currentImage = new Image
-                    {
-                        Source = getImageByIndex(currentImageIndex).Source,
-                        Width = MainScrollViewer.ActualWidth,
-                        MaxHeight = 700,
-                        RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
-                        RenderTransformOrigin = new Point(0.5, 0.5),
-                    };
-                    ComicsWrapPanel.Children.Add(currentImage);
-                }
-                //var host = new WindowsFormsHost
-                //{
-                //    Child = comicPDF.Viewer,
-                //    Width = MainScrollViewer.ActualWidth,
-                //    Height = MainScrollViewer.ActualHeight,
-                //};
-                //MainScrollViewer.SizeChanged += (s, args) =>
-                //{
-                //    host.Width = MainScrollViewer.ActualWidth;
-                //    host.Height = MainScrollViewer.ActualHeight;
-                //};
-                //ComicsWrapPanel.Children.Clear();
-                //ComicsWrapPanel.Children.Add(host);
-            }
-            else
-            {
-                string dirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Comic");
-                if (Directory.Exists(dirPath))
-                {
-                    if (currentReadingMode == ReadingMode.SCROLL)
-                    {
-                        List<Uri> files = currentComic.getImages();
-                        foreach (Uri file in files)
-                        {
-                            Image img;
-                            string path = file.ToString();
-                            if (!comicImages.ContainsKey(path))
-                            {
-                                BitmapImage bitmap = changeBrigthness(new BitmapImage(file), brightness);
-                                img = new Image
-                                {
-                                    Source = bitmap,
-                                    Width = MainScrollViewer.ActualWidth,
-                                    MaxHeight = 700,
-                                    RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
-                                    RenderTransformOrigin = new Point(0.5, 0.5),
-                                };
-                                comicImages.Add(path, img);
-                            }
-                            else
-                            {
-                                img = comicImages[path];
-                            }
-
-                            ComicsWrapPanel.Children.Add(img);
-                        }
-                        int tempPageIndex = currentComic.SavedPage;
-                        ComicsWrapPanel.UpdateLayout();
-                        saveCurrentPage(tempPageIndex);
-                        Point a = ComicsWrapPanel.Children[currentImageIndex].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
-                        MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
-                    }
-                    else
-                    {
-                        currentImage = new Image
-                        {
-                            Source = getImageByIndex(currentImageIndex).Source,
-                            Width = MainScrollViewer.ActualWidth,
-                            MaxHeight = 700,
-                            RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
-                            RenderTransformOrigin = new Point(0.5, 0.5),
-                        };
-                        ComicsWrapPanel.Children.Add(currentImage);
-                    }
-                }
-                else
-                {
-                    // Console.WriteLine("The directory does not exist.");
-                    string basePath = AppDomain.CurrentDomain.BaseDirectory;
-                    // Console.WriteLine($"Base Directory: {basePath}");
-                }
-            }
-            HomeButton.IsEnabled = true;
-            StartScrollingButton.IsEnabled = true;
-            stopAutoScrolling();
         }
         private void comicSettings(object sender, RoutedEventArgs e, Comic comic)
         {
@@ -901,7 +898,7 @@ namespace SharpReader
             {
                 List<Uri> files = currentComic.getImages();
                 Image img = null;
-                Uri file = files[currentImageIndex];
+                Uri file = files[index];
                 string path = file.ToString();
                 if (!comicImages.ContainsKey(path))
                 {
