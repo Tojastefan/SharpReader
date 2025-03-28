@@ -16,6 +16,8 @@ using System.Runtime.InteropServices;
 using System.Linq;
 using System.Windows.Threading;
 using System.Globalization;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace SharpReader
 {
@@ -55,12 +57,16 @@ namespace SharpReader
         private const double zoomStep = 0.2;  // Krok zoomu
         private Point lastMousePosition;         // Przechowywanie ostatniej pozycji myszy
         private bool isMouseDown = false;        // Flaga, czy przycisk myszy jest wciśnięty
+        private bool _isClosingHandled = false; // Flaga zapobiegająca wielokrotnemu zamykaniu
 
         private DateTime _startTime;
         private DispatcherTimer _timer;
         private int _clickCount = 0; // Licznik kliknięć
         private Dictionary<string, int> _clickStats = new Dictionary<string, int>(); // Słownik zliczający kliknięcia w różne elementy
-
+        private Task scrollingTask = null;
+        private CancellationTokenSource src = null;
+        private CancellationToken ct;
+        private double scrollingSpeed = 1;
         public Brush CurrentTextColor
         {
             get => currentTextColor;
@@ -170,6 +176,52 @@ namespace SharpReader
                 comics.Add(c);
             }
             switchToSelectionPanel();
+        }
+        private void startAutoScrolling()
+        {
+            StartScrollingButtonLabel.Text = "Turn off auto scrolling";
+            src = new CancellationTokenSource();
+            ct = src.Token;
+            scrollingTask = Task.Run(() =>
+            {
+                try
+                {
+                    while (true)
+                    {
+                        ct.ThrowIfCancellationRequested();
+                        Thread.Sleep((int)(10 / scrollingSpeed));
+                        Dispatcher.Invoke(() =>
+                        {
+                            MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + 1.0d);
+                        });
+                    }
+                }
+                catch (OperationCanceledException ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                finally
+                {
+                    src = null;
+                }
+            }, ct);
+        }
+        private void stopAutoScrolling()
+        {
+            StartScrollingButtonLabel.Text = "Turn on auto scrolling";
+            if (src != null)
+                src.Cancel();
+        }
+        private void StartScrollingButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (scrollingTask == null || !scrollingTask.Status.Equals(TaskStatus.Running))
+            {
+                startAutoScrolling();
+            }
+            else
+            {
+                stopAutoScrolling();
+            }
         }
         private void TestSlack()
         {
@@ -472,8 +524,10 @@ namespace SharpReader
         }
         private void switchToSelectionPanel()
         {
+            stopAutoScrolling();
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
+            StartScrollingButton.IsEnabled = false;
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
@@ -733,6 +787,8 @@ namespace SharpReader
                 }
             }
             HomeButton.IsEnabled = true;
+            StartScrollingButton.IsEnabled = true;
+            stopAutoScrolling();
         }
         private void comicSettings(object sender, RoutedEventArgs e, Comic comic)
         {
@@ -924,6 +980,7 @@ namespace SharpReader
             Tools.Header = "Tools";
             zoomIn.Header = "Zoom In";
             zoomOut.Header = "Zoom Out";
+            MirrorButton.Header = "Mirror images";
             ResetPreferences.Header = "Reset app settings";
 
             // Sidebar buttons
@@ -957,6 +1014,7 @@ namespace SharpReader
             Tools.Header = "Narzędzia";
             zoomIn.Header = "Powiększ";
             zoomOut.Header = "Pomniejsz";
+            MirrorButton.Header = "Odbij obrazki";
             ResetPreferences.Header = "Resetuj ustawienia";
 
             // Sidebar buttons
@@ -975,59 +1033,6 @@ namespace SharpReader
             Layout.Text = "Układ";
             Reading_Mode.Text = "Tryb czytania";
             Filter.Text = "Filtr";
-        }
-        private bool _isClosingHandled = false; // Flaga zapobiegająca wielokrotnemu zamykaniu
-        private async void Window_Closing(object sender, CancelEventArgs e)
-        {
-           
-            if (_isClosingHandled)
-                return; // Jeśli już obsługujemy zamykanie, nie rób nic więcej
-
-            _isClosingHandled = true; // Ustawiamy flagę, aby zapobiec ponownemu wywołaniu
-
-            string messageBoxText = "Do you want to save changes?";
-            string caption = "Quitting SharpReader";
-            MessageBoxButton button = MessageBoxButton.YesNoCancel;
-            MessageBoxImage icon = MessageBoxImage.Warning;
-
-            MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
-
-            if (result == MessageBoxResult.Cancel)
-            {
-                e.Cancel = true;
-                _isClosingHandled = false; // Cofamy flagę, aby móc ponownie zamykać w przyszłości
-                return;
-            }
-
-            if (result == MessageBoxResult.Yes)
-            {
-                Dictionary<string, Comic> comicDictionary = new Dictionary<string, Comic>();
-                foreach (Comic c in comics)
-                {
-                    comicDictionary.Add(c.Path, c);
-                }
-
-                AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
-                AppSettings.Default.categories = JsonSerializer.Serialize(categories);
-                AppSettings.Default.Save();
-            }
-            TimeSpan totalTime = DateTime.Now - _startTime;
-            string closeDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            string clickReport = string.Join("\n", _clickStats.Select(kv => $"🔹 {kv.Key}: {kv.Value}x"));
-            string systemInfo = SystemInfoCollector.GetSystemInfo();
-
-            string report = $"📊 Statystyki aplikacji:\n" +
-                            $"⏳ Czas spędzony: {totalTime:mm\\:ss} min\n" +
-                            $"📅 Zamknięto: {closeDateTime}\n" +
-                            $"🖱️ Liczba kliknięć: {_clickCount}\n" +
-                            $"🎯 Kliknięte elementy:\n{clickReport}\n" +
-                            $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}\n" +
-                            $"{systemInfo}\n";
-
-            // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
-            e.Cancel = true;
-            // await SlackLoger.SendMessageAsync(report);
-            Application.Current.Shutdown();
         }
 
         private void BrightnessUpButton_Click(object sender, RoutedEventArgs e)
@@ -1284,6 +1289,58 @@ namespace SharpReader
             {
                 adjustImageXAxis(currentImage);
             }
+        }
+        private async void Window_Closing(object sender, CancelEventArgs e)
+        {
+            stopAutoScrolling();
+            if (_isClosingHandled)
+                return; // Jeśli już obsługujemy zamykanie, nie rób nic więcej
+
+            _isClosingHandled = true; // Ustawiamy flagę, aby zapobiec ponownemu wywołaniu
+
+            string messageBoxText = "Do you want to save changes?";
+            string caption = "Quitting SharpReader";
+            MessageBoxButton button = MessageBoxButton.YesNoCancel;
+            MessageBoxImage icon = MessageBoxImage.Warning;
+
+            MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+
+            if (result == MessageBoxResult.Cancel)
+            {
+                e.Cancel = true;
+                _isClosingHandled = false; // Cofamy flagę, aby móc ponownie zamykać w przyszłości
+                return;
+            }
+
+            if (result == MessageBoxResult.Yes)
+            {
+                Dictionary<string, Comic> comicDictionary = new Dictionary<string, Comic>();
+                foreach (Comic c in comics)
+                {
+                    comicDictionary.Add(c.Path, c);
+                }
+
+                AppSettings.Default.savedComics = JsonSerializer.Serialize(comicDictionary);
+                AppSettings.Default.categories = JsonSerializer.Serialize(categories);
+                AppSettings.Default.Save();
+            }
+            TimeSpan totalTime = DateTime.Now - _startTime;
+            string closeDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string clickReport = string.Join("\n", _clickStats.Select(kv => $"🔹 {kv.Key}: {kv.Value}x"));
+            string systemInfo = SystemInfoCollector.GetSystemInfo();
+
+            string report = $"📊 Statystyki aplikacji:\n" +
+                            $"⏳ Czas spędzony: {totalTime:mm\\:ss} min\n" +
+                            $"📅 Zamknięto: {closeDateTime}\n" +
+                            $"🖱️ Liczba kliknięć: {_clickCount}\n" +
+                            $"🎯 Kliknięte elementy:\n{clickReport}\n" +
+                            $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}\n" +
+                            $"{systemInfo}\n";
+
+            // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
+            e.Cancel = true;
+            // await SlackLoger.SendMessageAsync(report);
+            Application.Current.Shutdown();
         }
     }
 }

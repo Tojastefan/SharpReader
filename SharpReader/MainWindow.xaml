@@ -45,7 +45,7 @@
                             <TextBlock FontFamily="Segoe UI Symbol" FontSize="10" Text="🔍-" Foreground="#000"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Mirror images" Name="mirror" Foreground="#000" Click="mirror_Click">
+                    <MenuItem Header="Mirror images" Name="MirrorButton" Foreground="#000" Click="mirror_Click">
                         <MenuItem.Icon>
                             <TextBlock FontFamily="Segoe UI Symbol" FontSize="10" Text="" Foreground="#000"/>
                         </MenuItem.Icon>
@@ -140,6 +140,14 @@
                         <StackPanel Orientation="Horizontal">
                             <Image Source="resources\SharpReaderPage.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
                             <TextBlock Text="Page" VerticalAlignment="Center" HorizontalAlignment="Center" Name="Page"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                <Button Name="StartScrollingButton" Margin="10" Click="StartScrollingButton_Click">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderAutoScroll.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Name="StartScrollingButtonLabel" Text="Turn on auto scrolling" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         </StackPanel>
                     </Button.Content>
                 </Button>
