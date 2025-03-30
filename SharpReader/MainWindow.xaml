@@ -70,8 +70,17 @@
                     </StackPanel>
                 </Button.Content>
                 </Button>
-            
+
                 <!-- Przycisk do zmiany koloru tła -->
+                <Button Name="SystemBackground" Margin="10" Click="SystemBackground_Click" >
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderChangeBackground.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Use system theme off" VerticalAlignment="Center" HorizontalAlignment="Center" Name="SystemBackgroudText"/>
+                        </StackPanel>
+                    </Button.Content>
+                </Button>
+                
                 <Button Name="ChangeBackground" Margin="10" Click="ChangeBackground_Click" >
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">

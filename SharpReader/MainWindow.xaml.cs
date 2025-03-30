@@ -18,6 +18,7 @@ using System.Windows.Threading;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace SharpReader
 {
@@ -41,6 +42,7 @@ namespace SharpReader
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         private bool isDarkMode;
+        private bool isSystemThemeMode;
         private bool mirrorOn = false;
         private Mode currentMode;
         private ReadingMode currentReadingMode;
@@ -130,6 +132,7 @@ namespace SharpReader
                 var darkTheme = AppSettings.Default.darkTheme;
                 CurrentTextColor = darkTheme ? darkText : lightText;
                 isDarkMode = darkTheme;
+                isSystemThemeMode = AppSettings.Default.isSystemThemeMode;
             }
             catch (NullReferenceException e)
             {
@@ -137,6 +140,8 @@ namespace SharpReader
                 CurrentTextColor = darkText;
                 AppSettings.Default.darkTheme = false;
                 isDarkMode = false;
+                AppSettings.Default.isSystemThemeMode = false;
+                isSystemThemeMode = false;
             }
             try
             {
@@ -162,6 +167,14 @@ namespace SharpReader
 
             catch (JsonException e) { }
             ChangeBackground_Click(null, null);
+            if (isSystemThemeMode)
+            {
+                setSystemThemeOn();
+            }
+            else
+            {
+                setSystemThemeOff();
+            }
             foreach (var tb in FindVisualChildren<TextBlock>(SidebarPanel))
             {
                 tb.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
@@ -449,6 +462,56 @@ namespace SharpReader
             }
             AppSettings.Default.darkTheme = isDarkMode;
             isDarkMode = !isDarkMode;
+        }
+        private void SystemBackground_Click(object sender, RoutedEventArgs e)
+        {
+            isSystemThemeMode = !isSystemThemeMode;
+            AppSettings.Default.isSystemThemeMode = isSystemThemeMode;
+            if (!isSystemThemeMode)
+            {
+                setSystemThemeOff();
+            }
+            else
+            {
+                setSystemThemeOn();
+            }
+        }
+        private void setSystemThemeOff()
+        {
+            isSystemThemeMode = false;
+            ChangeBackground.IsEnabled = true;
+            SystemBackgroudText.Text = "Use system theme off";
+            ChangeTextColor(!isDarkMode);
+            if (!isDarkMode)
+            {
+                setBackgroundToDark();
+            }
+            else
+            {
+                setBackgroundToLight();
+            }
+        }
+        private void setSystemThemeOn()
+        {
+            isSystemThemeMode = true;
+            ChangeBackground.IsEnabled = false;
+            SystemBackgroudText.Text = "Use system theme on";
+            var theme = !IsLightTheme();
+            ChangeTextColor(theme);
+            if (theme)
+            {
+                setBackgroundToDark();
+            }
+            else
+            {
+                setBackgroundToLight();
+            }
+        }
+        private static bool IsLightTheme()
+        {
+            var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            var value = key?.GetValue("AppsUseLightTheme");
+            return value is int i && i > 0;
         }
         private TextBlock getText(string text, int size)
         {
@@ -1275,6 +1338,7 @@ namespace SharpReader
             AppSettings.Default.savedComics = JsonSerializer.Serialize("");
             AppSettings.Default.categories = JsonSerializer.Serialize("");
             AppSettings.Default.darkTheme = false;
+            AppSettings.Default.isSystemThemeMode = false;
             AppSettings.Default.Save();
             categories.Clear();
             comics.Clear();
