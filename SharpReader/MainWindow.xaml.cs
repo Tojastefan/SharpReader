@@ -638,6 +638,7 @@ namespace SharpReader
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
             StartScrollingButton.IsEnabled = false;
+            Reset_Click(null, null);
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
@@ -1162,14 +1163,13 @@ namespace SharpReader
             //ComicsWrapPanel.UpdateLayout();
         }
 
-        private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
+        private void BrightnessDownButton_Click(object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness -= 100;
             foreach (var kvp in comicImages)
             {
                 kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
-
             }
             //ComicsWrapPanel.UpdateLayout();
         }
