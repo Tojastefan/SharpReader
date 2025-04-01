@@ -91,6 +91,13 @@ namespace SharpReader
         {
             InitializeComponent();
             TestSlack();
+            this.Loaded += (object sender, RoutedEventArgs e) =>
+            {
+                if (AppSettings.Default.allowDataCollection == false)
+                {
+                    allowDataCollectionMessage();
+                }
+            };
 
             this.PreviewMouseDown += (sender, e) =>
             {
@@ -204,7 +211,28 @@ namespace SharpReader
             }
             switchToSelectionPanel();
         }
+       
+        private void allowDataCollectionMessage()
+        {
+            string messageBoxText = "This application collects anonymous statistics\nIf you do not wish to share statistic data close this application.";
+            string caption = "Allow data collection?";
+            MessageBoxButton button = MessageBoxButton.YesNo;
+            MessageBoxImage icon = MessageBoxImage.Warning;
 
+            MessageBoxResult result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+
+            if (result == MessageBoxResult.No)
+            {
+                Close();
+                return;
+            }
+
+            if (result == MessageBoxResult.Yes)
+            {
+                AppSettings.Default.allowDataCollection = true;
+                AppSettings.Default.Save();
+            }
+        }
         private void startAutoScrolling()
         {
             StartScrollingButtonLabel.Text = "Turn off auto scrolling";
@@ -625,6 +653,7 @@ namespace SharpReader
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
             StartScrollingButton.IsEnabled = false;
+            Reset_Click(null, null);
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
@@ -1158,14 +1187,13 @@ namespace SharpReader
             //ComicsWrapPanel.UpdateLayout();
         }
 
-        private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
+        private void BrightnessDownButton_Click(object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness -= 100;
             foreach (var kvp in comicImages)
             {
                 kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
-
             }
             //ComicsWrapPanel.UpdateLayout();
         }
@@ -1410,6 +1438,8 @@ namespace SharpReader
         private async void Window_Closing(object sender, CancelEventArgs e)
         {
             stopAutoScrolling();
+            if (AppSettings.Default.allowDataCollection == false)
+                return;
             if (_isClosingHandled)
                 return; // Jeśli już obsługujemy zamykanie, nie rób nic więcej
 
@@ -1472,7 +1502,11 @@ namespace SharpReader
 
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
-           // await SlackLoger.SendMessageAsync(report);
+            if(AppSettings.Default.allowDataCollection == true)
+            {
+                //await SlackLoger.SendMessageAsync(report);
+            }
+            
             Application.Current.Shutdown();
         }
     }

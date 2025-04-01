@@ -70,5 +70,17 @@ namespace SharpReader {
                 this["isSystemThemeMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool allowDataCollection {
+            get {
+                return ((bool)(this["allowDataCollection"]));
+            }
+            set {
+                this["allowDataCollection"] = value;
+            }
+        }
     }
 }
