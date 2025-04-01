@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Win32;
 using System.Resources;
-using System.Threading;
 using System.Diagnostics;
 
 namespace SharpReader
@@ -213,7 +212,7 @@ namespace SharpReader
         }
         private void allowDataCollectionMessage()
         {
-            string messageBoxText = "This application collects anonymous statistics\nIf you do not wish to share statistic data close this application.";
+            string messageBoxText = "This application collects anonymous diagnostics\nIf you do not wish to share diagnostic data close this application.";
             string caption = "Allow data collection?";
             MessageBoxButton button = MessageBoxButton.YesNo;
             MessageBoxImage icon = MessageBoxImage.Warning;
@@ -1503,7 +1502,7 @@ namespace SharpReader
             e.Cancel = true;
             if(AppSettings.Default.allowDataCollection == true)
             {
-               await SlackLoger.SendMessageAsync(report);
+               // await SlackLoger.SendMessageAsync(report);
             }
             Application.Current.Shutdown();
         }
