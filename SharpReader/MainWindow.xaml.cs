@@ -19,6 +19,9 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Win32;
+using System.Resources;
+using System.Threading;
+using System.Diagnostics;
 
 namespace SharpReader
 {
@@ -113,6 +116,17 @@ namespace SharpReader
                 // Console.WriteLine($"🖱️ Kliknięcie! Licznik: {_clickCount}");
             };
 
+            // Wybranie Jezyka Deafultego dla aplikacji 
+            string langCode = Properties.Settings.Default.Language;
+            if (string.IsNullOrEmpty(langCode))
+            {
+                langCode = "en";  // Domyślny język
+            }
+            SetLanguage(langCode);
+
+            // Ustawienie języka dla konkretnego kraju wykrytego jak nie wykryje to Angielski
+            SetSystemLanguage();
+
             currentMode = Mode.SELECTION;
             currentSelectionMode = SelectionMode.GRID;
             GridButton.IsEnabled = false;
@@ -190,6 +204,7 @@ namespace SharpReader
             }
             switchToSelectionPanel();
         }
+
         private void startAutoScrolling()
         {
             StartScrollingButtonLabel.Text = "Turn off auto scrolling";
@@ -1057,70 +1072,79 @@ namespace SharpReader
             }
         }
 
-        private void SetLanguageToEnglish(object sender, RoutedEventArgs e)
+        private bool IsLanguageSupported(string langCode)
         {
+            return langCode == "pl" || langCode == "en"; // Obsługiwane języki
+        }
+
+        //Pobieranie jezyka Systemowego
+        private void SetSystemLanguage()
+        {
+            // Pobieranie języka systemowego
+            string systemLanguage = CultureInfo.CurrentUICulture.Name;
+
+            if (!IsLanguageSupported(systemLanguage))
+            {
+                systemLanguage = "en"; // Domyślny język (angielski)
+            }
+
+            Trace.WriteLine($"🌐 Język systemowy: {systemLanguage}");
+            // Ustawienie języka aplikacji na podstawie języka systemowego
+            SetLanguage(systemLanguage);
+        }
+
+        public void SetLanguage(string langCode)
+        {
+            // Ustawienie nowej kultury UI
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(langCode);
+
+            // Pobranie zasobów językowych
+            ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
+
+
             // Toolbar
-            Comic.Header = "Comic";
-            Categories.Header = "Categories";
-            Language.Header = "Language";
-            New.Header = "New Folder";
-            NewPDF.Header = "New PDF";
-            NewCategory.Header = "New Category";
-            Tools.Header = "Tools";
-            zoomIn.Header = "Zoom In";
-            zoomOut.Header = "Zoom Out";
-            MirrorButton.Header = "Mirror images";
-            ResetPreferences.Header = "Reset app settings";
+            Comic.Header = resourceManager.GetString("Comic");
+            Categories.Header = resourceManager.GetString("Categories");
+            Language.Header = resourceManager.GetString("Language");
+            New.Header = resourceManager.GetString("NewFolder");
+            NewPDF.Header = resourceManager.GetString("NewPDF");
+            NewCategory.Header = resourceManager.GetString("NewCategory");
+            Tools.Header = resourceManager.GetString("Tools");
+            zoomIn.Header = resourceManager.GetString("ZoomIn");
+            zoomOut.Header = resourceManager.GetString("ZoomOut");
+            MirrorButton.Header = resourceManager.GetString("MirrorImages");
+            ResetPreferences.Header = resourceManager.GetString("ResetPreferences");
 
             // Sidebar buttons
-            HomeText.Text = "Home";
-            ChangeBackgroudText.Text = "Change Background";
-            GridLayout.Text = "Grid Layout";
-            ListLayout.Text = "List Layout";
-            Scrollbar.Text = "Scrollbar";
-            Page.Text = "Page";
-            Lightnes.Text = "Lighten up";
-            Darken.Text = "Darken";
-            ResetText.Text = "Reset";
+            HomeText.Text = resourceManager.GetString("HomeText");
+            ChangeBackgroudText.Text = resourceManager.GetString("ChangeBackground");
+            GridLayout.Text = resourceManager.GetString("GridLayout");
+            ListLayout.Text = resourceManager.GetString("ListLayout");
+            Scrollbar.Text = resourceManager.GetString("Scrollbar");
+            Page.Text = resourceManager.GetString("Page");
+            Lightnes.Text = resourceManager.GetString("Lighten");
+            Darken.Text = resourceManager.GetString("Darken");
+            ResetText.Text = resourceManager.GetString("ResetText");
 
             // Sidebar sections
-            Options.Text = "Options";
-            Layout.Text = "Layout";
-            Reading_Mode.Text = "Reading Mode";
-            Filter.Text = "Filters";
+            Options.Text = resourceManager.GetString("Options");
+            Layout.Text = resourceManager.GetString("Layout");
+            Reading_Mode.Text = resourceManager.GetString("ReadingMode");
+            Filter.Text = resourceManager.GetString("Filters");
+
+            // Zapisanie języka w ustawieniach aplikacji
+            Properties.Settings.Default.Language = langCode;
+            Properties.Settings.Default.Save();
+        }
+
+        private void SetLanguageToEnglish(object sender, RoutedEventArgs e)
+        {
+            SetLanguage("en");
         }
 
         private void SetLanguageToPolish(object sender, RoutedEventArgs e)
         {
-            // Toolbar
-            Comic.Header = "Komiks";
-            Categories.Header = "Kategorie";
-            Language.Header = "Język";
-            New.Header = "Nowy Folder";
-            NewPDF.Header = "Nowy PDF";
-            NewCategory.Header = "Nowa Kategoria";
-            Tools.Header = "Narzędzia";
-            zoomIn.Header = "Powiększ";
-            zoomOut.Header = "Pomniejsz";
-            MirrorButton.Header = "Odbij obrazki";
-            ResetPreferences.Header = "Resetuj ustawienia";
-
-            // Sidebar buttons
-            HomeText.Text = "Strona główna";
-            ChangeBackgroudText.Text = "Zmień tło";
-            GridLayout.Text = "Układ siatki";
-            ListLayout.Text = "Układ listy";
-            Scrollbar.Text = "Pasek przewijania";
-            Page.Text = "Strona";
-            Lightnes.Text = "Rozjaśnanie";
-            Darken.Text = "Przyciemnanie";
-            ResetText.Text = "Resetuj";
-
-            // Sidebar sections
-            Options.Text = "Opcje";
-            Layout.Text = "Układ";
-            Reading_Mode.Text = "Tryb czytania";
-            Filter.Text = "Filtr";
+            SetLanguage("pl");
         }
 
         private void BrightnessUpButton_Click(object sender, RoutedEventArgs e)
@@ -1422,17 +1446,33 @@ namespace SharpReader
             string clickReport = string.Join("\n", _clickStats.Select(kv => $"🔹 {kv.Key}: {kv.Value}x"));
             string systemInfo = SystemInfoCollector.GetSystemInfo();
 
+            string appLanguage = CultureInfo.CurrentUICulture.DisplayName;
+
+            string comicProgressReport = "";
+            foreach (Comic comic in comics)
+            {
+                double progress = comic.SavedPage <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount();
+                string progressText = progress < 100 ? $"{progress:F1}%" : "Finished";
+                string comicTitle = comic.Title;
+
+                // Dodajemy postęp komiksu do raportu
+                comicProgressReport += $"   📖 Komiks: {comicTitle}\n" +
+                                       $"   🕒 Postęp: {progressText}\n\n";
+            }
+
             string report = $"📊 Statystyki aplikacji:\n" +
                             $"⏳ Czas spędzony: {totalTime:mm\\:ss} min\n" +
                             $"📅 Zamknięto: {closeDateTime}\n" +
                             $"🖱️ Liczba kliknięć: {_clickCount}\n" +
                             $"🎯 Kliknięte elementy:\n{clickReport}\n" +
+                            $"🌎 Język aplikacji: {appLanguage}\n" +
                             $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}\n" +
-                            $"{systemInfo}\n";
+                            $"{systemInfo}\n"+
+                            $"📰 Postęp w komiksach:\n{comicProgressReport}";
 
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
-            // await SlackLoger.SendMessageAsync(report);
+           // await SlackLoger.SendMessageAsync(report);
             Application.Current.Shutdown();
         }
     }

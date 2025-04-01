@@ -20,11 +20,11 @@ namespace SharpReader
                 string appMemoryUsage = $"{(Environment.WorkingSet / (1024 * 1024)):N0} MB"; // Aktualne użycie RAM przez aplikację
 
                 // Tworzenie raportu
-                return $"🖥️ Środowisko systemowe**:\n" +
-                       $"🔹 System: {osVersion}\n" +
-                       $"🔹 Architektura: {architecture}\n" +
-                       $"🔹 Rozdzielczość: {screenResolution}\n" +
-                       $"🔹 RAM aplikacji: {appMemoryUsage}";
+                return $"🖥️ Środowisko systemowe:\n" +
+                       $"   🔹 System: {osVersion}\n" +
+                       $"   🔹 Architektura: {architecture}\n" +
+                       $"   🔹 Rozdzielczość: {screenResolution}\n" +
+                       $"   🔹 RAM aplikacji: {appMemoryUsage}";
             }
             catch (Exception ex)
             {

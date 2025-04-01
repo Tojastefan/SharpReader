@@ -116,6 +116,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>AppSettings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ResourceLoader.cs" />
     <Compile Include="SlackLoger.cs" />
     <Compile Include="SystemInfoCollector.cs" />
     <Page Include="ComicSettings.xaml">
@@ -166,6 +167,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\Strings.resx" />
+    <EmbeddedResource Include="resources\Strings.en.resx" />
+    <EmbeddedResource Include="resources\Strings.pl.resx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -11,8 +11,8 @@ namespace SharpReader
     internal class SlackLoger
     {
         private static readonly HttpClient _client = new HttpClient();
-        private static readonly string SlackWebhookUrl = "https://hooks.slack.com/services/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";
-
+        private static readonly string SlackWebhookUrl = "https://hooks.slack.com/services/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";
+       
         public static async Task SendMessageAsync(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
