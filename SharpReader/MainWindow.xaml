@@ -1,7 +1,7 @@
 ﻿<Window x:Class="SharpReader.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Comic Viewer" Height="720" Width="1280" Icon="resources\SharpReaderIcon.png"
+        Title="Sharp Reader" Width="1280" Height="720" Icon="resources\SharpReaderIcon.png"
         MaxWidth="1920" MaxHeight="1080" WindowStartupLocation="CenterScreen"
         WindowState="Maximized" Closing="Window_Closing"
         >
