@@ -1503,7 +1503,7 @@ namespace SharpReader
             e.Cancel = true;
             if(AppSettings.Default.allowDataCollection == true)
             {
-               // await SlackLoger.SendMessageAsync(report);
+               await SlackLoger.SendMessageAsync(report);
             }
             Application.Current.Shutdown();
         }

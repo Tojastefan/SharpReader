@@ -5,14 +5,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace SharpReader
 {
     internal class SlackLoger
     {
         private static readonly HttpClient _client = new HttpClient();
-        private static readonly string SlackWebhookUrl = "https://hooks.slack.com/services/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";
-       
+        private static readonly string SlackWebhookUrl;
+        //SLACK_WEBHOOK_URL
+
+        static SlackLoger()
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory()) // Katalog, w którym jest aplikacja
+                .AddJsonFile("Settings.json", optional: false, reloadOnChange: true);
+
+            var configuration = builder.Build();
+            SlackWebhookUrl = configuration["SlackWebhookUrl"];
+        }
+
+        //https://hooks.slack.com/services/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
         public static async Task SendMessageAsync(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
