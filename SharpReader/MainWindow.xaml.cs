@@ -211,7 +211,6 @@ namespace SharpReader
             }
             switchToSelectionPanel();
         }
-       
         private void allowDataCollectionMessage()
         {
             string messageBoxText = "This application collects anonymous statistics\nIf you do not wish to share statistic data close this application.";
@@ -1187,7 +1186,7 @@ namespace SharpReader
             //ComicsWrapPanel.UpdateLayout();
         }
 
-        private void BrightnessDownButton_Click(object sender, RoutedEventArgs e)
+        private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness -= 100;
@@ -1506,7 +1505,6 @@ namespace SharpReader
             {
                 //await SlackLoger.SendMessageAsync(report);
             }
-            
             Application.Current.Shutdown();
         }
     }
