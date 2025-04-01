@@ -3,7 +3,7 @@
 **Aplikacja do czytania plików PDF i komiksów**  
 Prosty czytnik wspierający popularne formaty z dodatkowymi funkcjami dla miłośników komiksów.
 
-*Pełna lista funkcji dostępna w [FUNKCJE.md](Funkcje.md)*
+*Pełna lista funkcji dostępna w [FUNCTION.md](FUNCTION.md)*
 
 ## Wersja testowa
 *Pomóż nam udoskonalić aplikację!*
