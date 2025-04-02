@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Effects;
-using Forms=System.Windows.Forms;
+using Forms = System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using static SharpReader.Comic;
@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Win32;
 using System.Resources;
-using System.Threading;
 using System.Diagnostics;
 
 namespace SharpReader
@@ -280,7 +279,7 @@ namespace SharpReader
 
         private void allowDataCollectionMessage()
         {
-            string messageBoxText = "This application collects anonymous statistics\nIf you do not wish to share statistic data close this application.";
+            string messageBoxText = "This application collects anonymous diagnostics.\nIf you do not wish to share diagnostic data close this application.";
             string caption = "Allow data collection?";
             MessageBoxButton button = MessageBoxButton.YesNo;
             MessageBoxImage icon = MessageBoxImage.Warning;
@@ -289,7 +288,7 @@ namespace SharpReader
 
             if (result == MessageBoxResult.No)
             {
-                Close();
+                Application.Current.Shutdown();
                 return;
             }
 
@@ -448,7 +447,7 @@ namespace SharpReader
                 Height = 25,
                 Minimum = 0,
                 Maximum = 100,
-                Value = comic.SavedPage <=0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount(),
+                Value = comic.SavedPage <= 0 || comic.getImageCount() <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount(),
                 Padding = new Thickness(0, 5, 0, 0),
             };
             TextBlock percentText = new TextBlock
@@ -1260,7 +1259,7 @@ namespace SharpReader
             brightness += 100;
             foreach (var kvp in comicImages)
             {
-               kvp.Value.Source =  changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
+                kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
             }
             //ComicsWrapPanel.UpdateLayout();
         }
@@ -1508,7 +1507,7 @@ namespace SharpReader
             {
                 adjustImageXAxis(img);
             }
-            if(currentImage != null)
+            if (currentImage != null)
             {
                 adjustImageXAxis(currentImage);
             }
@@ -1559,7 +1558,7 @@ namespace SharpReader
             string comicProgressReport = "";
             foreach (Comic comic in comics)
             {
-                double progress = comic.SavedPage <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount();
+                double progress = comic.SavedPage <= 0 || comic.getImageCount() <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount();
                 string progressText = progress < 100 ? $"{progress:F1}%" : "Finished";
                 string comicTitle = comic.Title;
 
@@ -1575,12 +1574,12 @@ namespace SharpReader
                             $"🎯 Kliknięte elementy:\n{clickReport}\n" +
                             $"🌎 Język aplikacji: {appLanguage}\n" +
                             $"🌎 Język systemu: {CultureInfo.CurrentCulture.DisplayName}\n" +
-                            $"{systemInfo}\n"+
+                            $"{systemInfo}\n" +
                             $"📰 Postęp w komiksach:\n{comicProgressReport}";
 
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
-            if(AppSettings.Default.allowDataCollection == true)
+            if (AppSettings.Default.allowDataCollection == true)
             {
                //await SlackLoger.SendMessageAsync(report);
             }
