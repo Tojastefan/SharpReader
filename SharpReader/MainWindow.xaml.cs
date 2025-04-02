@@ -304,8 +304,7 @@ namespace SharpReader
         }
         private void startAutoScrolling()
         {
-            //StartScrollingButtonLabel.Text = "Turn off auto scrolling";
-            StartScrollingButtonLabel.Text = resourceManager.GetString("SystemBackgroudTextOff");
+            StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOn");
             src = new CancellationTokenSource();
             ct = src.Token;
             scrollingTask = Task.Run(() =>
@@ -353,8 +352,7 @@ namespace SharpReader
         }
         private void stopAutoScrolling()
         {
-            //StartScrollingButtonLabel.Text = "Turn on auto scrolling";
-            StartScrollingButtonLabel.Text = resourceManager.GetString("SystemBackgroudTextOn");
+            StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOff");
             if (src != null)
                 src.Cancel();
         }
@@ -1177,8 +1175,8 @@ namespace SharpReader
         {
             var dialog = new Dialog
             {
-                Header = "New category",
-                PromptText = "Enter new category name:",
+                Header = resourceManager.GetString("NewCatMessage1"),
+                PromptText = resourceManager.GetString("NewCatMessage2"),
             };
             bool result = dialog.ShowDialog().Value;
             if (result)
@@ -1253,8 +1251,14 @@ namespace SharpReader
             Reading_Mode.Text = resourceManager.GetString("ReadingMode");
             Filter.Text = resourceManager.GetString("Filters");
 
-            //  SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroundText");
-            StartScrollingButtonLabel.Text = resourceManager.GetString("ButtonLabel");
+            if (src == null)
+            {
+                StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOff");
+            }
+            else
+            {
+                StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOn");
+            }
 
             // Zapisanie języka w ustawieniach aplikacji
             Properties.Settings.Default.Language = langCode;
@@ -1470,8 +1474,8 @@ namespace SharpReader
         private void ResetPreferences_Click(object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
-            string messageBoxText = "Do you want to reset app settings?";
-            string caption = "Reset app settings";
+            string caption = resourceManager.GetString("ResetMessage1");
+            string messageBoxText = resourceManager.GetString("ResetMessage2");
 
             MessageBoxButton button = MessageBoxButton.OKCancel;
             MessageBoxImage icon = MessageBoxImage.Warning;

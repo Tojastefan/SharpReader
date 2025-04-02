@@ -159,6 +159,12 @@
   <data name="NewCategory" xml:space="preserve">
     <value>New Category</value>
   </data>
+  <data name="NewCatMessage1" xml:space="preserve">
+    <value>New category</value>
+  </data>
+  <data name="NewCatMessage2" xml:space="preserve">
+    <value>Enter new category name:</value>
+  </data>
   <data name="NewFolder" xml:space="preserve">
     <value>New Folder</value>
   </data>
@@ -174,6 +180,12 @@
   <data name="ReadingMode" xml:space="preserve">
     <value>Reading Mode</value>
   </data>
+  <data name="ResetMessage1" xml:space="preserve">
+    <value>Reset app settings</value>
+  </data>
+  <data name="ResetMessage2" xml:space="preserve">
+    <value>Do you want to reset app settings?</value>
+  </data>
   <data name="ResetPreferences" xml:space="preserve">
     <value>Reset App Settings</value>
   </data>
@@ -184,10 +196,10 @@
     <value>Scrollbar</value>
   </data>
   <data name="StartScrollingButtonLabelOff" xml:space="preserve">
-    <value>Turn off auto scrolling</value>
+    <value>Turn on auto scrolling</value>
   </data>
   <data name="StartScrollingButtonLabelOn" xml:space="preserve">
-    <value>Turn on auto scrolling</value>
+    <value>Turn off auto scrolling</value>
   </data>
   <data name="SystemBackgroudTextOff" xml:space="preserve">
     <value>Use system theme off</value>

@@ -157,7 +157,13 @@
     <value>Odbicie Lustrzane</value>
   </data>
   <data name="NewCategory" xml:space="preserve">
-    <value>Nowa Kategorie</value>
+    <value>Nowa Kategoria</value>
+  </data>
+  <data name="NewCatMessage1" xml:space="preserve">
+    <value>Nowa kategoria</value>
+  </data>
+  <data name="NewCatMessage2" xml:space="preserve">
+    <value>Wprowadź nową nazwę:</value>
   </data>
   <data name="NewFolder" xml:space="preserve">
     <value>Nowy Folder</value>
@@ -174,6 +180,12 @@
   <data name="ReadingMode" xml:space="preserve">
     <value>Tryb Czytania</value>
   </data>
+  <data name="ResetMessage1" xml:space="preserve">
+    <value>Reset ustawień</value>
+  </data>
+  <data name="ResetMessage2" xml:space="preserve">
+    <value>Czy chcesz zresetować ustwaienia?</value>
+  </data>
   <data name="ResetPreferences" xml:space="preserve">
     <value>Resetowanie ustawień</value>
   </data>
@@ -184,10 +196,10 @@
     <value>Tryb przewijania</value>
   </data>
   <data name="StartScrollingButtonLabelOff" xml:space="preserve">
-    <value>Wyłącz skrolowanie automatyczne</value>
+    <value>Włącz auto scroll</value>
   </data>
   <data name="StartScrollingButtonLabelOn" xml:space="preserve">
-    <value>Włącz skrolowanie automatyczne</value>
+    <value>Wyłącz auto scroll</value>
   </data>
   <data name="SystemBackgroudTextOff" xml:space="preserve">
     <value>Wyłącz motwy Systemowy</value>
