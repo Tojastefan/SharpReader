@@ -21,6 +21,7 @@ using System.Threading;
 using Microsoft.Win32;
 using System.Resources;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
 
 namespace SharpReader
 {
@@ -64,6 +65,8 @@ namespace SharpReader
         private bool _isClosingHandled = false; // Flaga zapobiegająca wielokrotnemu zamykaniu
 
         private readonly HashSet<string> imageExtensions = new HashSet<string> { ".jpg", ".jpeg", ".png", ".bmp", ".gif" }; // Obsługiwane rozszerzenia plików obrazów
+
+        ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
 
         private DateTime _startTime;
         private DispatcherTimer _timer;
@@ -300,7 +303,8 @@ namespace SharpReader
         }
         private void startAutoScrolling()
         {
-            StartScrollingButtonLabel.Text = "Turn off auto scrolling";
+            //StartScrollingButtonLabel.Text = "Turn off auto scrolling";
+            StartScrollingButtonLabel.Text = resourceManager.GetString("SystemBackgroudTextOff");
             src = new CancellationTokenSource();
             ct = src.Token;
             scrollingTask = Task.Run(() =>
@@ -348,7 +352,8 @@ namespace SharpReader
         }
         private void stopAutoScrolling()
         {
-            StartScrollingButtonLabel.Text = "Turn on auto scrolling";
+            //StartScrollingButtonLabel.Text = "Turn on auto scrolling";
+            StartScrollingButtonLabel.Text = resourceManager.GetString("SystemBackgroudTextOn");
             if (src != null)
                 src.Cancel();
         }
@@ -588,7 +593,8 @@ namespace SharpReader
         {
             isSystemThemeMode = false;
             ChangeBackground.IsEnabled = true;
-            SystemBackgroudText.Text = "Use system theme off";
+            //SystemBackgroudText.Text = "Use system theme off";
+            SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOff");
             ChangeTextColor(!isDarkMode);
             if (!isDarkMode)
             {
@@ -603,7 +609,8 @@ namespace SharpReader
         {
             isSystemThemeMode = true;
             ChangeBackground.IsEnabled = false;
-            SystemBackgroudText.Text = "Use system theme on";
+            //SystemBackgroudText.Text = "Use system theme on";
+            SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOn");
             var theme = !IsLightTheme();
             ChangeTextColor(theme);
             if (theme)
@@ -1205,8 +1212,7 @@ namespace SharpReader
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(langCode);
 
             // Pobranie zasobów językowych
-            ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
-
+            //ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
 
             // Toolbar
             Comic.Header = resourceManager.GetString("Comic");
@@ -1237,6 +1243,9 @@ namespace SharpReader
             Layout.Text = resourceManager.GetString("Layout");
             Reading_Mode.Text = resourceManager.GetString("ReadingMode");
             Filter.Text = resourceManager.GetString("Filters");
+
+         //  SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroundText");
+           StartScrollingButtonLabel.Text = resourceManager.GetString("ButtonLabel");
 
             // Zapisanie języka w ustawieniach aplikacji
             Properties.Settings.Default.Language = langCode;

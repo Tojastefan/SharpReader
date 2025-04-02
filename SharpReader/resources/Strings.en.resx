@@ -180,6 +180,18 @@
   <data name="Scrollbar" xml:space="preserve">
     <value>Scrollbar</value>
   </data>
+  <data name="StartScrollingButtonLabelOff" xml:space="preserve">
+    <value>Turn off auto scrolling</value>
+  </data>
+  <data name="StartScrollingButtonLabelOn" xml:space="preserve">
+    <value>Turn on auto scrolling</value>
+  </data>
+  <data name="SystemBackgroudTextOff" xml:space="preserve">
+    <value>Use system theme off</value>
+  </data>
+  <data name="SystemBackgroudTextOn" xml:space="preserve">
+    <value>Use system theme on</value>
+  </data>
   <data name="Tools" xml:space="preserve">
     <value>Tools</value>
   </data>

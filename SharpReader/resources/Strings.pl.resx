@@ -180,6 +180,18 @@
   <data name="Scrollbar" xml:space="preserve">
     <value>Tryb przewijania</value>
   </data>
+  <data name="StartScrollingButtonLabelOff" xml:space="preserve">
+    <value>Wyłącz skrolowanie automatyczne</value>
+  </data>
+  <data name="StartScrollingButtonLabelOn" xml:space="preserve">
+    <value>Włącz skrolowanie automatyczne</value>
+  </data>
+  <data name="SystemBackgroudTextOff" xml:space="preserve">
+    <value>Wyłącz motwy Systemowy</value>
+  </data>
+  <data name="SystemBackgroudTextOn" xml:space="preserve">
+    <value>Włącz motyw Systemowy</value>
+  </data>
   <data name="Tools" xml:space="preserve">
     <value>Narzędzia</value>
   </data>
