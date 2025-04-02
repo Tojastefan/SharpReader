@@ -165,7 +165,9 @@
             <ScrollViewer Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ScrollChanged="MainScrollViewer_ScrollChanged">
                 <WrapPanel Name="ComicsWrapPanel" HorizontalAlignment="Left" VerticalAlignment="Top"
                             MinWidth="{Binding ActualWidth, ElementName=MainScrollViewer}" 
-                            MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}">
+                            MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}" AllowDrop="True"
+               DragEnter="ComicsWrapPanel_DragEnter"
+               Drop="ComicsWrapPanel_Drop">
                 </WrapPanel>
             </ScrollViewer>
         </DockPanel>

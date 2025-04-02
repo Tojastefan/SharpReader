@@ -64,6 +64,8 @@ namespace SharpReader
         private bool isMouseDown = false;        // Flaga, czy przycisk myszy jest wciśnięty
         private bool _isClosingHandled = false; // Flaga zapobiegająca wielokrotnemu zamykaniu
 
+        private readonly HashSet<string> imageExtensions = new HashSet<string> { ".jpg", ".jpeg", ".png", ".bmp", ".gif" }; // Obsługiwane rozszerzenia plików obrazów
+
         private DateTime _startTime;
         private DispatcherTimer _timer;
         private int _clickCount = 0; // Licznik kliknięć
@@ -211,6 +213,71 @@ namespace SharpReader
             }
             switchToSelectionPanel();
         }
+         // Sprawdzenie, czy plik to PDF lub obraz
+        private bool IsValidFileType(string filePath)
+        {
+            string ext = Path.GetExtension(filePath).ToLower();
+            return ext == ".pdf" || imageExtensions.Contains(ext);
+        }
+
+        //Sprawdzenia Folderu
+        private bool IsFolder(string filePath)
+        {
+            return Directory.Exists(filePath);
+        }
+
+        // Obsługa przeciągania nad ComicsWrapPanel
+        private void ComicsWrapPanel_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // Sprawdzenie czy to plik PDF lub obraz
+                if (files.Any(file => IsValidFileType(file) || IsFolder(file)))
+                {
+                    e.Effects = DragDropEffects.Copy;
+                }
+                else
+                {
+                    e.Effects = DragDropEffects.None;
+                }
+            }
+        }
+
+        // Obsługa upuszczania pliku
+        private void ComicsWrapPanel_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (string file in files)
+                {
+                    if (Path.GetExtension(file).ToLower() == ".pdf")
+                    {
+                        ComicPDF newComic = new ComicPDF(file, Path.GetFileNameWithoutExtension(file));
+                        comics.Add(newComic); // Dodaj komiks do listy komiksów
+
+                        // Oczyszczenie panelu i załadowanie ponownie
+                        ComicsWrapPanel.Children.Clear();
+                        LoadComics();
+                    }
+                    else if (IsFolder(file))
+                    {
+                        // Obsługa folderu
+                        string folderPath = file;
+                        ComicImages newComicImages = new ComicImages(folderPath, Path.GetFileName(folderPath));
+                        comics.Add(newComicImages); // Dodaj folder do listy komiksów
+
+                        // Oczyszczenie panelu i załadowanie ponownie
+                        ComicsWrapPanel.Children.Clear();
+                        LoadComics(); // Ponownie załaduj wszystkie komiksy
+                    }
+                }
+            }
+        }
+
         private void allowDataCollectionMessage()
         {
             string messageBoxText = "This application collects anonymous statistics\nIf you do not wish to share statistic data close this application.";
@@ -652,7 +719,7 @@ namespace SharpReader
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
             StartScrollingButton.IsEnabled = false;
-            Reset_Click(null, null);
+            //Reset_Click(null, null);
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
@@ -952,6 +1019,11 @@ namespace SharpReader
                 Content = "Select Cover",
             };
             TextBlock label = new TextBlock { Text = "Not assigned" };
+            Button Delete = new Button
+            {
+                Margin = new Thickness(5),
+                Content = "Delete",
+            };
             coverButton.Click += (btnSender, btnE) =>
             {
                 using (Forms.OpenFileDialog ofd = new Forms.OpenFileDialog())
@@ -964,8 +1036,15 @@ namespace SharpReader
                     }
                 }
             };
+           Delete.Click += (btnSender, btnE) =>
+            {
+                comics.Remove(comic);
+                dialog.Close();
+                switchToSelectionPanel();
+            };
             dialog.Form.Children.Add(coverButton);
             dialog.Form.Children.Add(label);
+            dialog.Form.Children.Add(Delete);
             bool result = dialog.ShowDialog().Value;
             if (result)
             {
@@ -1503,7 +1582,7 @@ namespace SharpReader
             e.Cancel = true;
             if(AppSettings.Default.allowDataCollection == true)
             {
-               await SlackLoger.SendMessageAsync(report);
+               //await SlackLoger.SendMessageAsync(report);
             }
             Application.Current.Shutdown();
         }

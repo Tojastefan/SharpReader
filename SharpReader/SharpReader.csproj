@@ -195,7 +195,7 @@
     <EmbeddedResource Include="resources\Strings.en.resx" />
     <EmbeddedResource Include="resources\Strings.pl.resx" />
     <None Include="Settings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
