@@ -1,0 +1,24 @@
+@keyframes roll-in-right {
+	0% {
+		transform: translateX(40em) rotate(220deg);
+		opacity: 0;
+	}
+
+	75% {
+		transform: translateX(-1.0em) rotate(-15deg);
+		opacity: 0.8;
+	}
+
+	100% {
+		transform: translateX(1em) rotate(0deg);
+		opacity: 1;
+	}
+}
+
+:has(>*>.hero) {
+	overflow: clip;
+}
+
+.hero {
+	animation: roll-in-right 1.6s cubic-bezier(0.45, 0.05, 0.39, 1.2) 0.5s 1 normal both;
+}
