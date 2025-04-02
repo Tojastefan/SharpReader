@@ -216,7 +216,7 @@ namespace SharpReader
             }
             switchToSelectionPanel();
         }
-         // Sprawdzenie, czy plik to PDF lub obraz
+        // Sprawdzenie, czy plik to PDF lub obraz
         private bool IsValidFileType(string filePath)
         {
             string ext = Path.GetExtension(filePath).ToLower();
@@ -1043,7 +1043,7 @@ namespace SharpReader
                     }
                 }
             };
-           Delete.Click += (btnSender, btnE) =>
+            Delete.Click += (btnSender, btnE) =>
             {
                 comics.Remove(comic);
                 dialog.Close();
@@ -1117,16 +1117,19 @@ namespace SharpReader
             {
                 fdb.Description = "Select a comic folder:";
                 fdb.ShowNewFolderButton = false;
-                if (fdb.ShowDialog() == Forms.DialogResult.OK)
+                switch (fdb.ShowDialog())
                 {
-                    ComicImages c = new ComicImages(fdb.SelectedPath, Path.GetFileName(fdb.SelectedPath));
-                    comics.Add(c);
-                    ComicsWrapPanel.Children.Clear();
-                    LoadComics();
-                }
-                else
-                {
-                    MessageBox.Show("Error when adding comic!", "Error");
+                    case Forms.DialogResult.OK:
+                        ComicImages c = new ComicImages(fdb.SelectedPath, Path.GetFileName(fdb.SelectedPath));
+                        comics.Add(c);
+                        ComicsWrapPanel.Children.Clear();
+                        LoadComics();
+                        break;
+                    case Forms.DialogResult.Cancel:
+                        break;
+                    default:
+                        MessageBox.Show("Error when adding comic!", "Error");
+                        break;
                 }
             }
         }
@@ -1135,16 +1138,20 @@ namespace SharpReader
             using (Forms.OpenFileDialog ofd = new Forms.OpenFileDialog())
             {
                 ofd.Filter = "PDF Files (*.pdf)|*.pdf|CBZ Files (*.cbz)|*.cbz";
-                if (ofd.ShowDialog() == Forms.DialogResult.OK)
+
+                switch (ofd.ShowDialog())
                 {
-                    ComicPDF c = new ComicPDF(ofd.FileName, Path.GetFileName(Regex.Replace(ofd.FileName, @"\.[^.\\]+$", "")));
-                    comics.Add(c);
-                    ComicsWrapPanel.Children.Clear();
-                    LoadComics();
-                }
-                else
-                {
-                    MessageBox.Show("Error when adding comic!", "Error");
+                    case Forms.DialogResult.OK:
+                        ComicPDF c = new ComicPDF(ofd.FileName, Path.GetFileName(Regex.Replace(ofd.FileName, @"\.[^.\\]+$", "")));
+                        comics.Add(c);
+                        ComicsWrapPanel.Children.Clear();
+                        LoadComics();
+                        break;
+                    case Forms.DialogResult.Cancel:
+                        break;
+                    default:
+                        MessageBox.Show("Error when adding comic!", "Error");
+                        break;
                 }
             }
         }
@@ -1246,9 +1253,9 @@ namespace SharpReader
             Reading_Mode.Text = resourceManager.GetString("ReadingMode");
             Filter.Text = resourceManager.GetString("Filters");
 
-         //  SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroundText");
+            //  SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroundText");
             StartScrollingButtonLabel.Text = resourceManager.GetString("ButtonLabel");
-            
+
             // Zapisanie języka w ustawieniach aplikacji
             Properties.Settings.Default.Language = langCode;
             Properties.Settings.Default.Save();
@@ -1592,7 +1599,7 @@ namespace SharpReader
             e.Cancel = true;
             if (AppSettings.Default.allowDataCollection == true)
             {
-               //await SlackLoger.SendMessageAsync(report);
+                //await SlackLoger.SendMessageAsync(report);
             }
             Application.Current.Shutdown();
         }
@@ -1600,12 +1607,12 @@ namespace SharpReader
         private void DelCategory_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new ComicSettings();
-            dialog.Form.Children.Add(new TextBlock { Text = "Category", FontWeight = FontWeights.Bold, }); 
+            dialog.Form.Children.Add(new TextBlock { Text = "Category", FontWeight = FontWeights.Bold, });
             dialog.Save.Content = "Delete";
             List<RadioButton> radioButtons = new List<RadioButton>();
             categories.ForEach((name) =>
             {
-                if(name == "Other")
+                if (name == "Other")
                 {
                     return;
                 }
@@ -1635,7 +1642,7 @@ namespace SharpReader
                         categories.Remove(radioButtons[i].Name);
                         if (currentMode == Mode.SELECTION)
                             switchToSelectionPanel();
-                        break; 
+                        break;
                     }
                 }
             }
