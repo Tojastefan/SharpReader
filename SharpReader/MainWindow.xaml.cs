@@ -22,6 +22,7 @@ using Microsoft.Win32;
 using System.Resources;
 using System.Diagnostics;
 using System.Windows.Media.Animation;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace SharpReader
 {
@@ -1221,6 +1222,7 @@ namespace SharpReader
             New.Header = resourceManager.GetString("NewFolder");
             NewPDF.Header = resourceManager.GetString("NewPDF");
             NewCategory.Header = resourceManager.GetString("NewCategory");
+            DelCategory.Header = resourceManager.GetString("DeleteCategory");
             Tools.Header = resourceManager.GetString("Tools");
             zoomIn.Header = resourceManager.GetString("ZoomIn");
             zoomOut.Header = resourceManager.GetString("ZoomOut");
@@ -1245,8 +1247,8 @@ namespace SharpReader
             Filter.Text = resourceManager.GetString("Filters");
 
          //  SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroundText");
-           StartScrollingButtonLabel.Text = resourceManager.GetString("ButtonLabel");
-
+            StartScrollingButtonLabel.Text = resourceManager.GetString("ButtonLabel");
+            
             // Zapisanie języka w ustawieniach aplikacji
             Properties.Settings.Default.Language = langCode;
             Properties.Settings.Default.Save();
@@ -1593,6 +1595,50 @@ namespace SharpReader
                //await SlackLoger.SendMessageAsync(report);
             }
             Application.Current.Shutdown();
+        }
+
+        private void DelCategory_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new ComicSettings();
+            dialog.Form.Children.Add(new TextBlock { Text = "Category", FontWeight = FontWeights.Bold, }); 
+            dialog.Save.Content = "Delete";
+            List<RadioButton> radioButtons = new List<RadioButton>();
+            categories.ForEach((name) =>
+            {
+                if(name == "Other")
+                {
+                    return;
+                }
+                RadioButton rb = new RadioButton
+                {
+                    Name = name,
+                    Content = name,
+                };
+                radioButtons.Add(rb);
+                dialog.Form.Children.Add(rb);
+            });
+            bool result = dialog.ShowDialog().Value;
+            if (result)
+            {
+                for (int i = 0; i < radioButtons.Count; ++i)
+                {
+                    if (radioButtons[i].IsChecked == true)
+                    {
+                        comics.ForEach((comic) =>
+                        {
+                            if (comic.Category == radioButtons[i].Name)
+                            {
+                                comic.Category = "Other";
+                            }
+                        });
+
+                        categories.Remove(radioButtons[i].Name);
+                        if (currentMode == Mode.SELECTION)
+                            switchToSelectionPanel();
+                        break; 
+                    }
+                }
+            }
         }
     }
 }

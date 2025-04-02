@@ -129,6 +129,9 @@
   <data name="Darken" xml:space="preserve">
     <value>Darken</value>
   </data>
+  <data name="DeleteCategory" xml:space="preserve">
+    <value>Delete Category</value>
+  </data>
   <data name="Filters" xml:space="preserve">
     <value>Filters</value>
   </data>

@@ -20,6 +20,7 @@
                 </MenuItem>
                 <MenuItem Header="Categories" Name="Categories">
                     <MenuItem Header="New Category" Name="NewCategory" Foreground="#000" Click="NewCategory_Click"/>
+                    <MenuItem Header="Delete Category" Name="DelCategory" Foreground="#000" Click="DelCategory_Click"/>
                 </MenuItem>
                 <MenuItem Header="Language" Name="Language">
                     <MenuItem Header="English" Name="English" Foreground="#000" Click="SetLanguageToEnglish">

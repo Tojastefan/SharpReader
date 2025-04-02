@@ -10,7 +10,7 @@
         </WrapPanel>
         <StackPanel Margin="10"
                     Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Save" Width="75" Click="Save_Click"/>
+            <Button Content="Save" Name="Save" Width="75" Click="Save_Click"/>
             <Button Content="Cancel" Width="75" Margin="5,0,0,0" Click="Cancel_Click"/>
         </StackPanel>
     </StackPanel>
