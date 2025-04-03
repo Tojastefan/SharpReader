@@ -30,6 +30,7 @@ const slide = () => {
 };
 let inter = setInterval(slide, 2000);
 slider.oninput = () => {
+	clearInterval(inner);
 	clearInterval(inter);
 	const sliderVal = slider.value;
 	dragLine.style.left = sliderVal + "%";

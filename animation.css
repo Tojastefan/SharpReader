@@ -4,8 +4,8 @@
 		opacity: 0;
 	}
 
-	75% {
-		transform: translateX(-1.0em) rotate(-15deg);
+	60% {
+		transform: translateX(-2em) rotate(-15deg);
 		opacity: 0.8;
 	}
 
@@ -20,5 +20,5 @@
 }
 
 .hero {
-	animation: roll-in-right 1.6s cubic-bezier(0.45, 0.05, 0.39, 1.2) 0.5s 1 normal both;
+	animation: roll-in-right 2s cubic-bezier(0.45, 0.05, 0.2, 1) 0.5s 1 normal both;
 }
