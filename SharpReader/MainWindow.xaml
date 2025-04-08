@@ -64,12 +64,12 @@
                 <TextBlock Text="Options" Name="Options" Foreground="White" FontSize="16" Margin="10"/>
 
                 <Button Name="HomeButton" Margin="10" Click="HomeButton_Click" IsEnabled="False">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="resources\SharpReaderHome.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Home" VerticalAlignment="Center" HorizontalAlignment="Center" Name="HomeText"/>
-                    </StackPanel>
-                </Button.Content>
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="resources\SharpReaderHome.png" Width="20" Height="20" Margin="2" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Home" VerticalAlignment="Center" HorizontalAlignment="Center" Name="HomeText"/>
+                        </StackPanel>
+                    </Button.Content>
                 </Button>
 
                 <!-- Przycisk do zmiany koloru tła -->
@@ -81,7 +81,7 @@
                         </StackPanel>
                     </Button.Content>
                 </Button>
-                
+
                 <Button Name="ChangeBackground" Margin="10" Click="ChangeBackground_Click" >
                     <Button.Content>
                         <StackPanel Orientation="Horizontal">
@@ -165,12 +165,52 @@
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->
             <ScrollViewer Name="MainScrollViewer" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ScrollChanged="MainScrollViewer_ScrollChanged">
                 <WrapPanel Name="ComicsWrapPanel" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            MinWidth="{Binding ActualWidth, ElementName=MainScrollViewer}" 
-                            MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}" AllowDrop="True"
-               DragEnter="ComicsWrapPanel_DragEnter"
-               Drop="ComicsWrapPanel_Drop">
+                    MinWidth="{Binding ActualWidth, ElementName=MainScrollViewer}"
+                    MinHeight="{Binding ActualHeight, ElementName=MainScrollViewer}"
+                    AllowDrop="True"
+                    DragEnter="ComicsWrapPanel_DragEnter"
+                    Drop="ComicsWrapPanel_Drop"
+                    MouseMove="UpdateMagnifyingGlass">
                 </WrapPanel>
             </ScrollViewer>
+
         </DockPanel>
+        <Canvas Name="magnifyingGlassCanvas" Visibility="Hidden">
+
+            <!-- The magnifying glass. -->
+            <Ellipse Name="magnifyingGlassEllipse" Width="100" Height="100" Stroke="Black">
+                <Ellipse.Fill>
+                    <DrawingBrush>
+                        <DrawingBrush.Drawing>
+                            <DrawingGroup>
+                                <DrawingGroup.Children>
+
+                                    <!-- This GeometryDrawing provides an opaque background for the 
+                       magnified view. -->
+                                    <GeometryDrawing Brush="White">
+                                        <GeometryDrawing.Geometry>
+                                            <RectangleGeometry Rect="0,0,1,1" />
+                                        </GeometryDrawing.Geometry>
+                                    </GeometryDrawing>
+
+                                    <!-- The magnified view. -->
+                                    <GeometryDrawing>
+                                        <GeometryDrawing.Brush>
+
+                                            <!-- This VisualBrush magnifies its content. -->
+                                            <VisualBrush x:Name="myVisualBrush" ViewboxUnits="Absolute"
+                        Visual="{Binding ElementName=MainScrollViewer}"/>
+                                        </GeometryDrawing.Brush>
+                                        <GeometryDrawing.Geometry>
+                                            <RectangleGeometry Rect="0,0,1,1" />
+                                        </GeometryDrawing.Geometry>
+                                    </GeometryDrawing>
+                                </DrawingGroup.Children>
+                            </DrawingGroup>
+                        </DrawingBrush.Drawing>
+                    </DrawingBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Canvas>
     </Grid>
 </Window>

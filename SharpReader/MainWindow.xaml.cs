@@ -21,8 +21,6 @@ using System.Threading;
 using Microsoft.Win32;
 using System.Resources;
 using System.Diagnostics;
-using System.Windows.Media.Animation;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace SharpReader
 {
@@ -59,8 +57,8 @@ namespace SharpReader
         private Dictionary<string, Image> comicImages = new Dictionary<string, Image>();
         private Brush currentTextColor;
         private int brightness = 0;
-        private double currentZoom = 1.0;  // Początkowy poziom zoomu
-        private const double zoomStep = 0.2;  // Krok zoomu
+        private int currentZoom = 1;  // Początkowy poziom zoomu
+        private int currentZoomSquareSize = 120;
         private Point lastMousePosition;         // Przechowywanie ostatniej pozycji myszy
         private bool isMouseDown = false;        // Flaga, czy przycisk myszy jest wciśnięty
         private bool _isClosingHandled = false; // Flaga zapobiegająca wielokrotnemu zamykaniu
@@ -223,7 +221,7 @@ namespace SharpReader
             return ext == ".pdf" || imageExtensions.Contains(ext);
         }
 
-        //Sprawdzenia Folderu
+        // Sprawdzenia Folderu
         private bool IsFolder(string filePath)
         {
             return Directory.Exists(filePath);
@@ -375,7 +373,7 @@ namespace SharpReader
             _timer.Tick += (sender, e) =>
             {
                 TimeSpan elapsed = DateTime.Now - _startTime;
-                //this.Title = $"⏳ Czas: {elapsed:mm\\:ss}";
+                // this.Title = $"⏳ Czas: {elapsed:mm\\:ss}";
             };
             _timer.Start();
         }
@@ -457,7 +455,7 @@ namespace SharpReader
             TextBlock percentText = new TextBlock
             {
                 Text = progressBar.Value < 100 ? $"{progressBar.Value}%" : "Finished",
-                //Text = $"{comic.SavedPage}, {comic.getImageCount()}",
+                // Text = $"{comic.SavedPage}, {comic.getImageCount()}",
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 FontSize = 12,
@@ -592,7 +590,7 @@ namespace SharpReader
         {
             isSystemThemeMode = false;
             ChangeBackground.IsEnabled = true;
-            //SystemBackgroudText.Text = "Use system theme off";
+            // SystemBackgroudText.Text = "Use system theme off";
             SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOff");
             ChangeTextColor(!isDarkMode);
             if (!isDarkMode)
@@ -608,7 +606,7 @@ namespace SharpReader
         {
             isSystemThemeMode = true;
             ChangeBackground.IsEnabled = false;
-            //SystemBackgroudText.Text = "Use system theme on";
+            // SystemBackgroudText.Text = "Use system theme on";
             SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOn");
             var theme = !IsLightTheme();
             ChangeTextColor(theme);
@@ -721,10 +719,11 @@ namespace SharpReader
         private void switchToSelectionPanel()
         {
             stopAutoScrolling();
+            ApplyZoom(1);
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
             StartScrollingButton.IsEnabled = false;
-            //Reset_Click(null, null);
+            // Reset_Click(null, null);
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
@@ -783,19 +782,6 @@ namespace SharpReader
                     currentImageIndex = currentComic.SavedPage;
                     ComicsWrapPanel.Children.Add(currentImage);
                 }
-                //var host = new WindowsFormsHost
-                //{
-                //    Child = comicPDF.Viewer,
-                //    Width = MainScrollViewer.ActualWidth,
-                //    Height = MainScrollViewer.ActualHeight,
-                //};
-                //MainScrollViewer.SizeChanged += (s, args) =>
-                //{
-                //    host.Width = MainScrollViewer.ActualWidth;
-                //    host.Height = MainScrollViewer.ActualHeight;
-                //};
-                //ComicsWrapPanel.Children.Clear();
-                //ComicsWrapPanel.Children.Add(host);
             }
             else
             {
@@ -960,10 +946,10 @@ namespace SharpReader
                         }
                         break;
                     case Key.Add:
-                        ApplyZoom(zoomStep);
+                        ZoomIncrease();
                         break;
                     case Key.Subtract:
-                        ApplyZoom(-zoomStep);
+                        ZoomDecrease();
                         break;
                 }
             }
@@ -982,8 +968,6 @@ namespace SharpReader
                     Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
                     if (a.Y > 0)
                     {
-                        // Console.WriteLine("Saving " + i);
-                        // Console.WriteLine("index: " + ComicsWrapPanel.Children.Count);
                         saveCurrentPage(i);
                         break;
                     }
@@ -1196,7 +1180,7 @@ namespace SharpReader
             return langCode == "pl" || langCode == "en"; // Obsługiwane języki
         }
 
-        //Pobieranie jezyka Systemowego
+        // Pobieranie jezyka Systemowego
         private void SetSystemLanguage()
         {
             // Pobieranie języka systemowego
@@ -1218,7 +1202,7 @@ namespace SharpReader
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(langCode);
 
             // Pobranie zasobów językowych
-            //ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
+            // ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
 
             // Toolbar
             Comic.Header = resourceManager.GetString("Comic");
@@ -1283,7 +1267,7 @@ namespace SharpReader
             {
                 kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
             }
-            //ComicsWrapPanel.UpdateLayout();
+            // ComicsWrapPanel.UpdateLayout();
         }
 
         private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
@@ -1294,7 +1278,7 @@ namespace SharpReader
             {
                 kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
             }
-            //ComicsWrapPanel.UpdateLayout();
+            // ComicsWrapPanel.UpdateLayout();
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
@@ -1309,36 +1293,70 @@ namespace SharpReader
 
         private void ZoomInMenuItem(object sender, RoutedEventArgs e)
         {
-            ApplyZoom(zoomStep);  // Przybliżenie
+            ZoomIncrease();  // Przybliżenie
         }
 
         private void ZoomOutMenuItem(object sender, RoutedEventArgs e)
         {
-            ApplyZoom(-zoomStep);  //Oddalanie
+            ZoomDecrease();  // Oddalanie
         }
-
-        private void ApplyZoom(double zoomDelta)
+        private void ZoomIncrease()
         {
-            currentZoom += zoomDelta;
-            currentZoom = Math.Max(0.1, Math.Min(3.0, currentZoom)); // Zoom w zakresie [0.1, 3.0]
+            ApplyZoom(currentZoom + 1);
+        }
+        private void ZoomDecrease()
+        {
+            ApplyZoom(currentZoom - 1);
+        }
+        private void ApplyZoom(int zoomMod)
+        {
+            currentZoom = zoomMod;
+            currentZoom = Math.Max(1, Math.Min(10, currentZoom)); // Zoom w zakresie [1, 10]
+            currentZoomSquareSize = 120 - (10 * currentZoom);
+            if (currentZoom > 1)
+            {
+                Mouse.SetCursor(Cursors.Cross);
+                magnifyingGlassCanvas.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Mouse.SetCursor(Cursors.Hand);
+                magnifyingGlassCanvas.Visibility = Visibility.Hidden;
+            }
+            UpdateMagnifyingGlass(null, null);
+        }
+        private void UpdateMagnifyingGlass(object sender, MouseEventArgs args)
+        {
+            if (currentMode == Mode.SELECTION)
+            {
+                return;
+            }
+            const double DistanceFromMouse = 5;
 
-            if (currentReadingMode == ReadingMode.SCROLL)
+            var currentMousePosition = Mouse.GetPosition(this);
+
+            if (ActualWidth - currentMousePosition.X > magnifyingGlassEllipse.Width + DistanceFromMouse)
             {
-                foreach (var item in ComicsWrapPanel.Children)
-                {
-                    if (item is Image img)
-                    {
-                        ApplyScaleTransform(img);
-                    }
-                }
+                Canvas.SetLeft(magnifyingGlassEllipse, currentMousePosition.X + DistanceFromMouse);
             }
-            else if (currentReadingMode == ReadingMode.PAGE)
+            else
             {
-                if (currentImage != null)
-                {
-                    ApplyScaleTransform(currentImage);
-                }
+                Canvas.SetLeft(magnifyingGlassEllipse,
+                    currentMousePosition.X - DistanceFromMouse - magnifyingGlassEllipse.Width);
             }
+            if (ActualHeight - currentMousePosition.Y > magnifyingGlassEllipse.Height + DistanceFromMouse)
+            {
+                Canvas.SetTop(magnifyingGlassEllipse,
+                    currentMousePosition.Y + DistanceFromMouse);
+            }
+            else
+            {
+                Canvas.SetTop(magnifyingGlassEllipse,
+                    currentMousePosition.Y - DistanceFromMouse - magnifyingGlassEllipse.Height);
+            }
+            myVisualBrush.Viewbox =
+                new Rect(currentMousePosition.X - currentZoomSquareSize / 2,
+                currentMousePosition.Y - currentZoomSquareSize/2, currentZoomSquareSize, currentZoomSquareSize);
         }
 
         private void ApplyScaleTransform(Image image)
@@ -1603,7 +1621,7 @@ namespace SharpReader
             e.Cancel = true;
             if (AppSettings.Default.allowDataCollection == true)
             {
-                //await SlackLoger.SendMessageAsync(report);
+                // await SlackLoger.SendMessageAsync(report);
             }
             Application.Current.Shutdown();
         }
