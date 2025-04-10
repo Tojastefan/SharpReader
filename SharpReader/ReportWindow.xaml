@@ -12,7 +12,7 @@
             </ComboBox>
         </StackPanel>
         <TextBlock Text="Content:" />
-        <TextBox x:Name="Description" MinHeight="100"/>
+        <TextBox x:Name="Description" MinHeight="100" TextWrapping="Wrap" AcceptsReturn="True"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 20 0 0">
             <Button Name="Send" Content="Send" Width="75" Click="Send_Click"/>
             <Button Name="Cancel" Content="Cancel" Width="75" Margin="5,0,0,0" Click="Cancel_Click"/>

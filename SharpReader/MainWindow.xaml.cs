@@ -1560,6 +1560,7 @@ namespace SharpReader
             stopAutoScrolling();
             if (AppSettings.Default.allowDataCollection == false)
                 return;
+            string userReport = "";
             if (!reportData.Sent)
             {
                 ReportWindow reportWindow = new ReportWindow(reportData)
@@ -1569,14 +1570,10 @@ namespace SharpReader
                 var reportResult = reportWindow.ShowDialog();
                 if (reportResult != null && (bool)reportResult)
                 {
-                    string userReport =
-                        $@"USER REPORT
-                        Subject: {reportData.Subject}
-                        Description: {reportData.Description}";
-                    Console.WriteLine(JsonSerializer.Serialize(reportData));
-                    // For now don't send
-                    if (1 > 2)
-                        await SlackLoger.SendMessageAsync(userReport);
+                    userReport =
+                        $"USER REPORT\n"+
+                        $"Subject: {reportData.Subject}\n"+
+                        $"Description: {reportData.Description}";
                 }
             }
             if (_isClosingHandled)
@@ -1641,9 +1638,17 @@ namespace SharpReader
 
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
-            if (AppSettings.Default.allowDataCollection == true)
+            // For now don't send
+            if (1 > 2)
             {
-                // await SlackLoger.SendMessageAsync(report);
+                if (AppSettings.Default.allowDataCollection == true)
+                {
+                    await SlackLoger.SendMessageAsync(report);
+                }
+                if (!string.IsNullOrWhiteSpace(userReport) && reportData.Sent)
+                {
+                    await SlackLoger.SendMessageAsync(userReport);
+                }
             }
             Application.Current.Shutdown();
         }
