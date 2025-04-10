@@ -41,6 +41,7 @@ namespace SharpReader
             SCROLL,
             PAGE,
         }
+        public ReportData reportData;
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         private bool isDarkMode;
@@ -93,6 +94,7 @@ namespace SharpReader
         public MainWindow()
         {
             InitializeComponent();
+            reportData = new ReportData();
             TestSlack();
             this.Loaded += (object sender, RoutedEventArgs e) =>
             {
@@ -111,7 +113,7 @@ namespace SharpReader
                 {
                     clickedElement = element.Name; // Pobranie nazwy elementu
                     if (string.IsNullOrEmpty(clickedElement))
-                        clickedElement = element.GetType().Name; // Jeśli element nie ma nazwy, używamy jego typu
+                        clickedElement = element.GetType().Name;
                 }
 
                 // Zliczanie kliknięć w dany element
@@ -981,7 +983,10 @@ namespace SharpReader
         }
         private void comicSettings(object sender, RoutedEventArgs e, Comic comic)
         {
-            var dialog = new ComicSettings();
+            var dialog = new ComicSettings
+            {
+                Owner = this,
+            };
             TextBlock titleLabel = new TextBlock { Text = "Title:" };
             TextBox titleTextBox = new TextBox { Width = 200, Text = comic.Title };
             dialog.Form.Children.Add(new TextBlock { Text = "Properties", FontWeight = FontWeights.Bold, });
@@ -1161,6 +1166,7 @@ namespace SharpReader
             {
                 Header = resourceManager.GetString("NewCatMessage1"),
                 PromptText = resourceManager.GetString("NewCatMessage2"),
+                Owner = this,
             };
             bool result = dialog.ShowDialog().Value;
             if (result)
@@ -1386,7 +1392,7 @@ namespace SharpReader
         {
             if (sender is Image img)
             {
-                isMouseDown = true;  // Flaga wskazująca, że użytkownik nacisnął przycisk myszy
+                isMouseDown = true;
 
                 // Zapisujemy ostatnią pozycję myszy
                 lastMousePosition = e.GetPosition(img);
@@ -1398,18 +1404,15 @@ namespace SharpReader
         {
             if (isMouseDown && sender is Image img)
             {
-                // Obliczamy przesunięcie myszy
                 Point currentMousePosition = e.GetPosition(img);
                 Vector delta = currentMousePosition - lastMousePosition;
 
-                // Zmieniamy pozycję obrazu w panelu
                 if (img.RenderTransform is ScaleTransform transform)
                 {
                     transform.CenterX -= delta.X;
                     transform.CenterY -= delta.Y;
                 }
 
-                // Ustawiamy ostatnią pozycję myszy jako aktualną
                 lastMousePosition = currentMousePosition;
             }
         }
@@ -1419,7 +1422,7 @@ namespace SharpReader
         {
             if (sender is Image)
             {
-                isMouseDown = false;  // Flaga, gdy użytkownik zwalnia przycisk myszy
+                isMouseDown = false;
             }
         }
 
@@ -1557,10 +1560,29 @@ namespace SharpReader
             stopAutoScrolling();
             if (AppSettings.Default.allowDataCollection == false)
                 return;
+            if (!reportData.Sent)
+            {
+                ReportWindow reportWindow = new ReportWindow(reportData)
+                {
+                    Owner = this,
+                };
+                var reportResult = reportWindow.ShowDialog();
+                if (reportResult != null && (bool)reportResult)
+                {
+                    string userReport =
+                        $@"USER REPORT
+                        Subject: {reportData.Subject}
+                        Description: {reportData.Description}";
+                    Console.WriteLine(JsonSerializer.Serialize(reportData));
+                    // For now don't send
+                    if (1 > 2)
+                        await SlackLoger.SendMessageAsync(userReport);
+                }
+            }
             if (_isClosingHandled)
-                return; // Jeśli już obsługujemy zamykanie, nie rób nic więcej
+                return;
 
-            _isClosingHandled = true; // Ustawiamy flagę, aby zapobiec ponownemu wywołaniu
+            _isClosingHandled = true;
 
             string messageBoxText = "Do you want to save changes?";
             string caption = "Quitting SharpReader";
@@ -1572,7 +1594,7 @@ namespace SharpReader
             if (result == MessageBoxResult.Cancel)
             {
                 e.Cancel = true;
-                _isClosingHandled = false; // Cofamy flagę, aby móc ponownie zamykać w przyszłości
+                _isClosingHandled = false;
                 return;
             }
 
@@ -1628,7 +1650,10 @@ namespace SharpReader
 
         private void DelCategory_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new ComicSettings();
+            var dialog = new ComicSettings
+            {
+                Owner = this,
+            };
             dialog.Form.Children.Add(new TextBlock { Text = "Category", FontWeight = FontWeights.Bold, });
             dialog.Save.Content = "Delete";
             List<RadioButton> radioButtons = new List<RadioButton>();
