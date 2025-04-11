@@ -53,9 +53,11 @@ namespace SharpReader
         private List<string> categories;
         private List<Comic> comics = new List<Comic>();
         private int currentImageIndex = 0;
-        private Image currentImage;
+        private Image currentImage = null;
+        private Image currentImageClone = null;
         private Comic currentComic;
         private Dictionary<string, Image> comicImages = new Dictionary<string, Image>();
+        private Dictionary<Image, Image> originalModifiedPairImages = new Dictionary<Image, Image>();
         private Brush currentTextColor;
         private int brightness = 0;
         private int currentZoom = 1;  // Początkowy poziom zoomu
@@ -743,27 +745,30 @@ namespace SharpReader
                 {
                     for (int i = 0; i < currentComic.getImageCount(); i++)
                     {
-                        Image img;
+                        Image img, clone;
                         string path = currentComic.Path + i;
                         if (!comicImages.ContainsKey(path))
                         {
-                            BitmapImage bitmap = changeBrigthness(BitmapSourceToBitmapImage(currentComic.pageToImage(i)), brightness);
+                            // BitmapImage bitmap = changeBrigthness(BitmapSourceToBitmapImage(), brightness);
                             img = new Image
                             {
-                                Source = bitmap,
+                                Source = currentComic.pageToImage(i),
                                 Width = MainScrollViewer.ActualWidth,
                                 MaxHeight = 700,
                                 RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                                 RenderTransformOrigin = new Point(0.5, 0.5),
                             };
                             comicImages.Add(path, img);
+                            clone = cloneImage(img);
+                            originalModifiedPairImages.Add(img, clone);
                         }
                         else
                         {
                             img = comicImages[path];
+                            clone = cloneImage(img);
+                            originalModifiedPairImages[img] = clone;
                         }
-
-                        ComicsWrapPanel.Children.Add(img);
+                        ComicsWrapPanel.Children.Add(clone);
                     }
                     int tempPageIndex = currentComic.SavedPage;
                     ComicsWrapPanel.UpdateLayout();
@@ -781,8 +786,10 @@ namespace SharpReader
                         RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                         RenderTransformOrigin = new Point(0.5, 0.5),
                     };
+                    currentImageClone = cloneImage(currentImage);
+                    originalModifiedPairImages.Add(currentImage, currentImageClone);
                     currentImageIndex = currentComic.SavedPage;
-                    ComicsWrapPanel.Children.Add(currentImage);
+                    ComicsWrapPanel.Children.Add(currentImageClone);
                 }
             }
             else
@@ -795,7 +802,7 @@ namespace SharpReader
                         List<Uri> files = currentComic.getImages();
                         foreach (Uri file in files)
                         {
-                            Image img;
+                            Image img, clone;
                             string path = file.ToString();
                             if (!comicImages.ContainsKey(path))
                             {
@@ -809,13 +816,17 @@ namespace SharpReader
                                     RenderTransformOrigin = new Point(0.5, 0.5),
                                 };
                                 comicImages.Add(path, img);
+                                clone = cloneImage(img);
+                                originalModifiedPairImages.Add(img, clone);
                             }
                             else
                             {
                                 img = comicImages[path];
+                                clone = cloneImage(img);
+                                originalModifiedPairImages[img] = clone;
                             }
 
-                            ComicsWrapPanel.Children.Add(img);
+                            ComicsWrapPanel.Children.Add(clone);
                         }
                         int tempPageIndex = currentComic.SavedPage;
                         ComicsWrapPanel.UpdateLayout();
@@ -825,6 +836,10 @@ namespace SharpReader
                     }
                     else
                     {
+                        if (currentImage != null)
+                        {
+                            originalModifiedPairImages.Remove(currentImage);
+                        }
                         currentImage = new Image
                         {
                             Source = getImageByIndex(currentComic.SavedPage).Source,
@@ -833,8 +848,10 @@ namespace SharpReader
                             RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                             RenderTransformOrigin = new Point(0.5, 0.5),
                         };
+                        currentImageClone = cloneImage(currentImage);
+                        originalModifiedPairImages.Add(currentImage, currentImageClone);
                         currentImageIndex = currentComic.SavedPage;
-                        ComicsWrapPanel.Children.Add(currentImage);
+                        ComicsWrapPanel.Children.Add(currentImageClone);
                     }
                 }
                 else
@@ -861,10 +878,12 @@ namespace SharpReader
                 saveCurrentPage(currentImageIndex + n);
                 Image newImage = getImageByIndex(currentImageIndex);
                 currentImage.Source = newImage.Source;
+                currentImageClone.Source = newImage.Source;
             }
         }
         private void turnPageForward()
         {
+            Reset_Click(null, null);
             turnPageBy(1);
         }
         private void turnPageBackward()
@@ -1076,7 +1095,7 @@ namespace SharpReader
             else
             {
                 List<Uri> files = currentComic.getImages();
-                Image img = null;
+                Image img, clone;
                 Uri file = files[index];
                 string path = file.ToString();
                 if (!comicImages.ContainsKey(path))
@@ -1090,12 +1109,16 @@ namespace SharpReader
                         RenderTransformOrigin = new Point(0.5, 0.5),
                     };
                     comicImages.Add(path, img);
+                    clone = cloneImage(img);
+                    originalModifiedPairImages.Add(img, clone);
                 }
                 else
                 {
                     img = comicImages[path];
+                    clone = cloneImage(img);
+                    originalModifiedPairImages[img] = clone;
                 }
-                return img;
+                return clone;
             }
         }
         private void NewComic(object sender, RoutedEventArgs e)
@@ -1273,37 +1296,49 @@ namespace SharpReader
         {
             SetLanguage("pl");
         }
-
+        private void replaceClones()
+        {
+            if (currentReadingMode == ReadingMode.PAGE)
+            {
+                if (currentImage.Source is BitmapImage bmpImage)
+                {
+                    currentImageClone.Source = changeBrigthness(bmpImage, brightness);
+                }
+            }
+            else
+            {
+                foreach (var kvp in originalModifiedPairImages)
+                {
+                    if (kvp.Key.Source is BitmapImage bmpImage)
+                    {
+                        originalModifiedPairImages[kvp.Key].Source = changeBrigthness(bmpImage, brightness);
+                    }
+                    else
+                    {
+                        throw new Exception("Not BitmapImage");
+                    }
+                }
+            }
+        }
         private void BrightnessUpButton_Click(object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness += 100;
-            foreach (var kvp in comicImages)
-            {
-                kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
-            }
-            // ComicsWrapPanel.UpdateLayout();
+            replaceClones();
         }
 
         private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness -= 100;
-            foreach (var kvp in comicImages)
-            {
-                kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
-            }
-            // ComicsWrapPanel.UpdateLayout();
+            replaceClones();
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness = 0;
-            foreach (var kvp in comicImages)
-            {
-                kvp.Value.Source = changeBrigthness(new BitmapImage(new Uri(kvp.Key)), brightness);
-            }
+            replaceClones();
         }
 
         private void ZoomInMenuItem(object sender, RoutedEventArgs e)
@@ -1371,7 +1406,7 @@ namespace SharpReader
             }
             myVisualBrush.Viewbox =
                 new Rect(currentMousePosition.X - currentZoomSquareSize / 2,
-                currentMousePosition.Y - currentZoomSquareSize/2, currentZoomSquareSize, currentZoomSquareSize);
+                currentMousePosition.Y - currentZoomSquareSize / 2, currentZoomSquareSize, currentZoomSquareSize);
         }
 
         private void ApplyScaleTransform(Image image)
@@ -1434,7 +1469,26 @@ namespace SharpReader
                 isMouseDown = false;
             }
         }
-
+        public Image cloneImage(Image original)
+        {
+            if (original == null)
+                return null;
+            Image clone = new Image
+            {
+                Source = original.Source,
+                Width = original.Width,
+                MaxHeight = original.MaxHeight,
+                RenderTransform = original.RenderTransform,
+                RenderTransformOrigin = original.RenderTransformOrigin,
+                Height = original.Height,
+                Margin = original.Margin,
+                HorizontalAlignment = original.HorizontalAlignment,
+                VerticalAlignment = original.VerticalAlignment,
+                Stretch = original.Stretch,
+                ToolTip = original.ToolTip,
+            };
+            return clone;
+        }
         private BitmapImage changeBrigthness(BitmapImage bitmap, int brightness)
         {
             if (brightness == 0)
@@ -1580,8 +1634,8 @@ namespace SharpReader
                 if (reportResult != null && (bool)reportResult)
                 {
                     userReport =
-                        $"USER REPORT\n"+
-                        $"Subject: {reportData.Subject}\n"+
+                        $"USER REPORT\n" +
+                        $"Subject: {reportData.Subject}\n" +
                         $"Description: {reportData.Description}";
                 }
             }
