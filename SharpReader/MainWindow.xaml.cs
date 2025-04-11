@@ -727,7 +727,7 @@ namespace SharpReader
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
             StartScrollingButton.IsEnabled = false;
-            // Reset_Click(null, null);
+            Reset_Click(null, null);
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
@@ -871,6 +871,7 @@ namespace SharpReader
         }
         private void turnPageBy(int n)
         {
+            Reset_Click(null, null);
             int nextPage = currentImageIndex + n;
 
             if (nextPage < currentComic.getImageCount() && nextPage >= 0)
@@ -883,7 +884,6 @@ namespace SharpReader
         }
         private void turnPageForward()
         {
-            Reset_Click(null, null);
             turnPageBy(1);
         }
         private void turnPageBackward()
@@ -948,6 +948,7 @@ namespace SharpReader
                             MainScrollViewer.ScrollToTop();
                         else
                         {
+                            Reset_Click(null, null);
                             Image temp = currentImageClone;
                             saveCurrentPage(0);
                             Image newImage = getImageByIndex(currentImageIndex);
@@ -960,6 +961,7 @@ namespace SharpReader
                             MainScrollViewer.ScrollToEnd();
                         else
                         {
+                            Reset_Click(null, null);
                             Image temp = currentImageClone;
                             saveCurrentPage(currentComic.getImageCount() - 1);
                             Image newImage = getImageByIndex(currentImageIndex);
