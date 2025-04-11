@@ -1704,7 +1704,7 @@ namespace SharpReader
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
             // For now don't send
-            if (1 > 2)
+            if (1 < 2)
             {
                 if (AppSettings.Default.allowDataCollection == true)
                 {
