@@ -202,10 +202,10 @@
     <value>Wyłącz auto scroll</value>
   </data>
   <data name="SystemBackgroudTextOff" xml:space="preserve">
-    <value>Wyłącz motwy Systemowy</value>
+    <value>Włącz motyw Systemowy</value>
   </data>
   <data name="SystemBackgroudTextOn" xml:space="preserve">
-    <value>Włącz motyw Systemowy</value>
+    <value>Wyłącz motwy Systemowy</value>
   </data>
   <data name="Tools" xml:space="preserve">
     <value>Narzędzia</value>

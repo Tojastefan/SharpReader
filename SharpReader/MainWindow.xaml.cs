@@ -1241,6 +1241,15 @@ namespace SharpReader
             Reading_Mode.Text = resourceManager.GetString("ReadingMode");
             Filter.Text = resourceManager.GetString("Filters");
 
+            if (isSystemThemeMode)
+            {
+                SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOn");
+            }
+            else
+            {
+                SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOff");
+            }
+
             if (src == null)
             {
                 StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOff");
