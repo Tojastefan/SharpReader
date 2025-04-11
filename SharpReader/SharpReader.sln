@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpReader", "SharpReader.csproj", "{C724A86A-8433-4D11-878D-93B33A2E6993}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SharpReader1.0.0", "..\SharpReader1.0.0\SharpReader1.0.0.vdproj", "{BEC13F52-69E0-4A78-B393-CAE9840F38E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{C724A86A-8433-4D11-878D-93B33A2E6993}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C724A86A-8433-4D11-878D-93B33A2E6993}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C724A86A-8433-4D11-878D-93B33A2E6993}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEC13F52-69E0-4A78-B393-CAE9840F38E1}.Debug|Any CPU.ActiveCfg = Debug
+		{BEC13F52-69E0-4A78-B393-CAE9840F38E1}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

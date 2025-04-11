@@ -18,8 +18,9 @@ namespace SharpReader
 
         static SlackLoger()
         {
+            var appFolder = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory()) // Katalog, w którym jest aplikacja
+                .SetBasePath(appFolder) // Katalog, w którym jest aplikacja appFolder | Directory.GetCurrentDirectory()
                 .AddJsonFile("Settings.json", optional: false, reloadOnChange: true);
 
             var configuration = builder.Build();
