@@ -948,7 +948,7 @@ namespace SharpReader
                             MainScrollViewer.ScrollToTop();
                         else
                         {
-                            Image temp = currentImage;
+                            Image temp = currentImageClone;
                             saveCurrentPage(0);
                             Image newImage = getImageByIndex(currentImageIndex);
                             temp.Source = newImage.Source;
@@ -960,7 +960,7 @@ namespace SharpReader
                             MainScrollViewer.ScrollToEnd();
                         else
                         {
-                            Image temp = currentImage;
+                            Image temp = currentImageClone;
                             saveCurrentPage(currentComic.getImageCount() - 1);
                             Image newImage = getImageByIndex(currentImageIndex);
                             temp.Source = newImage.Source;
