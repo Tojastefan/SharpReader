@@ -7,9 +7,9 @@ Prosty czytnik wspierający popularne formaty z dodatkowymi funkcjami dla miło�
 
 ## Wersja testowa
 *Pomóż nam udoskonalić aplikację!*
-1. Pobierz najnowszą wersję
-2. Wypakuj archiwum (nie wymaga instalacji) ???
-3. Otwórz swój plik PDF/CBZ/CBR
+1. Pobierz najnowszą wersję że strony
+2. Zainstaluj aplikacje na swoim komputerze
+3. Otwórz swój plik z komiksami / PDF
 4. Przetestuj i powiedz nam co sądzisz!
 
 ## 🐛 Zgłaszanie problemów
