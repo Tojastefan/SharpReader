@@ -7,7 +7,6 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Effects;
 using Forms = System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Text.Json;
@@ -21,6 +20,8 @@ using System.Threading;
 using Microsoft.Win32;
 using System.Resources;
 using System.Diagnostics;
+using SharpReader.Controls;
+using System.Windows.Data;
 
 namespace SharpReader
 {
@@ -44,7 +45,7 @@ namespace SharpReader
         public ReportData reportData;
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
-        private bool isDarkMode;
+        public bool isDarkMode;
         private bool isSystemThemeMode;
         private bool mirrorOn = false;
         private Mode currentMode;
@@ -90,12 +91,17 @@ namespace SharpReader
                 }
             }
         }
+        public Binding TextColorBinding;
         Color darkSidebar = (Color)ColorConverter.ConvertFromString("#3c3c3c");
         Color lightSidebar = (Color)ColorConverter.ConvertFromString("#F5F5F5");
 
         public MainWindow()
         {
             InitializeComponent();
+            TextColorBinding = new Binding("CurrentTextColor")
+            {
+                Source = this
+            };
             reportData = new ReportData();
             TestSlack();
             this.Loaded += (object sender, RoutedEventArgs e) =>
@@ -205,10 +211,7 @@ namespace SharpReader
             }
             foreach (var tb in FindVisualChildren<TextBlock>(SidebarPanel))
             {
-                tb.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
-                {
-                    Source = this
-                });
+                tb.SetBinding(TextBlock.ForegroundProperty, TextColorBinding);
             }
             // Example comic
             if (comics.Count < 1)
@@ -401,102 +404,17 @@ namespace SharpReader
                 };
                 wp.Children.Add(getText(item, 36));
                 List<Comic> filteredComics = comics.FindAll((e) => e.Category == item ? true : false);
-                filteredComics.ForEach((e) => innerwp.Children.Add(LoadComic(e)));
+                filteredComics.ForEach((e) => {
+                    var c = new ComicPanel(this, e)
+                    {
+                        Text = CurrentTextColor,
+                    };
+                    c.SetBinding(ForegroundProperty, TextColorBinding);
+                    innerwp.Children.Add(c);
+                });
                 wp.Children.Add(innerwp);
                 ComicsWrapPanel.Children.Add(wp);
             }
-        }
-        private StackPanel LoadComic(Comic comic)
-        {
-            string path = comic.Path;
-            string title = comic.Title;
-            BitmapSource cover = comic.getCoverImage();
-            int width = 150, height = 400;
-            StackPanel panel = new StackPanel
-            {
-                Height = height,
-                Width = width,
-                Margin = new Thickness(20)
-            };
-            Image image = new Image
-            {
-                Source = cover,
-                Width = width,
-                MaxHeight = height
-            };
-            TextBlock textBlock = new TextBlock
-            {
-                Text = title,
-                FontSize = 15,
-                TextWrapping = TextWrapping.Wrap
-            };
-            textBlock.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
-            {
-                Source = this
-            });
-            Button button = new Button
-            {
-                Content = "Settings",
-                Visibility = Visibility.Hidden,
-            };
-            button.Click += (sender, e) => comicSettings(sender, e, comic);
-            panel.Children.Add(image);
-            panel.Children.Add(textBlock);
-            Grid progressContainer = new Grid
-            {
-                Width = width,
-                Height = 25,
-            };
-            ProgressBar progressBar = new ProgressBar
-            {
-                Width = width,
-                Height = 25,
-                Minimum = 0,
-                Maximum = 100,
-                Value = comic.SavedPage <= 0 || comic.getImageCount() <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount(),
-                Padding = new Thickness(0, 5, 0, 0),
-            };
-            TextBlock percentText = new TextBlock
-            {
-                Text = progressBar.Value < 100 ? $"{progressBar.Value}%" : "Finished",
-                // Text = $"{comic.SavedPage}, {comic.getImageCount()}",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 12,
-                Foreground = Brushes.Black,
-            };
-            progressContainer.Children.Add(progressBar);
-            progressContainer.Children.Add(percentText);
-            panel.Children.Add(progressContainer);
-            panel.Children.Add(button);
-            panel.MouseDown += (sender, e) => switchToReadingPanel(sender, e, comic);
-            panel.MouseEnter += (sender, e) =>
-            {
-                StackPanel obj = sender as StackPanel;
-                Image imageInside = obj.Children[0] as Image;
-                imageInside.Width = imageInside.Width + 5;
-                obj.Width = obj.Width + 5;
-                image.Effect = new DropShadowEffect
-                {
-                    RenderingBias = RenderingBias.Quality,
-                    Color = isDarkMode ? Colors.Black : Colors.White,
-                    BlurRadius = 15,
-                    Opacity = 0.7,
-                    ShadowDepth = 0,
-                };
-                button.Visibility = Visibility.Visible;
-            };
-            panel.MouseLeave += (sender, e) =>
-            {
-                StackPanel obj = sender as StackPanel;
-                Image imageInside = obj.Children[0] as Image;
-                imageInside.Width = imageInside.Width - 5;
-                obj.Width = obj.Width - 5;
-                image.Effect = null;
-                button.Visibility = Visibility.Hidden;
-            };
-
-            return panel;
         }
         private void setBackgroundToDark()
         {
@@ -638,10 +556,7 @@ namespace SharpReader
                 Text = text,
                 FontSize = size,
             };
-            tb.SetBinding(TextBlock.ForegroundProperty, new System.Windows.Data.Binding("CurrentTextColor")
-            {
-                Source = this
-            });
+            tb.SetBinding(TextBlock.ForegroundProperty, TextColorBinding);
             return tb;
         }
         private void GridLayout_Click(object sender, RoutedEventArgs e)
@@ -724,16 +639,16 @@ namespace SharpReader
         {
             stopAutoScrolling();
             ApplyZoom(1);
+            Reset_Click(null, null);
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
             StartScrollingButton.IsEnabled = false;
-            Reset_Click(null, null);
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
             MainScrollViewer.ScrollToTop();
             LoadComics();
         }
-        private void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
+        public void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
         {
             currentMode = Mode.READING;
             currentComic = comic;
@@ -1002,7 +917,7 @@ namespace SharpReader
             currentImageIndex = pageIndex;
             currentComic.SavedPage = pageIndex;
         }
-        private void comicSettings(object sender, RoutedEventArgs e, Comic comic)
+        public void comicSettings(object sender, RoutedEventArgs e, Comic comic)
         {
             var dialog = new ComicSettings
             {
@@ -1704,7 +1619,7 @@ namespace SharpReader
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
             // For now don't send
-            if (1 < 2)
+            if (1 > 2)
             {
                 if (AppSettings.Default.allowDataCollection == true)
                 {

@@ -4,7 +4,7 @@ using System.Windows.Media.Imaging;
 
 namespace SharpReader
 {
-    internal class Comic
+    public class Comic
     {
         public enum COMICTYPE
         {
@@ -17,10 +17,10 @@ namespace SharpReader
         public string Category { get; set; }
         public int SavedPage { get; set; }
         public COMICTYPE ComicType { get; set; }
-        protected List<Uri> images=new List<Uri>();
-        public Uri cover=null;
+        protected List<Uri> images = new List<Uri>();
+        public Uri cover = null;
         public Comic() { }
-        public Comic(string path, string title, string category,int savedPage)
+        public Comic(string path, string title, string category, int savedPage)
         {
             this.Path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
             this.Title = title;
@@ -51,7 +51,7 @@ namespace SharpReader
         public virtual BitmapSource getCoverImage()
         {
             if (cover == null)
-                return new BitmapImage(new Uri(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"\\resources\\placeholder.jpg"),UriKind.Relative));
+                return new BitmapImage(new Uri(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"\\resources\\placeholder.jpg"), UriKind.Relative));
             return new BitmapImage(cover);
         }
     }

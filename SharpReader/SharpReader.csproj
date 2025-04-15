@@ -140,6 +140,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>AppSettings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ComicPanel.xaml.cs">
+      <DependentUpon>ComicPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ReportData.cs" />
     <Compile Include="ReportWindow.xaml.cs">
       <DependentUpon>ReportWindow.xaml</DependentUpon>
@@ -148,6 +151,10 @@
     <Compile Include="SlackLoger.cs" />
     <Compile Include="SystemInfoCollector.cs" />
     <Page Include="ComicSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ComicPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

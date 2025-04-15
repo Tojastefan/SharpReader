@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace SharpReader
 {
-    internal class ComicImages : Comic
+    public class ComicImages : Comic
     {
         public ComicImages(string path, string title) : base(path, title)
         {

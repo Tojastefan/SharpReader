@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace SharpReader
 {
-    internal class ComicPDF : Comic
+    public class ComicPDF : Comic
     {
         private PdfDocument pdfDocument;
         private PdfViewer pdfViewer;
