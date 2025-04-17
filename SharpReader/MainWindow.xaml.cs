@@ -227,13 +227,11 @@ namespace SharpReader
             string ext = Path.GetExtension(filePath).ToLower();
             return ext == ".pdf" || imageExtensions.Contains(ext);
         }
-
         // Sprawdzenia Folderu
         private bool IsFolder(string filePath)
         {
             return Directory.Exists(filePath);
         }
-
         // Obsługa przeciągania nad ComicsWrapPanel
         private void ComicsWrapPanel_DragEnter(object sender, DragEventArgs e)
         {
@@ -252,7 +250,6 @@ namespace SharpReader
                 }
             }
         }
-
         // Obsługa upuszczania pliku
         private void ComicsWrapPanel_Drop(object sender, DragEventArgs e)
         {
@@ -285,7 +282,6 @@ namespace SharpReader
                 }
             }
         }
-
         private void allowDataCollectionMessage()
         {
             string messageBoxText = "This application collects anonymous diagnostics.\nIf you do not wish to share diagnostic data close this application.";
@@ -384,7 +380,6 @@ namespace SharpReader
             };
             _timer.Start();
         }
-
         private void LoadComics()
         {
             ComicsWrapPanel.Orientation = Orientation.Vertical;
@@ -568,7 +563,6 @@ namespace SharpReader
                 return;
             switchToSelectionPanel();
         }
-
         private void ListLayout_Click(object sender, RoutedEventArgs e)
         {
             currentSelectionMode = SelectionMode.LIST;
@@ -578,7 +572,6 @@ namespace SharpReader
                 return;
             switchToSelectionPanel();
         }
-
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject parent) where T : DependencyObject
         {
             if (parent == null)
@@ -619,14 +612,11 @@ namespace SharpReader
 
             return null;
         }
-
         private void MyButton_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Button clicked!");
         }
-
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -1082,7 +1072,6 @@ namespace SharpReader
                 }
             }
         }
-
         private void toggleToScrollbar(object sender, RoutedEventArgs e)
         {
             if (currentMode == Mode.READING)
@@ -1099,7 +1088,6 @@ namespace SharpReader
             PageButton.IsEnabled = false;
             ScrollbarButton.IsEnabled = true;
         }
-
         private void NewCategory_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new Dialog
@@ -1120,12 +1108,10 @@ namespace SharpReader
                 }
             }
         }
-
         private bool IsLanguageSupported(string langCode)
         {
             return langCode == "pl" || langCode == "en"; // Obsługiwane języki
         }
-
         // Pobieranie jezyka Systemowego
         private void SetSystemLanguage()
         {
@@ -1141,7 +1127,6 @@ namespace SharpReader
             // Ustawienie języka aplikacji na podstawie języka systemowego
             SetLanguage(systemLanguage);
         }
-
         public void SetLanguage(string langCode)
         {
             // Ustawienie nowej kultury UI
@@ -1165,7 +1150,7 @@ namespace SharpReader
             ResetPreferences.Header = resourceManager.GetString("ResetPreferences");
 
             // Sidebar buttons
-            HomeText.Text = resourceManager.GetString("HomeText");
+            HomeButton.TooltipText = resourceManager.GetString("HomeText");
             ChangeBackgroudText.Text = resourceManager.GetString("ChangeBackground");
             GridLayout.Text = resourceManager.GetString("GridLayout");
             ListLayout.Text = resourceManager.GetString("ListLayout");
@@ -1203,12 +1188,10 @@ namespace SharpReader
             Properties.Settings.Default.Language = langCode;
             Properties.Settings.Default.Save();
         }
-
         private void SetLanguageToEnglish(object sender, RoutedEventArgs e)
         {
             SetLanguage("en");
         }
-
         private void SetLanguageToPolish(object sender, RoutedEventArgs e)
         {
             SetLanguage("pl");
@@ -1243,26 +1226,22 @@ namespace SharpReader
             brightness += 100;
             replaceClones();
         }
-
         private void BrightnessDownButton_Click(Object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness -= 100;
             replaceClones();
         }
-
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             stopAutoScrolling();
             brightness = 0;
             replaceClones();
         }
-
         private void ZoomInMenuItem(object sender, RoutedEventArgs e)
         {
             ZoomIncrease();  // Przybliżenie
         }
-
         private void ZoomOutMenuItem(object sender, RoutedEventArgs e)
         {
             ZoomDecrease();  // Oddalanie
@@ -1325,7 +1304,6 @@ namespace SharpReader
                 new Rect(currentMousePosition.X - currentZoomSquareSize / 2,
                 currentMousePosition.Y - currentZoomSquareSize / 2, currentZoomSquareSize, currentZoomSquareSize);
         }
-
         private void ApplyScaleTransform(Image image)
         {
             var transform = image.RenderTransform as ScaleTransform;
@@ -1347,7 +1325,6 @@ namespace SharpReader
             image.MouseMove += Image_MouseMove;
             image.MouseUp += Image_MouseUp;
         }
-
         // Zdarzenie uruchamiane po kliknięciu myszy na obraz
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -1359,7 +1336,6 @@ namespace SharpReader
                 lastMousePosition = e.GetPosition(img);
             }
         }
-
         // Zdarzenie uruchamiane, gdy użytkownik przesuwa myszką po obrazie
         private void Image_MouseMove(object sender, MouseEventArgs e)
         {
@@ -1377,7 +1353,6 @@ namespace SharpReader
                 lastMousePosition = currentMousePosition;
             }
         }
-
         // Zdarzenie uruchamiane, gdy użytkownik zwalnia przycisk myszy
         private void Image_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -1632,7 +1607,6 @@ namespace SharpReader
             }
             Application.Current.Shutdown();
         }
-
         private void DelCategory_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new ComicSettings

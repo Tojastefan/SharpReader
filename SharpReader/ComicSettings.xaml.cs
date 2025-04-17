@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using static SharpReader.MainWindow;
+using System.Windows.Input;
 
 namespace SharpReader
 {
@@ -22,6 +24,16 @@ namespace SharpReader
         {
             DialogResult = false;
             Close();
+        }
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            switch (e.Key)
+            {
+                case Key.Escape:
+                    Cancel_Click(null, null);
+                    break;
+            }
         }
     }
 }

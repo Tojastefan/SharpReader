@@ -143,6 +143,9 @@
     <Compile Include="Controls\ComicPanel.xaml.cs">
       <DependentUpon>ComicPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TooltipButton.xaml.cs">
+      <DependentUpon>TooltipButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ReportData.cs" />
     <Compile Include="ReportWindow.xaml.cs">
       <DependentUpon>ReportWindow.xaml</DependentUpon>
@@ -155,6 +158,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ComicPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TooltipButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
