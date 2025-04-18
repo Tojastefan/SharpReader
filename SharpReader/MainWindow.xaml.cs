@@ -305,7 +305,7 @@ namespace SharpReader
         }
         private void startAutoScrolling()
         {
-            StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOn");
+            StartScrollingButton.TooltipText = resourceManager.GetString("StartScrollingButtonLabelOn");
             src = new CancellationTokenSource();
             ct = src.Token;
             scrollingTask = Task.Run(() =>
@@ -353,7 +353,7 @@ namespace SharpReader
         }
         private void stopAutoScrolling()
         {
-            StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOff");
+            StartScrollingButton.TooltipText = resourceManager.GetString("StartScrollingButtonLabelOff");
             if (src != null)
                 src.Cancel();
         }
@@ -507,8 +507,8 @@ namespace SharpReader
         {
             isSystemThemeMode = false;
             ChangeBackground.IsEnabled = true;
-            // SystemBackgroudText.Text = "Use system theme off";
-            SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOff");
+            // SystemBackground.TooltipText = "Use system theme off";
+            SystemBackground.TooltipText = resourceManager.GetString("SystemBackgroundTextOff");
             ChangeTextColor(!isDarkMode);
             if (!isDarkMode)
             {
@@ -523,8 +523,8 @@ namespace SharpReader
         {
             isSystemThemeMode = true;
             ChangeBackground.IsEnabled = false;
-            // SystemBackgroudText.Text = "Use system theme on";
-            SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOn");
+            // SystemBackground.TooltipText = "Use system theme on";
+            SystemBackground.TooltipText = resourceManager.GetString("SystemBackgroundTextOn");
             var theme = !IsLightTheme();
             ChangeTextColor(theme);
             if (theme)
@@ -1151,14 +1151,14 @@ namespace SharpReader
 
             // Sidebar buttons
             HomeButton.TooltipText = resourceManager.GetString("HomeText");
-            ChangeBackgroudText.Text = resourceManager.GetString("ChangeBackground");
-            GridLayout.Text = resourceManager.GetString("GridLayout");
-            ListLayout.Text = resourceManager.GetString("ListLayout");
-            Scrollbar.Text = resourceManager.GetString("Scrollbar");
-            Page.Text = resourceManager.GetString("Page");
-            Lightnes.Text = resourceManager.GetString("Lighten");
-            Darken.Text = resourceManager.GetString("Darken");
-            ResetText.Text = resourceManager.GetString("ResetText");
+            ChangeBackground.TooltipText = resourceManager.GetString("ChangeBackground");
+            GridButton.TooltipText = resourceManager.GetString("GridLayout");
+            ListButton.TooltipText = resourceManager.GetString("ListLayout");
+            ScrollbarButton.TooltipText = resourceManager.GetString("Scrollbar");
+            PageButton.TooltipText = resourceManager.GetString("Page");
+            BrightnessUpButton.TooltipText = resourceManager.GetString("Lighten");
+            BrightnessDownButton.TooltipText = resourceManager.GetString("Darken");
+            BrightnessResetDown.TooltipText = resourceManager.GetString("ResetText");
 
             // Sidebar sections
             Options.Text = resourceManager.GetString("Options");
@@ -1168,20 +1168,20 @@ namespace SharpReader
 
             if (isSystemThemeMode)
             {
-                SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOn");
+                SystemBackground.TooltipText = resourceManager.GetString("SystemBackgroundTextOn");
             }
             else
             {
-                SystemBackgroudText.Text = resourceManager.GetString("SystemBackgroudTextOff");
+                SystemBackground.TooltipText = resourceManager.GetString("SystemBackgroundTextOff");
             }
 
             if (src == null)
             {
-                StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOff");
+                StartScrollingButton.TooltipText = resourceManager.GetString("StartScrollingButtonLabelOff");
             }
             else
             {
-                StartScrollingButtonLabel.Text = resourceManager.GetString("StartScrollingButtonLabelOn");
+                StartScrollingButton.TooltipText = resourceManager.GetString("StartScrollingButtonLabelOn");
             }
 
             // Zapisanie języka w ustawieniach aplikacji

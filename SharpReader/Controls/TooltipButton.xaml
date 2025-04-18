@@ -36,6 +36,7 @@
             Height="30"
             ToolTip="{Binding TooltipText,ElementName = Window}"
             Click="Button_Click"
+            Cursor="Hand"
             >
             <Button.Content>
                 <Image

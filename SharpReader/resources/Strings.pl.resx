@@ -201,10 +201,10 @@
   <data name="StartScrollingButtonLabelOn" xml:space="preserve">
     <value>Wyłącz auto scroll</value>
   </data>
-  <data name="SystemBackgroudTextOff" xml:space="preserve">
+  <data name="SystemBackgroundTextOff" xml:space="preserve">
     <value>Włącz motyw Systemowy</value>
   </data>
-  <data name="SystemBackgroudTextOn" xml:space="preserve">
+  <data name="SystemBackgroundTextOn" xml:space="preserve">
     <value>Wyłącz motwy Systemowy</value>
   </data>
   <data name="Tools" xml:space="preserve">
