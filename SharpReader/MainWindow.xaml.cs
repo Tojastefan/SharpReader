@@ -632,6 +632,8 @@ namespace SharpReader
             Reset_Click(null, null);
             ComicsWrapPanel.Children.Clear();
             HomeButton.IsEnabled = false;
+            NavigationLabel.Visibility = Visibility.Collapsed;
+            NavigationStackPanel.Visibility = Visibility.Collapsed;
             StartScrollingButton.IsEnabled = false;
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
@@ -640,8 +642,14 @@ namespace SharpReader
         }
         public void switchToReadingPanel(object sender, RoutedEventArgs e, Comic comic)
         {
+            stopAutoScrolling();
             currentMode = Mode.READING;
             currentComic = comic;
+            CurrentPageLabel.Text = currentImageIndex.ToString();
+            HomeButton.IsEnabled = true;
+            NavigationLabel.Visibility = Visibility.Visible;
+            NavigationStackPanel.Visibility = Visibility.Visible;
+            StartScrollingButton.IsEnabled = true;
             ComicsWrapPanel.Children.Clear();
             ComicsWrapPanel.Orientation = Orientation.Vertical;
             if (currentComic is ComicPDF comicPDF)
@@ -766,9 +774,6 @@ namespace SharpReader
                     Console.WriteLine($"Base Directory: {basePath}");
                 }
             }
-            HomeButton.IsEnabled = true;
-            StartScrollingButton.IsEnabled = true;
-            stopAutoScrolling();
         }
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -776,16 +781,18 @@ namespace SharpReader
         }
         private void turnPageBy(int n)
         {
-            Reset_Click(null, null);
             int nextPage = currentImageIndex + n;
-
-            if (nextPage < currentComic.getImageCount() && nextPage >= 0)
-            {
-                saveCurrentPage(currentImageIndex + n);
-                Image newImage = getImageByIndex(currentImageIndex);
-                currentImage.Source = newImage.Source;
-                currentImageClone.Source = newImage.Source;
-            }
+            turnPageTo(nextPage);
+        }
+        private void turnPageTo(int nextPage)
+        {
+            if (nextPage >= currentComic.getImageCount() || nextPage < 0)
+                return;
+            Reset_Click(null, null);
+            saveCurrentPage(nextPage);
+            Image newImage = getImageByIndex(nextPage);
+            currentImage.Source = newImage.Source;
+            currentImageClone.Source = newImage.Source;
         }
         private void turnPageForward()
         {
@@ -795,11 +802,18 @@ namespace SharpReader
         {
             turnPageBy(-1);
         }
+        private void NavLeftButton_Click(object sender, RoutedEventArgs e)
+        {
+            turnPageBackward();
+        }
+        private void NavRightButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            turnPageForward();
+        }
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            //if (currentComic is ComicPDF comicPDF)
-            //    return;
             if (currentMode == Mode.READING)
             {
                 double lastPos = 0.0d;
@@ -905,7 +919,8 @@ namespace SharpReader
         private void saveCurrentPage(int pageIndex)
         {
             currentImageIndex = pageIndex;
-            currentComic.SavedPage = pageIndex;
+            currentComic.SavedPage = currentImageIndex;
+            CurrentPageLabel.Text = currentImageIndex.ToString();
         }
         public void comicSettings(object sender, RoutedEventArgs e, Comic comic)
         {
@@ -1151,6 +1166,8 @@ namespace SharpReader
 
             // Sidebar buttons
             HomeButton.TooltipText = resourceManager.GetString("HomeText");
+            NavLeftButton.TooltipText = resourceManager.GetString("NavLeft");
+            NavRightButton.TooltipText = resourceManager.GetString("NavRight");
             ChangeBackground.TooltipText = resourceManager.GetString("ChangeBackground");
             GridButton.TooltipText = resourceManager.GetString("GridLayout");
             ListButton.TooltipText = resourceManager.GetString("ListLayout");

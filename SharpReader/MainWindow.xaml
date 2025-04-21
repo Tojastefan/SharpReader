@@ -79,6 +79,35 @@
                         Source="..\resources\SharpReaderHome.png"
                         />
                 </StackPanel>
+                <TextBlock Text="Navigation" Name="NavigationLabel" Foreground="White" FontSize="16" Margin="10"/>
+                <StackPanel
+                    Name="NavigationStackPanel"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    >
+                    <StackPanel.Resources>
+                        <Style TargetType="{x:Type controls:TooltipButton}">
+                            <Setter Property="Margin" Value="5,0,5,0"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <controls:TooltipButton
+                        x:Name="NavLeftButton"
+                        Source="" Click="NavLeftButton_Click"
+                        />
+                    <TextBox
+                        Name="CurrentPageLabel"
+                        Text="0"
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        FontSize="24"
+                        MinWidth="80"
+                        Height="40"
+                        />
+                    <controls:TooltipButton
+                        x:Name="NavRightButton"
+                        Source="" Click="NavRightButton_Click"
+                        />
+                </StackPanel>
                 <TextBlock Text="Options" Name="Options" Foreground="White" FontSize="16" Margin="10"/>
                 <StackPanel
                     Orientation="Horizontal"

@@ -32,8 +32,8 @@
     <Grid>
         <Button
             Name="Button"
-            Width="30"
-            Height="30"
+            Width="{Binding Size, ElementName=Window}"
+            Height="{Binding Size, ElementName=Window}"
             ToolTip="{Binding TooltipText,ElementName = Window}"
             Click="Button_Click"
             Cursor="Hand"
@@ -41,8 +41,6 @@
             <Button.Content>
                 <Image
                     Source="{Binding Source,ElementName = Window}"
-                    Width="20"
-                    Height="20"
                     Margin="2"
                     HorizontalAlignment="Center"
                     />

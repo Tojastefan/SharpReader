@@ -31,8 +31,13 @@ namespace SharpReader.Controls
             add { AddHandler(ClickEvent, value); }
             remove { RemoveHandler(ClickEvent, value); }
         }
-
-
+        public int Size
+        {
+            get { return (int)GetValue(SizeProperty); }
+            set { SetValue(SizeProperty, value); }
+        }
+        public static readonly DependencyProperty SizeProperty =
+            DependencyProperty.Register("Size", typeof(int), typeof(TooltipButton), new PropertyMetadata(40));
         public string Source
         {
             get { return (string)GetValue(SourceProperty); }

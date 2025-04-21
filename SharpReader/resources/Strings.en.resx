@@ -141,6 +141,12 @@
   <data name="HomeText" xml:space="preserve">
     <value>Home</value>
   </data>
+  <data name="NavLeft" xml:space="preserve">
+    <value>Backward (a)</value>
+  </data>
+  <data name="NavRight" xml:space="preserve">
+    <value>Forward (d)</value>
+  </data>
   <data name="Language" xml:space="preserve">
     <value>Language</value>
   </data>
