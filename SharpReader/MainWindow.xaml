@@ -92,8 +92,9 @@
                     </StackPanel.Resources>
                     <controls:TooltipButton
                         x:Name="NavLeftButton"
-                        Source="" Click="NavLeftButton_Click"
+                        Source="..\resources\SharpReaderArrowLeft.png" Click="NavLeftButton_Click"
                         />
+
                     <TextBox
                         Name="CurrentPageLabel"
                         Text="0"
@@ -101,13 +102,20 @@
                         HorizontalContentAlignment="Center"
                         FontSize="24"
                         MinWidth="80"
-                        Height="40"
+                        Height="40" TextChanged="CurrentPageLabel_TextChanged"
                         />
                     <controls:TooltipButton
                         x:Name="NavRightButton"
-                        Source="" Click="NavRightButton_Click"
+                        Source="..\resources\SharpReaderArrowRight.png" Click="NavRightButton_Click"
                         />
+                    
                 </StackPanel>
+                <Button 
+                    Name="setToPage" 
+                    Click="setToPage_Click"
+                    Content="Go To Page"
+                    Margin="15, 10"
+                    />     
                 <TextBlock Text="Options" Name="Options" Foreground="White" FontSize="16" Margin="10"/>
                 <StackPanel
                     Orientation="Horizontal"
@@ -121,7 +129,7 @@
                     <controls:TooltipButton
                         x:Name="SystemBackground"
                         Click="SystemBackground_Click"
-                        Source="..\resources\SharpReaderChangeBackground.png"
+                        Source="..\resources\SharpReaderSystemMotive.png"
                     />
                     <controls:TooltipButton
                         x:Name="ChangeBackground"

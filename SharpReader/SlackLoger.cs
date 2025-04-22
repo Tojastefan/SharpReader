@@ -27,7 +27,7 @@ namespace SharpReader
             SlackWebhookUrl = configuration["SlackWebhookUrl"];
         }
 
-        //https://hooks.slack.com/services/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
+        
         public static async Task SendMessageAsync(string message)
         {
             if (string.IsNullOrWhiteSpace(message))

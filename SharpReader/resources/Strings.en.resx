@@ -222,4 +222,10 @@
   <data name="ZoomOut" xml:space="preserve">
     <value>Zoom Out</value>
   </data>
+  <data name="ReturnHome" xml:space="preserve">
+    <value>Return Home</value>
+  </data>
+  <data name="SetToPage" xml:space="preserve">
+    <value>Go To Page</value>
+  </data>
 </root>

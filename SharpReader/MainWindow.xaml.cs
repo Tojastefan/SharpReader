@@ -634,6 +634,7 @@ namespace SharpReader
             HomeButton.IsEnabled = false;
             NavigationLabel.Visibility = Visibility.Collapsed;
             NavigationStackPanel.Visibility = Visibility.Collapsed;
+            setToPage.Visibility = Visibility.Collapsed;
             StartScrollingButton.IsEnabled = false;
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
@@ -654,6 +655,7 @@ namespace SharpReader
             HomeButton.IsEnabled = true;
             NavigationLabel.Visibility = Visibility.Visible;
             NavigationStackPanel.Visibility = Visibility.Visible;
+            setToPage.Visibility = Visibility.Visible;
             StartScrollingButton.IsEnabled = true;
             ComicsWrapPanel.Children.Clear();
             ComicsWrapPanel.Orientation = Orientation.Vertical;
@@ -823,6 +825,17 @@ namespace SharpReader
         {
             turnPageForward();
         }
+
+        private void CurrentPageLabel_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // Sprawdź, czy currentComic jest zainicjowany
+            if (currentComic == null)
+            {
+                Console.WriteLine("currentComic jest null. Upewnij się, że został zainicjowany.");
+                return; // Zakończ działanie metody
+            }
+        }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
@@ -1143,9 +1156,11 @@ namespace SharpReader
             ResetPreferences.Header = resourceManager.GetString("ResetPreferences");
 
             // Sidebar buttons
+            ReturnHome.Text = resourceManager.GetString("ReturnHome");
             HomeButton.TooltipText = resourceManager.GetString("HomeText");
             NavLeftButton.TooltipText = resourceManager.GetString("NavLeft");
             NavRightButton.TooltipText = resourceManager.GetString("NavRight");
+            setToPage.Content = resourceManager.GetString("SetToPage");
             ChangeBackground.TooltipText = resourceManager.GetString("ChangeBackground");
             GridButton.TooltipText = resourceManager.GetString("GridLayout");
             ListButton.TooltipText = resourceManager.GetString("ListLayout");
@@ -1646,6 +1661,28 @@ namespace SharpReader
                         break;
                     }
                 }
+            }
+        }
+
+        private void setToPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(CurrentPageLabel.Text, out int pageNumber))
+            {
+                int imageCount = currentComic.getImageCount();
+                Trace.WriteLine($"Liczba obrazków: {imageCount}, Podany numer strony: {pageNumber}");
+
+                if (pageNumber < 1)
+                {
+                    pageNumber = 1;
+                }
+                else if (pageNumber > imageCount)
+                {
+                    pageNumber = imageCount;
+                }
+                Trace.WriteLine($"Ustawiony numer strony: {pageNumber}");
+
+                // Przejdź do odpowiedniej strony (indeksowanie od 1)
+                turnPageTo(pageNumber);
             }
         }
     }
