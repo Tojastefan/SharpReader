@@ -213,6 +213,32 @@
                         Source="..\resources\SharpReaderAutoScroll.png"
                     />
                 </StackPanel>
+                <DockPanel
+                    Margin="0,15">
+                    <Slider 
+                        Minimum="0"
+                        Maximum="100" 
+                        Name="ScrollingValue"
+                        Margin="0,0"
+                        Value="10"
+                        SmallChange="1" LargeChange="10"
+                        IsSnapToTickEnabled="True"
+                        TickPlacement="BottomRight" TickFrequency="10" ValueChanged="ScrollingValue_ValueChanged">
+                        <Slider.Resources>
+                        <!-- Stylizacja suwaka -->
+                        <Style TargetType="Slider">
+                            <Setter Property="Foreground" Value="{DynamicResource SliderTrackColor}"/>
+                            <Setter Property="Background" Value="{DynamicResource SliderBackgroundColor}" />
+                        </Style>
+                        <Style TargetType="Thumb">
+                                <Setter Property="Foreground" Value="{DynamicResource SliderTrackColor}"/>
+                                <Setter Property="Background" Value="{DynamicResource SliderThumbColor}" />
+                            <Setter Property="Width" Value="20" />
+                            <Setter Property="Height" Value="20" />
+                        </Style>
+                    </Slider.Resources>
+                    </Slider>
+                </DockPanel>
             </StackPanel>
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->

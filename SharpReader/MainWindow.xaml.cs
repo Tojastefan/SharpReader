@@ -78,7 +78,7 @@ namespace SharpReader
         private Task scrollingTask = null;
         private CancellationTokenSource src = null;
         private CancellationToken ct;
-        private double scrollingSpeed = 1;
+        private double scrollingSpeed = 1.0;
         public Brush CurrentTextColor
         {
             get => currentTextColor;
@@ -333,11 +333,12 @@ namespace SharpReader
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + 1.0d);
+                                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + scrollingSpeed);
                                 saveCurrentPage();
                             });
                         }
-                        Thread.Sleep((int)(10 / scrollingSpeed));
+                          Thread.Sleep(10);
+                        //Thread.Sleep((int)(10 / scrollingSpeed));
                     }
                 }
                 catch (OperationCanceledException ex)
@@ -1685,5 +1686,13 @@ namespace SharpReader
                 turnPageTo(pageNumber);
             }
         }
+
+        private void ScrollingValue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (e.NewValue != e.OldValue)
+            {
+                scrollingSpeed = e.NewValue / 10.0;  // Normalizujemy zakres do wartości 0-10
+            }
+        }      
     }
 }
