@@ -646,10 +646,13 @@ namespace SharpReader
             stopAutoScrolling();
             currentMode = Mode.READING;
             currentComic = comic;
+            if (currentReadingMode == ReadingMode.SCROLL)
+            {
+                saveCurrentPage(currentImageIndex - 1);
+            }
             if (currentComic.SavedPage < 1)
             {
-                currentImageIndex = 1;
-                currentComic.SavedPage = 1;
+                saveCurrentPage(1);
             }
             CurrentPageLabel.Text = currentImageIndex.ToString();
             HomeButton.IsEnabled = true;
