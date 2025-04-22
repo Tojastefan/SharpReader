@@ -645,6 +645,11 @@ namespace SharpReader
             stopAutoScrolling();
             currentMode = Mode.READING;
             currentComic = comic;
+            if (currentComic.SavedPage < 1)
+            {
+                currentImageIndex = 1;
+                currentComic.SavedPage = 1;
+            }
             CurrentPageLabel.Text = currentImageIndex.ToString();
             HomeButton.IsEnabled = true;
             NavigationLabel.Visibility = Visibility.Visible;
@@ -685,7 +690,7 @@ namespace SharpReader
                     }
                     int tempPageIndex = currentComic.SavedPage;
                     ComicsWrapPanel.UpdateLayout();
-                    saveCurrentPage(tempPageIndex);
+                    saveCurrentPage(tempPageIndex + 1);
                     Point a = ComicsWrapPanel.Children[currentImageIndex].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
                     MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
                 }
@@ -786,13 +791,21 @@ namespace SharpReader
         }
         private void turnPageTo(int nextPage)
         {
-            if (nextPage >= currentComic.getImageCount() || nextPage < 0)
+            if (nextPage > currentComic.getImageCount() || nextPage < 1)
                 return;
             Reset_Click(null, null);
             saveCurrentPage(nextPage);
-            Image newImage = getImageByIndex(nextPage);
-            currentImage.Source = newImage.Source;
-            currentImageClone.Source = newImage.Source;
+            if (currentReadingMode == ReadingMode.SCROLL)
+            {
+                Point a = ComicsWrapPanel.Children[nextPage - 1].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
+                MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
+            }
+            else
+            {
+                Image newImage = getImageByIndex(nextPage);
+                currentImage.Source = newImage.Source;
+                currentImageClone.Source = newImage.Source;
+            }
         }
         private void turnPageForward()
         {
@@ -808,7 +821,6 @@ namespace SharpReader
         }
         private void NavRightButton_Click(object sender, RoutedEventArgs e)
         {
-
             turnPageForward();
         }
         protected override void OnKeyDown(KeyEventArgs e)
@@ -816,50 +828,15 @@ namespace SharpReader
             base.OnKeyDown(e);
             if (currentMode == Mode.READING)
             {
-                double lastPos = 0.0d;
                 switch (e.Key)
                 {
                     case Key.A:
                         stopAutoScrolling();
-                        if (currentReadingMode == ReadingMode.SCROLL)
-                        {
-                            for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
-                            {
-                                Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
-                                if (a.Y >= 0)
-                                {
-                                    double pos = MainScrollViewer.VerticalOffset + lastPos;
-                                    MainScrollViewer.ScrollToVerticalOffset(pos > 0d ? pos : 0d);
-                                    saveCurrentPage(i > 0 ? i - 1 : 0);
-                                    break;
-                                }
-                                lastPos = a.Y;
-                            }
-                        }
-                        else
-                        {
-                            turnPageBackward();
-                        }
+                        turnPageBackward();
                         break;
                     case Key.D:
                         stopAutoScrolling();
-                        if (currentReadingMode == ReadingMode.SCROLL)
-                        {
-                            for (int i = 0; i < ComicsWrapPanel.Children.Count; ++i)
-                            {
-                                Point a = ComicsWrapPanel.Children[i].TransformToAncestor(MainScrollViewer).Transform(new Point(0, 0));
-                                if (a.Y > 0)
-                                {
-                                    MainScrollViewer.ScrollToVerticalOffset(MainScrollViewer.VerticalOffset + a.Y);
-                                    saveCurrentPage(i);
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            turnPageForward();
-                        }
+                        turnPageForward();
                         break;
                     case Key.T:
                         stopAutoScrolling();
@@ -1000,8 +977,9 @@ namespace SharpReader
         }
         private Image getImageByIndex(int index)
         {
-            if (index < 0)
-                index = 0;
+            if (index < 1)
+                index = 1;
+            --index;
             if (currentComic is ComicPDF comicPDF)
             {
                 Image img = new Image
