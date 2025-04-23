@@ -6,43 +6,87 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:SharpReader.Controls"
     mc:Ignorable="d" 
-    d:DesignHeight="400" d:DesignWidth="150"
+    d:DesignHeight="400" d:DesignWidth="700"
     Name="Window"
     Margin="10"
     >
-    <StackPanel
-        x:Name="Panel"
-        Width="150"
-        Height="400"
+    <WrapPanel
+        Name="Wrap"
         >
-        <Image
-            Name="CoverImage"
-            Source="..\resources\placeholder.jpg"
-            Width = "{Binding ActualWidth, ElementName=Panel}"
-            MaxHeight = "250"
-            />
-        <TextBlock Name="Title" Text="" FontSize = "15" TextWrapping="Wrap" />
-        <Grid
-            Name="ProgressContainer"
-            Width = "{Binding ActualWidth, ElementName=Window}"
-            Height = "25"
+        <StackPanel
+            x:Name="Panel"
+            Width="150"
+            Height="400"
             >
-            <ProgressBar
-                x:Name="ProgressBar"
-                Minimum="0"
-                Maximum="100"
-                Height = "{Binding ActualHeight, ElementName=ProgressContainer}"
-                Value="50"
-            />
+            <Image
+                Name="CoverImage"
+                Source="..\resources\placeholder.jpg"
+                Width = "{Binding ActualWidth, ElementName=Panel}"
+                MaxHeight = "250"
+                />
             <TextBlock
-                Name="ProgressLabel"
-                Text="Progress"
-                HorizontalAlignment = "Center"
-                VerticalAlignment = "Center"
-                FontSize = "12"
-                Foreground = "{Binding Text, ElementName=Window}"
-            />
-        </Grid>
-        <Button Name="SettingsButton" Content="Settings"/>
-    </StackPanel>
+                Name="Title"
+                Text="{Binding ComicTitle,ElementName=Window,FallbackValue=ComicTitle}"
+                FontSize="15"
+                TextWrapping="Wrap"
+                Foreground="White"
+                />
+            <Grid
+                Name="ProgressContainer"
+                Height="25"
+                >
+                <ProgressBar
+                    x:Name="ProgressBar"
+                    Minimum="0"
+                    Maximum="100"
+                    Height="{Binding ActualHeight, ElementName=ProgressContainer}"
+                    Value="50"
+                    />
+                <TextBlock
+                    Name="ProgressLabel"
+                    Text="Progress"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Foreground="Black"
+                    />
+            </Grid>
+            <Button Name="SettingsButton" Content="Settings"/>
+        </StackPanel>
+        <StackPanel
+            Name="PanelList"
+            Width="300"
+            Margin="10 0 0 0"
+            Visibility="Visible"
+            >
+            <TextBlock
+                Name="TitleList"
+                Text="{Binding ComicTitle,ElementName=Window,FallbackValue=ComicTitle}"
+                FontSize="15"
+                TextWrapping="Wrap"
+                Foreground="White"
+                />
+            <Grid
+                Name="ProgressContainerList"
+                Height="25"
+                >
+                <ProgressBar
+                    x:Name="ProgressBarList"
+                    Minimum="0"
+                    Maximum="100"
+                    Height="{Binding ActualHeight, ElementName=ProgressContainer}"
+                    Value="50"
+                />
+                <TextBlock
+                    Name="ProgressLabelList"
+                    Text="Progress"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Foreground="Black"
+                />
+            </Grid>
+            <Button Name="SettingsButtonList" Content="Settings"/>
+        </StackPanel>
+    </WrapPanel>
 </UserControl>

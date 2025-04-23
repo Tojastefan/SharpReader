@@ -1,38 +1,69 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Effects = System.Windows.Media.Effects;
 
 namespace SharpReader.Controls
 {
     public partial class ComicPanel : UserControl
     {
-        //public string ImagePath
-        //{
-        //    get { return (string)GetValue(ImagePathProperty); }
-        //    set { SetValue(ImagePathProperty, value); }
-        //}
-        //public static readonly DependencyProperty ImagePathProperty =
-        //    DependencyProperty.Register("ImagePath", typeof(string), typeof(ComicPanel), new PropertyMetadata(string.Empty));
-        public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register("TextColor", typeof(Brush), typeof(ComicPanel), new PropertyMetadata(Brushes.Black));
-
-        public Brush Text
+        private MainWindow parent;
+        private Comic comic;
+        public MainWindow.SelectionMode Variant
         {
-            get { return (Brush)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get { return (MainWindow.SelectionMode)GetValue(VariantProperty); }
+            set
+            {
+                SetValue(VariantProperty, value);
+                switch (Variant)
+                {
+                    case MainWindow.SelectionMode.GRID:
+                        PanelList.Visibility = Visibility.Collapsed;
+                        SettingsButton.Visibility = Visibility.Visible;
+                        break;
+                    case MainWindow.SelectionMode.LIST:
+                        PanelList.Visibility = Visibility.Visible;
+                        SettingsButton.Visibility = Visibility.Collapsed;
+                        break;
+                }
+            }
         }
+        public static readonly DependencyProperty VariantProperty =
+            DependencyProperty.Register("Variant", typeof(MainWindow.SelectionMode), typeof(ComicPanel),
+                new PropertyMetadata(MainWindow.SelectionMode.GRID));
+        public Binding ColorBinding
+        {
+            set
+            {
+                Title.SetBinding(TextBlock.ForegroundProperty, value);
+            }
+        }
+        public string ComicTitle
+        {
+            get { return (string)GetValue(ComicTitleProperty); }
+            set { SetValue(ComicTitleProperty, value); }
+        }
+        public static readonly DependencyProperty ComicTitleProperty =
+            DependencyProperty.Register("ComicTitle", typeof(string), typeof(ComicPanel), new PropertyMetadata("ComicTitle"));
+
 
         public ComicPanel(MainWindow parent, Comic comic)
         {
             InitializeComponent();
+            this.parent = parent;
+            this.comic = comic;
             CoverImage.Source = comic.getCoverImage();
-            Title.Text = comic.Title;
+            ComicTitle = comic.Title;
             ProgressBar.Value = comic.SavedPage <= 0 || comic.getImageCount() <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount();
+            ProgressBarList.Value=ProgressBar.Value;
             ProgressLabel.Text = ProgressBar.Value < 100 ? $"{ProgressBar.Value}%" : "Finished";
+            ProgressLabelList.Text = ProgressLabel.Text;
             SettingsButton.Visibility = Visibility.Hidden;
             SettingsButton.Click += (sender, e) => parent.comicSettings(sender, e, comic);
-            Panel.MouseEnter += (sender, e) =>
+            SettingsButtonList.Click += (sender, e) => parent.comicSettings(sender, e, comic);
+            Wrap.MouseEnter += (sender, e) =>
             {
                 CoverImage.Width = CoverImage.Width + 5;
                 Panel.Width = Panel.Width + 5;
@@ -44,9 +75,10 @@ namespace SharpReader.Controls
                     Opacity = 0.7,
                     ShadowDepth = 0,
                 };
-                SettingsButton.Visibility = Visibility.Visible;
+                if (Variant == MainWindow.SelectionMode.GRID)
+                    SettingsButton.Visibility = Visibility.Visible;
             };
-            Panel.MouseLeave += (sender, e) =>
+            Wrap.MouseLeave += (sender, e) =>
             {
                 CoverImage.Width = CoverImage.Width - 5;
                 Panel.Width = Panel.Width - 5;

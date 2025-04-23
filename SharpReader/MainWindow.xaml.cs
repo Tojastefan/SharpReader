@@ -410,9 +410,9 @@ namespace SharpReader
                 filteredComics.ForEach((e) => {
                     var c = new ComicPanel(this, e)
                     {
-                        Text = CurrentTextColor,
+                        ColorBinding = TextColorBinding,
+                        Variant = currentSelectionMode,
                     };
-                    c.SetBinding(ForegroundProperty, TextColorBinding);
                     innerwp.Children.Add(c);
                 });
                 wp.Children.Add(innerwp);
