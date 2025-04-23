@@ -20,12 +20,16 @@ namespace SharpReader.Controls
                 switch (Variant)
                 {
                     case MainWindow.SelectionMode.GRID:
+                        Title.Visibility = Visibility.Visible;
                         PanelList.Visibility = Visibility.Collapsed;
                         SettingsButton.Visibility = Visibility.Visible;
+                        ProgressContainer.Visibility = Visibility.Visible;
                         break;
                     case MainWindow.SelectionMode.LIST:
+                        Title.Visibility = Visibility.Collapsed;
                         PanelList.Visibility = Visibility.Visible;
                         SettingsButton.Visibility = Visibility.Collapsed;
+                        ProgressContainer.Visibility = Visibility.Collapsed;
                         break;
                 }
             }
@@ -38,6 +42,7 @@ namespace SharpReader.Controls
             set
             {
                 Title.SetBinding(TextBlock.ForegroundProperty, value);
+                TitleList.SetBinding(TextBlock.ForegroundProperty, value);
             }
         }
         public string ComicTitle

@@ -1677,17 +1677,13 @@ namespace SharpReader
 
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
-            // For now don't send
-            if (1 > 2)
+            if (AppSettings.Default.allowDataCollection == true)
             {
-                if (AppSettings.Default.allowDataCollection == true)
-                {
-                    await SlackLoger.SendMessageAsync(report);
-                }
-                if (!string.IsNullOrWhiteSpace(userReport) && reportData.Sent)
-                {
-                    await SlackLoger.SendMessageAsync(userReport);
-                }
+                await SlackLoger.SendMessageAsync(report);
+            }
+            if (!string.IsNullOrWhiteSpace(userReport) && reportData.Sent)
+            {
+                await SlackLoger.SendMessageAsync(userReport);
             }
             Application.Current.Shutdown();
         }
