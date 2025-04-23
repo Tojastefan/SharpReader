@@ -864,26 +864,26 @@ namespace SharpReader
                         break;
                     case Key.T:
                         stopAutoScrolling();
+                        saveCurrentPage(1);
                         if (currentReadingMode == ReadingMode.SCROLL)
                             MainScrollViewer.ScrollToTop();
                         else
                         {
                             Reset_Click(null, null);
                             Image temp = currentImageClone;
-                            saveCurrentPage(0);
                             Image newImage = getImageByIndex(currentImageIndex);
                             temp.Source = newImage.Source;
                         }
                         break;
                     case Key.B:
                         stopAutoScrolling();
+                        saveCurrentPage(currentComic.getImageCount());
                         if (currentReadingMode == ReadingMode.SCROLL)
                             MainScrollViewer.ScrollToEnd();
                         else
                         {
                             Reset_Click(null, null);
                             Image temp = currentImageClone;
-                            saveCurrentPage(currentComic.getImageCount() - 1);
                             Image newImage = getImageByIndex(currentImageIndex);
                             temp.Source = newImage.Source;
                         }
@@ -1678,7 +1678,7 @@ namespace SharpReader
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
             // For now don't send
-            if (1 < 2)
+            if (1 > 2)
             {
                 if (AppSettings.Default.allowDataCollection == true)
                 {
