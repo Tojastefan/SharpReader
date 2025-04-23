@@ -146,7 +146,7 @@
     <Compile Include="Controls\TooltipButton.xaml.cs">
       <DependentUpon>TooltipButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ReportData.cs" />
+    <Compile Include="SurveyData.cs" />
     <Compile Include="SurveyWindow.xaml.cs">
       <DependentUpon>SurveyWindow.xaml</DependentUpon>
     </Compile>
