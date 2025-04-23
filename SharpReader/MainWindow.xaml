@@ -216,14 +216,16 @@
                 <DockPanel
                     Margin="0,15">
                     <Slider 
+                        Name="ScrollingValue"
                         Minimum="0"
                         Maximum="100" 
-                        Name="ScrollingValue"
                         Margin="0,0"
                         Value="10"
                         SmallChange="1" LargeChange="10"
                         IsSnapToTickEnabled="True"
-                        TickPlacement="BottomRight" TickFrequency="10" ValueChanged="ScrollingValue_ValueChanged">
+                        TickPlacement="BottomRight"
+                        TickFrequency="10"
+                        ValueChanged="ScrollingValue_ValueChanged">
                         <Slider.Resources>
                         <!-- Stylizacja suwaka -->
                         <Style TargetType="Slider">

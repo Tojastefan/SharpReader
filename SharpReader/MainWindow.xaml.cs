@@ -1,27 +1,26 @@
-﻿using System;
-using System.IO;
+﻿using Microsoft.Win32;
+using SharpReader.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Resources;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Forms = System.Windows.Forms;
-using System.Text.RegularExpressions;
-using System.Text.Json;
-using static SharpReader.Comic;
-using System.Runtime.InteropServices;
-using System.Linq;
 using System.Windows.Threading;
-using System.Globalization;
-using System.Threading.Tasks;
-using System.Threading;
-using Microsoft.Win32;
-using System.Resources;
-using System.Diagnostics;
-using SharpReader.Controls;
-using System.Windows.Data;
+using static SharpReader.Comic;
+using Forms = System.Windows.Forms;
 
 namespace SharpReader
 {
@@ -59,7 +58,6 @@ namespace SharpReader
         private Comic currentComic;
         private Dictionary<string, Image> comicImages = new Dictionary<string, Image>();
         private Dictionary<Image, Image> originalModifiedPairImages = new Dictionary<Image, Image>();
-        private Brush currentTextColor;
         private int brightness = 0;
         private int currentZoom = 1;  // Początkowy poziom zoomu
         private int currentZoomSquareSize = 120;
@@ -78,7 +76,8 @@ namespace SharpReader
         private Task scrollingTask = null;
         private CancellationTokenSource src = null;
         private CancellationToken ct;
-        private double scrollingSpeed = 1.0;
+        private double scrollingSpeed = 1.0d;
+        private Brush currentTextColor;
         public Brush CurrentTextColor
         {
             get => currentTextColor;
@@ -92,6 +91,7 @@ namespace SharpReader
             }
         }
         public Binding TextColorBinding;
+        public Binding ScrollViewHeight;
         Color darkSidebar = (Color)ColorConverter.ConvertFromString("#3c3c3c");
         Color lightSidebar = (Color)ColorConverter.ConvertFromString("#F5F5F5");
 
@@ -101,6 +101,11 @@ namespace SharpReader
             TextColorBinding = new Binding("CurrentTextColor")
             {
                 Source = this
+            };
+            ScrollViewHeight = new Binding("ActualHeight")
+            {
+                Source = MainScrollViewer,
+                Mode = BindingMode.OneWay,
             };
             reportData = new ReportData();
             TestSlack();
@@ -337,8 +342,7 @@ namespace SharpReader
                                 saveCurrentPage();
                             });
                         }
-                          Thread.Sleep(10);
-                        //Thread.Sleep((int)(10 / scrollingSpeed));
+                        Thread.Sleep(10);
                     }
                 }
                 catch (OperationCanceledException ex)
@@ -354,6 +358,7 @@ namespace SharpReader
         }
         private void stopAutoScrolling()
         {
+            ScrollingValue.Visibility = Visibility.Collapsed;
             StartScrollingButton.TooltipText = resourceManager.GetString("StartScrollingButtonLabelOff");
             if (src != null)
                 src.Cancel();
@@ -362,6 +367,8 @@ namespace SharpReader
         {
             if (scrollingTask == null || !scrollingTask.Status.Equals(TaskStatus.Running))
             {
+                ScrollingValue.Visibility = Visibility.Visible;
+                ScrollingValue.Value = 10.0d;
                 startAutoScrolling();
             }
             else
@@ -678,10 +685,10 @@ namespace SharpReader
                             {
                                 Source = currentComic.pageToImage(i),
                                 Width = MainScrollViewer.ActualWidth,
-                                MaxHeight = 700,
                                 RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                                 RenderTransformOrigin = new Point(0.5, 0.5),
                             };
+                            img.SetBinding(HeightProperty, ScrollViewHeight);
                             comicImages.Add(path, img);
                             clone = cloneImage(img);
                             originalModifiedPairImages.Add(img, clone);
@@ -706,10 +713,10 @@ namespace SharpReader
                     {
                         Source = getImageByIndex(currentComic.SavedPage).Source,
                         Width = MainScrollViewer.ActualWidth,
-                        MaxHeight = 700,
                         RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                         RenderTransformOrigin = new Point(0.5, 0.5),
                     };
+                    currentImage.SetBinding(HeightProperty, ScrollViewHeight);
                     currentImageClone = cloneImage(currentImage);
                     originalModifiedPairImages.Add(currentImage, currentImageClone);
                     currentImageIndex = currentComic.SavedPage;
@@ -735,10 +742,10 @@ namespace SharpReader
                                 {
                                     Source = bitmap,
                                     Width = MainScrollViewer.ActualWidth,
-                                    MaxHeight = 700,
                                     RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                                     RenderTransformOrigin = new Point(0.5, 0.5),
                                 };
+                                img.SetBinding(HeightProperty, ScrollViewHeight);
                                 comicImages.Add(path, img);
                                 clone = cloneImage(img);
                                 originalModifiedPairImages.Add(img, clone);
@@ -768,10 +775,10 @@ namespace SharpReader
                         {
                             Source = getImageByIndex(currentComic.SavedPage).Source,
                             Width = MainScrollViewer.ActualWidth,
-                            MaxHeight = 700,
                             RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                             RenderTransformOrigin = new Point(0.5, 0.5),
                         };
+                        currentImage.SetBinding(HeightProperty, ScrollViewHeight);
                         currentImageClone = cloneImage(currentImage);
                         originalModifiedPairImages.Add(currentImage, currentImageClone);
                         currentImageIndex = currentComic.SavedPage;
@@ -1003,10 +1010,10 @@ namespace SharpReader
                 {
                     Source = currentComic.pageToImage(index),
                     Width = MainScrollViewer.ActualWidth,
-                    MaxHeight = 700,
                     RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                     RenderTransformOrigin = new Point(0.5, 0.5),
                 };
+                img.SetBinding(HeightProperty, ScrollViewHeight);
                 return img;
             }
             else
@@ -1020,11 +1027,10 @@ namespace SharpReader
                     img = new Image
                     {
                         Source = new BitmapImage(file),
-                        Width = MainScrollViewer.ActualWidth,
-                        MaxHeight = 700,
                         RenderTransform = new ScaleTransform(mirrorOn ? -1.0 : 1.0, 1.0),
                         RenderTransformOrigin = new Point(0.5, 0.5),
                     };
+                    img.SetBinding(HeightProperty, ScrollViewHeight);
                     comicImages.Add(path, img);
                     clone = cloneImage(img);
                     originalModifiedPairImages.Add(img, clone);
@@ -1122,24 +1128,18 @@ namespace SharpReader
         {
             return langCode == "pl" || langCode == "en"; // Obsługiwane języki
         }
-        // Pobieranie jezyka Systemowego
         private void SetSystemLanguage()
         {
-            // Pobieranie języka systemowego
             string systemLanguage = CultureInfo.CurrentUICulture.Name;
 
             if (!IsLanguageSupported(systemLanguage))
             {
-                systemLanguage = "en"; // Domyślny język (angielski)
+                systemLanguage = "en";
             }
-
-            Trace.WriteLine($"🌐 Język systemowy: {systemLanguage}");
-            // Ustawienie języka aplikacji na podstawie języka systemowego
             SetLanguage(systemLanguage);
         }
         public void SetLanguage(string langCode)
         {
-            // Ustawienie nowej kultury UI
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(langCode);
 
             // Pobranie zasobów językowych
@@ -1524,6 +1524,76 @@ namespace SharpReader
                 adjustImageXAxis(currentImage);
             }
         }
+        private void DelCategory_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new ComicSettings
+            {
+                Owner = this,
+            };
+            dialog.Form.Children.Add(new TextBlock { Text = "Category", FontWeight = FontWeights.Bold, });
+            dialog.Save.Content = "Delete";
+            List<RadioButton> radioButtons = new List<RadioButton>();
+            categories.ForEach((name) =>
+            {
+                if (name == "Other")
+                {
+                    return;
+                }
+                RadioButton rb = new RadioButton
+                {
+                    Name = name,
+                    Content = name,
+                };
+                radioButtons.Add(rb);
+                dialog.Form.Children.Add(rb);
+            });
+            bool result = dialog.ShowDialog().Value;
+            if (result)
+            {
+                for (int i = 0; i < radioButtons.Count; ++i)
+                {
+                    if (radioButtons[i].IsChecked == true)
+                    {
+                        comics.ForEach((comic) =>
+                        {
+                            if (comic.Category == radioButtons[i].Name)
+                            {
+                                comic.Category = "Other";
+                            }
+                        });
+
+                        categories.Remove(radioButtons[i].Name);
+                        if (currentMode == Mode.SELECTION)
+                            switchToSelectionPanel();
+                        break;
+                    }
+                }
+            }
+        }
+        private void setToPage_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(CurrentPageLabel.Text, out int pageNumber))
+            {
+                int imageCount = currentComic.getImageCount();
+
+                if (pageNumber < 1)
+                {
+                    pageNumber = 1;
+                }
+                else if (pageNumber > imageCount)
+                {
+                    pageNumber = imageCount;
+                }
+                turnPageTo(pageNumber);
+            }
+        }
+        private void ScrollingValue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (e.NewValue != e.OldValue)
+            {
+                scrollingSpeed = e.NewValue / 10.0d;
+            }
+        }
         private async void Window_Closing(object sender, CancelEventArgs e)
         {
             stopAutoScrolling();
@@ -1608,7 +1678,7 @@ namespace SharpReader
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
             // For now don't send
-            if (1 > 2)
+            if (1 < 2)
             {
                 if (AppSettings.Default.allowDataCollection == true)
                 {
@@ -1621,81 +1691,5 @@ namespace SharpReader
             }
             Application.Current.Shutdown();
         }
-        private void DelCategory_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new ComicSettings
-            {
-                Owner = this,
-            };
-            dialog.Form.Children.Add(new TextBlock { Text = "Category", FontWeight = FontWeights.Bold, });
-            dialog.Save.Content = "Delete";
-            List<RadioButton> radioButtons = new List<RadioButton>();
-            categories.ForEach((name) =>
-            {
-                if (name == "Other")
-                {
-                    return;
-                }
-                RadioButton rb = new RadioButton
-                {
-                    Name = name,
-                    Content = name,
-                };
-                radioButtons.Add(rb);
-                dialog.Form.Children.Add(rb);
-            });
-            bool result = dialog.ShowDialog().Value;
-            if (result)
-            {
-                for (int i = 0; i < radioButtons.Count; ++i)
-                {
-                    if (radioButtons[i].IsChecked == true)
-                    {
-                        comics.ForEach((comic) =>
-                        {
-                            if (comic.Category == radioButtons[i].Name)
-                            {
-                                comic.Category = "Other";
-                            }
-                        });
-
-                        categories.Remove(radioButtons[i].Name);
-                        if (currentMode == Mode.SELECTION)
-                            switchToSelectionPanel();
-                        break;
-                    }
-                }
-            }
-        }
-
-        private void setToPage_Click(object sender, RoutedEventArgs e)
-        {
-            if (int.TryParse(CurrentPageLabel.Text, out int pageNumber))
-            {
-                int imageCount = currentComic.getImageCount();
-                Trace.WriteLine($"Liczba obrazków: {imageCount}, Podany numer strony: {pageNumber}");
-
-                if (pageNumber < 1)
-                {
-                    pageNumber = 1;
-                }
-                else if (pageNumber > imageCount)
-                {
-                    pageNumber = imageCount;
-                }
-                Trace.WriteLine($"Ustawiony numer strony: {pageNumber}");
-
-                // Przejdź do odpowiedniej strony (indeksowanie od 1)
-                turnPageTo(pageNumber);
-            }
-        }
-
-        private void ScrollingValue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (e.NewValue != e.OldValue)
-            {
-                scrollingSpeed = e.NewValue / 10.0;  // Normalizujemy zakres do wartości 0-10
-            }
-        }      
     }
 }
