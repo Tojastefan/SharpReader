@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using static SharpReader.ReportData;
+using static SharpReader.SurveyData;
 
 namespace SharpReader
 {
-    public partial class ReportWindow : Window
+    public partial class SurveyWindow : Window
     {
-        private ReportData data;
-        public ReportWindow(ReportData data)
+        private SurveyData data;
+        public SurveyWindow(SurveyData data)
         {
             InitializeComponent();
             this.data = data;

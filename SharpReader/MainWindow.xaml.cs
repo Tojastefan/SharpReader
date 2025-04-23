@@ -41,7 +41,7 @@ namespace SharpReader
             SCROLL,
             PAGE,
         }
-        public ReportData reportData;
+        public SurveyData surveyData;
         private readonly Brush darkText = Brushes.White;
         private readonly Brush lightText = Brushes.Black;
         public bool isDarkMode;
@@ -107,7 +107,7 @@ namespace SharpReader
                 Source = MainScrollViewer,
                 Mode = BindingMode.OneWay,
             };
-            reportData = new ReportData();
+            surveyData = new SurveyData();
             TestSlack();
             this.Loaded += (object sender, RoutedEventArgs e) =>
             {
@@ -1600,19 +1600,19 @@ namespace SharpReader
             if (AppSettings.Default.allowDataCollection == false)
                 return;
             string userReport = "";
-            if (!reportData.Sent)
+            if (!surveyData.Sent)
             {
-                ReportWindow reportWindow = new ReportWindow(reportData)
+                SurveyWindow SurveyWindow = new SurveyWindow(surveyData)
                 {
                     Owner = this,
                 };
-                var reportResult = reportWindow.ShowDialog();
+                var reportResult = SurveyWindow.ShowDialog();
                 if (reportResult != null && (bool)reportResult)
                 {
                     userReport =
                         $"USER REPORT\n" +
-                        $"Subject: {reportData.Subject}\n" +
-                        $"Description: {reportData.Description}";
+                        $"Subject: {surveyData.Subject}\n" +
+                        $"Description: {surveyData.Description}";
                 }
             }
             if (_isClosingHandled)
@@ -1681,7 +1681,7 @@ namespace SharpReader
             {
                 await SlackLoger.SendMessageAsync(report);
             }
-            if (!string.IsNullOrWhiteSpace(userReport) && reportData.Sent)
+            if (!string.IsNullOrWhiteSpace(userReport) && surveyData.Sent)
             {
                 await SlackLoger.SendMessageAsync(userReport);
             }

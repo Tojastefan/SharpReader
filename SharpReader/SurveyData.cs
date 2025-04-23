@@ -2,7 +2,7 @@
 
 namespace SharpReader
 {
-    public class ReportData
+    public class SurveyData
     {
         public bool Sent { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -14,7 +14,7 @@ namespace SharpReader
         }
         public SubjectType Subject { get; set; }
         public string Description { get; set; }
-        public ReportData()
+        public SurveyData()
         {
             Sent = false;
             Subject = SubjectType.OTHER;

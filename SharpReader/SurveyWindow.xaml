@@ -1,10 +1,10 @@
-﻿<Window x:Class="SharpReader.ReportWindow"
+﻿<Window x:Class="SharpReader.SurveyWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Icon="resources\SharpReaderIcon.png"
-        Name="HeaderTitle" Title="Report" MinHeight="300" MinWidth="500" Height="400" Width="500" WindowStartupLocation="CenterOwner">
+        Name="HeaderTitle" Title="Survey" MinHeight="300" MinWidth="500" Height="400" Width="500" WindowStartupLocation="CenterOwner">
     <StackPanel Margin="10">
-        <TextBlock x:Name="Prompt" Text="Would you like to send a report?:" Margin="0,0,0,10"/>
+        <TextBlock x:Name="Prompt" Text="Would you like to fill out a survey?:" Margin="0,0,0,10"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
             <TextBlock Text="Subject:" Width="50" HorizontalAlignment="Left"/>
             <ComboBox Name="SubjectSelect" MinWidth="150">

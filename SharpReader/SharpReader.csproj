@@ -147,8 +147,8 @@
       <DependentUpon>TooltipButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="ReportData.cs" />
-    <Compile Include="ReportWindow.xaml.cs">
-      <DependentUpon>ReportWindow.xaml</DependentUpon>
+    <Compile Include="SurveyWindow.xaml.cs">
+      <DependentUpon>SurveyWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ResourceLoader.cs" />
     <Compile Include="SlackLoger.cs" />
@@ -190,7 +190,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ReportWindow.xaml">
+    <Page Include="SurveyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
