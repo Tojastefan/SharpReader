@@ -1599,17 +1599,17 @@ namespace SharpReader
             stopAutoScrolling();
             if (AppSettings.Default.allowDataCollection == false)
                 return;
-            string userReport = "";
+            string userSurvey = "";
             if (!surveyData.Sent)
             {
                 SurveyWindow SurveyWindow = new SurveyWindow(surveyData)
                 {
                     Owner = this,
                 };
-                var reportResult = SurveyWindow.ShowDialog();
-                if (reportResult != null && (bool)reportResult)
+                var surveyResult = SurveyWindow.ShowDialog();
+                if (surveyResult != null && (bool)surveyResult)
                 {
-                    userReport =
+                    userSurvey =
                         $"USER REPORT\n" +
                         $"Subject: {surveyData.Subject}\n" +
                         $"Description: {surveyData.Description}";
@@ -1677,13 +1677,16 @@ namespace SharpReader
 
             // Console.WriteLine("🚀 Wysyłam raport na Slacka...");
             e.Cancel = true;
-            if (AppSettings.Default.allowDataCollection == true)
+            if (1 > 2)
             {
-                await SlackLoger.SendMessageAsync(report);
-            }
-            if (!string.IsNullOrWhiteSpace(userReport) && surveyData.Sent)
-            {
-                await SlackLoger.SendMessageAsync(userReport);
+                if (AppSettings.Default.allowDataCollection == true)
+                {
+                    await SlackLoger.SendMessageAsync(report);
+                }
+                if (!string.IsNullOrWhiteSpace(userSurvey) && surveyData.Sent)
+                {
+                    await SlackLoger.SendMessageAsync(userSurvey);
+                }
             }
             Application.Current.Shutdown();
         }

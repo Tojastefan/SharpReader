@@ -22,7 +22,7 @@ namespace SharpReader.Controls
                     case MainWindow.SelectionMode.GRID:
                         Title.Visibility = Visibility.Visible;
                         PanelList.Visibility = Visibility.Collapsed;
-                        SettingsButton.Visibility = Visibility.Visible;
+                        SettingsButton.Visibility = Visibility.Hidden;
                         ProgressContainer.Visibility = Visibility.Visible;
                         break;
                     case MainWindow.SelectionMode.LIST:
@@ -72,7 +72,7 @@ namespace SharpReader.Controls
             {
                 CoverImage.Width = CoverImage.Width + 5;
                 Panel.Width = Panel.Width + 5;
-                CoverImage.Effect = new Effects.DropShadowEffect
+                CoverImageBorder.Effect = new Effects.DropShadowEffect
                 {
                     RenderingBias = Effects.RenderingBias.Quality,
                     Color = parent.isDarkMode ? Colors.Black : Colors.White,
@@ -87,7 +87,7 @@ namespace SharpReader.Controls
             {
                 CoverImage.Width = CoverImage.Width - 5;
                 Panel.Width = Panel.Width - 5;
-                CoverImage.Effect = null;
+                CoverImageBorder.Effect = null;
                 SettingsButton.Visibility = Visibility.Hidden;
             };
             Panel.MouseDown += (sender, e) => parent.switchToReadingPanel(sender, e, comic);

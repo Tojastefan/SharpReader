@@ -12,22 +12,41 @@
     >
     <WrapPanel
         Name="Wrap"
+        Background="Transparent"
         >
         <StackPanel
             x:Name="Panel"
             Width="150"
-            Height="400"
+            MinHeight="320"
             >
-            <Image
-                Name="CoverImage"
-                Source="..\resources\placeholder.jpg"
-                Width = "{Binding ActualWidth, ElementName=Panel}"
-                MaxHeight = "250"
-                />
+            <Border
+                CornerRadius="30"
+                Name="CoverImageBorder">
+                <Border.OpacityMask>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Border 
+                                Background="Black"
+                                SnapsToDevicePixels="True"
+                                CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}"
+                                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}}"
+                                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}}"
+                                />
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Border.OpacityMask>
+                <Image
+                    Name="CoverImage"
+                    Source="..\resources\placeholder.jpg"
+                    Width = "{Binding ActualWidth, ElementName=Panel}"
+                    MaxHeight = "250"
+                    />
+            </Border>
             <TextBlock
                 Name="Title"
                 Text="{Binding ComicTitle,ElementName=Window,FallbackValue=ComicTitle}"
                 FontSize="15"
+                Margin="0 5 0 10"
                 TextWrapping="Wrap"
                 Foreground="White"
                 />
@@ -51,7 +70,12 @@
                     Foreground="Black"
                     />
             </Grid>
-            <Button Name="SettingsButton" Content="Settings"/>
+            <Button
+                Name="SettingsButton"
+                Content="Settings"
+                Margin="0 20 0 0"
+                Padding="10"
+                />
         </StackPanel>
         <StackPanel
             Name="PanelList"
@@ -62,7 +86,8 @@
             <TextBlock
                 Name="TitleList"
                 Text="{Binding ComicTitle,ElementName=Window,FallbackValue=ComicTitle}"
-                FontSize="15"
+                FontSize="24"
+                Margin="0 0 0 10"
                 TextWrapping="Wrap"
                 Foreground="White"
                 />
@@ -86,7 +111,12 @@
                     Foreground="Black"
                 />
             </Grid>
-            <Button Name="SettingsButtonList" Content="Settings"/>
+            <Button
+                Name="SettingsButtonList"
+                Content="Settings"
+                Margin="0 20 0 0"
+                Padding="10"
+                />
         </StackPanel>
     </WrapPanel>
 </UserControl>
