@@ -8,18 +8,19 @@
 	box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
 }
 
-.wrapper .images .img-1 {
+.wrapper .images .img{
 	height: 100%;
-	width: 100%;
-	background-image: url('./images/c1.png');
 	background-size: cover;
 }
 
+.wrapper .images .img-1 {
+	width: 100%;
+	background-image: url('./images/c1.png');
+}
+
 .wrapper .images .img-2 {
-	height: 100%;
 	width: 50%;
 	background-image: url('./images/c2.png');
-	background-size: cover;
 	position: absolute;
 	top: 0;
 	left: 0;
