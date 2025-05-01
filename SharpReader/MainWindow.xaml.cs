@@ -1656,12 +1656,16 @@ namespace SharpReader
             string comicProgressReport = "";
             foreach (Comic comic in comics)
             {
+                int readpage = comic.SavedPage;
+                int totalpage = comic.getImageCount();
+                string PagesReadStatistic = $"{readpage} / {totalpage} przeczytane";
                 double progress = comic.SavedPage <= 0 || comic.getImageCount() <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount();
                 string progressText = progress < 100 ? $"{progress:F1}%" : "Finished";
                 string comicTitle = comic.Title;
 
                 // Dodajemy postęp komiksu do raportu
                 comicProgressReport += $"   📖 Komiks: {comicTitle}\n" +
+                                       $"   📖 Strony: {PagesReadStatistic}\n" +
                                        $"   🕒 Postęp: {progressText}\n\n";
             }
 
