@@ -43,6 +43,7 @@ namespace SharpReader.Controls
             {
                 Title.SetBinding(TextBlock.ForegroundProperty, value);
                 TitleList.SetBinding(TextBlock.ForegroundProperty, value);
+                PagesReadLabel.SetBinding(TextBlock.ForegroundProperty, value);
             }
         }
         public string ComicTitle
@@ -54,6 +55,7 @@ namespace SharpReader.Controls
             DependencyProperty.Register("ComicTitle", typeof(string), typeof(ComicPanel), new PropertyMetadata("ComicTitle"));
 
 
+
         public ComicPanel(MainWindow parent, Comic comic)
         {
             InitializeComponent();
@@ -61,6 +63,9 @@ namespace SharpReader.Controls
             this.comic = comic;
             CoverImage.Source = comic.getCoverImage();
             ComicTitle = comic.Title;
+            int totalPages = comic.getImageCount();
+            int readPages = comic.SavedPage;
+            PagesReadLabel.Text = $"{readPages} / {totalPages} przeczytane";
             ProgressBar.Value = comic.SavedPage <= 0 || comic.getImageCount() <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount();
             ProgressBarList.Value=ProgressBar.Value;
             ProgressLabel.Text = ProgressBar.Value < 100 ? $"{ProgressBar.Value}%" : "Finished";
