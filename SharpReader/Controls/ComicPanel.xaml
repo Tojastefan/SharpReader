@@ -98,13 +98,13 @@
                 Foreground="White"
                 />
             <TextBlock 
-            x:Name="PagesReadLabel"
-            Text="ile/koniec"
-             Foreground="White"
-             FontSize="20"
-             Margin="0,4,0,10"
-             TextAlignment="Center"
-               />
+                x:Name="PagesReadLabel"
+                Text="read/total"
+                Foreground="White"
+                FontSize="20"
+                Margin="0,4,0,10"
+                TextAlignment="Center"
+                 />
             <Grid
                 Name="ProgressContainerList"
                 Height="25"

@@ -228,4 +228,13 @@
   <data name="SetToPage" xml:space="preserve">
     <value>Przejdź do strony</value>
   </data>
+  <data name="SettingsButton" xml:space="preserve">
+    <value>Ustawienia</value>
+  </data>
+  <data name="PagesReadLabel" xml:space="preserve">
+    <value>przeczytane</value>
+  </data>
+  <data name="FinishedStatus" xml:space="preserve">
+    <value>Ukończono</value>
+  </data>
 </root>

@@ -67,7 +67,7 @@ namespace SharpReader
 
         private readonly HashSet<string> imageExtensions = new HashSet<string> { ".jpg", ".jpeg", ".png", ".bmp", ".gif" }; // Obsługiwane rozszerzenia plików obrazów
 
-        ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
+        public ResourceManager resourceManager = new ResourceManager("SharpReader.resources.Strings", typeof(ResourceLoader).Assembly);
 
         private DateTime _startTime;
         private DispatcherTimer _timer;
@@ -418,6 +418,7 @@ namespace SharpReader
                 wp.Children.Add(innerwp);
                 ComicsWrapPanel.Children.Add(wp);
             }
+            SetLanguage(Properties.Settings.Default.Language);
         }
         private void setBackgroundToDark()
         {
@@ -1196,6 +1197,12 @@ namespace SharpReader
             else
             {
                 StartScrollingButton.TooltipText = resourceManager.GetString("StartScrollingButtonLabelOn");
+            }
+
+            // ComicPanel
+            foreach (var panel in FindVisualChildren<ComicPanel>(ComicsWrapPanel))
+            {
+                panel.SettingsButton.TooltipText = resourceManager.GetString("SettingsButton");
             }
 
             // Zapisanie języka w ustawieniach aplikacji
