@@ -275,8 +275,15 @@
     <Content Include="resources\ActionComics\Action Comics 001 %281938%29 %28Digital%29 %28Shadowcat-Empire%29_page-0014.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="resources\SharpReaderArrowLeft.png" />
-    <Resource Include="resources\SharpReaderArrowRight.png" />
+    <Resource Include="resources\SharpReaderComicSettings.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\SharpReaderArrowLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="resources\SharpReaderArrowRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="resources\SharpReaderSystemMotive.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

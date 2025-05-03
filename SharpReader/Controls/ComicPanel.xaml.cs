@@ -22,13 +22,11 @@ namespace SharpReader.Controls
                     case MainWindow.SelectionMode.GRID:
                         Title.Visibility = Visibility.Visible;
                         PanelList.Visibility = Visibility.Collapsed;
-                        SettingsButton.Visibility = Visibility.Hidden;
                         ProgressContainer.Visibility = Visibility.Visible;
                         break;
                     case MainWindow.SelectionMode.LIST:
                         Title.Visibility = Visibility.Collapsed;
                         PanelList.Visibility = Visibility.Visible;
-                        SettingsButton.Visibility = Visibility.Collapsed;
                         ProgressContainer.Visibility = Visibility.Collapsed;
                         break;
                 }
@@ -72,7 +70,6 @@ namespace SharpReader.Controls
             ProgressLabelList.Text = ProgressLabel.Text;
             SettingsButton.Visibility = Visibility.Hidden;
             SettingsButton.Click += (sender, e) => parent.comicSettings(sender, e, comic);
-            SettingsButtonList.Click += (sender, e) => parent.comicSettings(sender, e, comic);
             Wrap.MouseEnter += (sender, e) =>
             {
                 CoverImage.Width = CoverImage.Width + 5;
@@ -85,8 +82,7 @@ namespace SharpReader.Controls
                     Opacity = 0.7,
                     ShadowDepth = 0,
                 };
-                if (Variant == MainWindow.SelectionMode.GRID)
-                    SettingsButton.Visibility = Visibility.Visible;
+                SettingsButton.Visibility = Visibility.Visible;
             };
             Wrap.MouseLeave += (sender, e) =>
             {

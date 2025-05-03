@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:controls="clr-namespace:SharpReader.Controls"
     xmlns:local="clr-namespace:SharpReader.Controls"
     mc:Ignorable="d" 
     d:DesignHeight="400" d:DesignWidth="700"
@@ -35,12 +36,23 @@
                         </VisualBrush.Visual>
                     </VisualBrush>
                 </Border.OpacityMask>
-                <Image
-                    Name="CoverImage"
-                    Source="..\resources\placeholder.jpg"
-                    Width = "{Binding ActualWidth, ElementName=Panel}"
-                    MaxHeight = "250"
-                    />
+                <Canvas
+                    Width="{Binding ActualWidth, ElementName=CoverImage}"
+                    Height="{Binding ActualHeight, ElementName=CoverImage}"
+                    >
+                    <Image
+                        Name="CoverImage"
+                        Source="..\resources\placeholder.jpg"
+                        Width = "{Binding ActualWidth, ElementName=Panel}"
+                        MaxHeight = "250"
+                        />
+                    <controls:TooltipButton
+                        x:Name="SettingsButton"
+                        Source="..\resources\SharpReaderComicSettings.png"
+                        Canvas.Top="10"
+                        Canvas.Right="10"
+                        />
+                </Canvas>
             </Border>
             <TextBlock
                 Name="Title"
@@ -70,12 +82,6 @@
                     Foreground="Black"
                     />
             </Grid>
-            <Button
-                Name="SettingsButton"
-                Content="Settings"
-                Margin="0 20 0 0"
-                Padding="10"
-                />
         </StackPanel>
         <StackPanel
             Name="PanelList"
@@ -119,12 +125,6 @@
                     Foreground="Black"
                 />
             </Grid>
-            <Button
-                Name="SettingsButtonList"
-                Content="Settings"
-                Margin="0 20 0 0"
-                Padding="10"
-                />
         </StackPanel>
     </WrapPanel>
 </UserControl>
