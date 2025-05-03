@@ -657,7 +657,7 @@ namespace SharpReader
             currentComic = comic;
             if (currentReadingMode == ReadingMode.SCROLL)
             {
-                saveCurrentPage(currentImageIndex - 1);
+                saveCurrentPage(comic.SavedPage - 1);
             }
             if (currentComic.SavedPage < 1)
             {
