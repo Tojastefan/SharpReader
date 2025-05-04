@@ -195,10 +195,10 @@ namespace SharpReader
                     switch (c.ComicType)
                     {
                         case COMICTYPE.IMAGES:
-                            comics.Add(new ComicImages(kvp.Key, c.Title, c.Category, c.SavedPage));
+                            comics.Add(new ComicImages(kvp.Key, c.Title, c.Category, c.SavedPage, c.cover));
                             break;
                         case COMICTYPE.PDF:
-                            comics.Add(new ComicPDF(kvp.Key, c.Title, c.Category, c.SavedPage));
+                            comics.Add(new ComicPDF(kvp.Key, c.Title, c.Category, c.SavedPage, c.cover));
                             break;
                     }
                 }

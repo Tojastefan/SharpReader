@@ -11,7 +11,7 @@ namespace SharpReader
             this.ComicType = COMICTYPE.IMAGES;
             setup();
         }
-        public ComicImages(string path, string title, string category, int savedPage) : base(path, title, category, savedPage)
+        public ComicImages(string path, string title, string category, int savedPage, Uri cover) : base(path, title, category, savedPage, cover)
         {
             this.ComicType = COMICTYPE.IMAGES;
             setup();
@@ -32,7 +32,8 @@ namespace SharpReader
                 }
                 if (images.Count < 1)
                     throw new Exception("No images");
-                cover = images[0];
+                if (cover == null)
+                    cover = images[0];
             }
         }
     }

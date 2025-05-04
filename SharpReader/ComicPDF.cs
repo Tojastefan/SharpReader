@@ -4,6 +4,7 @@ using PdfiumViewer;
 using System.Drawing.Imaging;
 using System.Windows.Media.Imaging;
 using System.Drawing;
+using System;
 
 namespace SharpReader
 {
@@ -20,12 +21,7 @@ namespace SharpReader
             this.ComicType = COMICTYPE.PDF;
             setup();
         }
-        public ComicPDF(string path, string title, string category) : base(path, title, category, 0)
-        {
-            this.ComicType = COMICTYPE.PDF;
-            setup();
-        }
-        public ComicPDF(string path, string title, string category, int savedPage) : base(path, title, category, savedPage)
+        public ComicPDF(string path, string title, string category, int savedPage, Uri cover) : base(path, title, category, savedPage, cover)
         {
             this.ComicType = COMICTYPE.PDF;
             setup();
@@ -42,12 +38,16 @@ namespace SharpReader
         }
         public override BitmapSource getCoverImage()
         {
-            var dpi = 20;
-
-            using (var image = pdfDocument.Render(0, dpi, dpi, PdfRenderFlags.CorrectFromDpi))
+            if (cover == null)
             {
-                return ConvertToBitmapSource(image);
+                var dpi = 20;
+
+                using (var image = pdfDocument.Render(0, dpi, dpi, PdfRenderFlags.CorrectFromDpi))
+                {
+                    return ConvertToBitmapSource(image);
+                }
             }
+            return new BitmapImage(cover);
         }
         public override int getImageCount()
         {

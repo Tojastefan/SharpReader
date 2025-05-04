@@ -66,7 +66,7 @@ namespace SharpReader.Controls
             int readPages = comic.SavedPage;
             PagesReadLabel.Text = $"{readPages} / {totalPages} {parent.resourceManager.GetString("PagesReadLabel")}";
             ProgressBar.Value = comic.SavedPage <= 0 || comic.getImageCount() <= 0 ? 0 : (comic.SavedPage + 1) * 100 / comic.getImageCount();
-            ProgressBarList.Value=ProgressBar.Value;
+            ProgressBarList.Value = ProgressBar.Value;
             ProgressLabel.Text = ProgressBar.Value < 100 ? $"{ProgressBar.Value}%" : parent.resourceManager.GetString("FinishedStatus");
             ProgressLabelList.Text = ProgressLabel.Text;
             SettingsButton.Visibility = Visibility.Hidden;
