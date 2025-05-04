@@ -1,21 +1,26 @@
 # SharpReader
 
-**Aplikacja do czytania plików PDF i komiksów**  
-Prosty czytnik wspierający popularne formaty z dodatkowymi funkcjami dla miłośników komiksów.
+**Windows desktop reader**
 
-*Pełna lista funkcji dostępna w [FUNCTION.md](FUNCTION.md)*
+A simplistic comic book reader with PDF support and more for comic book enthusiasts!
 
-## Wersja testowa
-*Pomóż nam udoskonalić aplikację!*
-1. Pobierz najnowszą wersję że strony
-2. Zainstaluj aplikacje na swoim komputerze
-3. Otwórz swój plik z komiksami / PDF
-4. Przetestuj i powiedz nam co sądzisz!
+*Full list of features available here [FUNCTION.md](FUNCTION.md)*
 
-## 🐛 Zgłaszanie problemów
-Znaleziony błąd? Brakuje funkcji? Daj nam znać:
+### *Please, help us in further developement by providing us with diagnostic data and feedback!*
+## Download and installation
+<details>
+  <summary>Download and installation</summary>
+  
+  1. Download installer from our [website](https://tojastefan.github.io/SharpReader/)
+  2. Run the installer
+  3. Open a comic / PDF with SharpReader
+  4. Share with us your feedback!
+</details>
+
+## 🐛 Report issues
+Found a bug? Missing feature? Let us know about it:
 📮 Email: [kajetan.such@gmail.com](mailto:kajetan.such@gmail.com)
 
 ---
 
-*Zespół SharpReader | 2024*
+*SharpReader Team | 2025*
