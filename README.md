@@ -4,7 +4,7 @@
 
 A simplistic comic book reader with PDF support and more for comic book enthusiasts!
 
-*Full list of features available here [FUNCTION.md](FUNCTION.md)*
+*Full list of features available here [FEATURES.md](FEATURES.md)*
 
 ### *Please, help us in further developement by providing us with diagnostic data and feedback!*
 ## Download and installation
