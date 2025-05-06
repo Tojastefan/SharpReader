@@ -213,6 +213,12 @@
                         Source="..\resources\SharpReaderAutoScroll.png"
                     />
                 </StackPanel>
+                <TextBlock Text="Search" Name="SearchComicText" Foreground="White" FontSize="14" Margin="10 5 10 5" />
+                <DockPanel Width="200" Height="20">
+                    <TextBox Width="180"  Height="20" Name="SearchComicInput"
+                     Margin="10 0 10 0"
+                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" TextChanged="SearchComicInput_TextChanged" />    
+                </DockPanel>
                 <DockPanel
                     Margin="0,15">
                     <Slider 
@@ -227,20 +233,21 @@
                         TickFrequency="10"
                         ValueChanged="ScrollingValue_ValueChanged">
                         <Slider.Resources>
-                        <!-- Stylizacja suwaka -->
-                        <Style TargetType="Slider">
-                            <Setter Property="Foreground" Value="{DynamicResource SliderTrackColor}"/>
-                            <Setter Property="Background" Value="{DynamicResource SliderBackgroundColor}" />
-                        </Style>
-                        <Style TargetType="Thumb">
+                            <!-- Stylizacja suwaka -->
+                            <Style TargetType="Slider">
+                                <Setter Property="Foreground" Value="{DynamicResource SliderTrackColor}"/>
+                                <Setter Property="Background" Value="{DynamicResource SliderBackgroundColor}" />
+                            </Style>
+                            <Style TargetType="Thumb">
                                 <Setter Property="Foreground" Value="{DynamicResource SliderTrackColor}"/>
                                 <Setter Property="Background" Value="{DynamicResource SliderThumbColor}" />
-                            <Setter Property="Width" Value="20" />
-                            <Setter Property="Height" Value="20" />
-                        </Style>
-                    </Slider.Resources>
+                                <Setter Property="Width" Value="20" />
+                                <Setter Property="Height" Value="20" />
+                            </Style>
+                        </Slider.Resources>
                     </Slider>
                 </DockPanel>
+               
             </StackPanel>
 
             <!-- ScrollViewer z siatką WrapPanel na komiksy -->

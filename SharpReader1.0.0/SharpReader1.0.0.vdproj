@@ -460,12 +460,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_B9207843491E0DDE375B797DD95EEBB4"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_657603FF059846D88E8C9DB7513CEF1E"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -619,6 +613,12 @@
         "OwnerKey" = "8:_E226757F7CCBC4D793080C3AEB6642D6"
         "MsmSig" = "8:_UNDEFINED"
         }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_B9207843491E0DDE375B797DD95EEBB4"
+        "MsmSig" = "8:_UNDEFINED"
+        }
     }
     "Configurations"
     {
@@ -637,6 +637,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -653,6 +669,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -1583,9 +1607,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:SharpReader 1.0.0"
+        "ProductName" = "8:SharpReader 1.0.3"
         "ProductCode" = "8:{D766AF12-AAB4-4C86-99B8-CABEAFD568C9}"
-        "PackageCode" = "8:{AD0B4BB0-B958-4877-A821-560EB8731C29}"
+        "PackageCode" = "8:{A5507EBB-9228-43A1-B695-9FC2BA9F7961}"
         "UpgradeCode" = "8:{5777EE49-27E1-49DA-B2E2-DFB05DCF23BB}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -1596,7 +1620,7 @@
         "Manufacturer" = "8:SharpReader"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:SharpReader1.0.0"
+        "Title" = "8:SharpReader1.0.3"
         "Subject" = "8:"
         "ARPCONTACT" = "8:SharpReader"
         "Keywords" = "8:"

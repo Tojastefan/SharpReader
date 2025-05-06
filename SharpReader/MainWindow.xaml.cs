@@ -388,9 +388,49 @@ namespace SharpReader
             };
             _timer.Start();
         }
+        //private void LoadComics()
+        //{
+        //    ComicsWrapPanel.Orientation = Orientation.Vertical;
+        //    foreach (var item in categories)
+        //    {
+        //        WrapPanel wp = new WrapPanel
+        //        {
+        //            HorizontalAlignment = HorizontalAlignment.Left,
+        //            VerticalAlignment = VerticalAlignment.Top,
+        //            Orientation = Orientation.Vertical,
+        //        };
+        //        WrapPanel innerwp = new WrapPanel
+        //        {
+        //            HorizontalAlignment = HorizontalAlignment.Left,
+        //            VerticalAlignment = VerticalAlignment.Top,
+        //            Orientation = currentSelectionMode == SelectionMode.GRID ? Orientation.Horizontal : Orientation.Vertical,
+        //        };
+        //        wp.Children.Add(getText(item, 36));
+        //        List<Comic> filteredComics = comics.FindAll((e) => e.Category == item ? true : false);
+        //        filteredComics.ForEach((e) => {
+        //            var c = new ComicPanel(this, e)
+        //            {
+        //                ColorBinding = TextColorBinding,
+        //                Variant = currentSelectionMode,
+        //            };
+        //            innerwp.Children.Add(c);
+        //        });
+        //        wp.Children.Add(innerwp);
+        //        ComicsWrapPanel.Children.Add(wp);
+        //    }
+        //    SetLanguage(Properties.Settings.Default.Language);
+        //}
+
         private void LoadComics()
         {
+            ComicsWrapPanel.Children.Clear();
             ComicsWrapPanel.Orientation = Orientation.Vertical;
+            string filter = SearchComicInput.Text?.Trim().ToLower();
+
+            var filteredComics = string.IsNullOrWhiteSpace(filter)
+      ? comics  // Jeśli nie ma filtra, weź wszystkie komiksy
+      : comics.Where(c => c.Title.ToLower().Contains(filter)).ToList();
+
             foreach (var item in categories)
             {
                 WrapPanel wp = new WrapPanel
@@ -399,24 +439,36 @@ namespace SharpReader
                     VerticalAlignment = VerticalAlignment.Top,
                     Orientation = Orientation.Vertical,
                 };
-                WrapPanel innerwp = new WrapPanel
-                {
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top,
-                    Orientation = currentSelectionMode == SelectionMode.GRID ? Orientation.Horizontal : Orientation.Vertical,
-                };
                 wp.Children.Add(getText(item, 36));
-                List<Comic> filteredComics = comics.FindAll((e) => e.Category == item ? true : false);
-                filteredComics.ForEach((e) => {
-                    var c = new ComicPanel(this, e)
+                //List<Comic> categoryComics = filteredComics.Where(c => c.Category == item).ToList();
+
+                List<Comic> categoryComics = comics
+           .Where(c => c.Category == item &&
+                       (string.IsNullOrWhiteSpace(filter) || c.Title.ToLower().Contains(filter)))
+           .ToList();
+                if (categoryComics.Count > 0 || string.IsNullOrWhiteSpace(filter))
+                {
+                    WrapPanel innerwp = new WrapPanel
                     {
-                        ColorBinding = TextColorBinding,
-                        Variant = currentSelectionMode,
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        VerticalAlignment = VerticalAlignment.Top,
+                        Orientation = currentSelectionMode == SelectionMode.GRID ? Orientation.Horizontal : Orientation.Vertical,
                     };
-                    innerwp.Children.Add(c);
-                });
-                wp.Children.Add(innerwp);
-                ComicsWrapPanel.Children.Add(wp);
+
+                    // Dodaj pasujące komiksy
+                    categoryComics.ForEach((e) =>
+                    {
+                        var c = new ComicPanel(this, e)
+                        {
+                            ColorBinding = TextColorBinding,
+                            Variant = currentSelectionMode,
+                        };
+                        innerwp.Children.Add(c);
+                    });
+
+                    wp.Children.Add(innerwp);
+                    ComicsWrapPanel.Children.Add(wp);
+                }
             }
             SetLanguage(Properties.Settings.Default.Language);
         }
@@ -644,6 +696,8 @@ namespace SharpReader
             NavigationLabel.Visibility = Visibility.Collapsed;
             NavigationStackPanel.Visibility = Visibility.Collapsed;
             setToPage.Visibility = Visibility.Collapsed;
+            SearchComicText.Visibility = Visibility.Visible;
+            SearchComicInput.Visibility = Visibility.Visible;
             StartScrollingButton.IsEnabled = false;
             currentMode = Mode.SELECTION;
             ComicsWrapPanel.Orientation = Orientation.Horizontal;
@@ -668,6 +722,8 @@ namespace SharpReader
             NavigationLabel.Visibility = Visibility.Visible;
             NavigationStackPanel.Visibility = Visibility.Visible;
             setToPage.Visibility = Visibility.Visible;
+            SearchComicInput.Visibility = Visibility.Collapsed;
+            SearchComicText.Visibility = Visibility.Collapsed;
             StartScrollingButton.IsEnabled = true;
             ComicsWrapPanel.Children.Clear();
             ComicsWrapPanel.Orientation = Orientation.Vertical;
@@ -1700,6 +1756,11 @@ namespace SharpReader
                 }
             }
             Application.Current.Shutdown();
+        }
+
+        private void SearchComicInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            LoadComics();
         }
     }
 }
