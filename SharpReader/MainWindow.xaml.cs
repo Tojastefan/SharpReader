@@ -1236,6 +1236,7 @@ namespace SharpReader
             Layout.Text = resourceManager.GetString("Layout");
             Reading_Mode.Text = resourceManager.GetString("ReadingMode");
             Filter.Text = resourceManager.GetString("Filters");
+            SearchComicText.Text = resourceManager.GetString("SearchComicText");
 
             if (isSystemThemeMode)
             {

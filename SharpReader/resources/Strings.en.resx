@@ -237,4 +237,7 @@
   <data name="FinishedStatus" xml:space="preserve">
     <value>Finished</value>
   </data>
+  <data name="SearchComicText" xml:space="preserve">
+    <value>Search</value>
+  </data>
 </root>
